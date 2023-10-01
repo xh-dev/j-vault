@@ -7,7 +7,8 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(
         name = "token",
-        subcommands = {GenToken.class}
+        subcommands = {GenToken.class},
+        description = "manage token"
 )
 public class Token implements Callable<Integer> {
     @Override

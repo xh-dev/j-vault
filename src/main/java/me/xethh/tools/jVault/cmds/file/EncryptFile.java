@@ -16,6 +16,8 @@ import java.util.concurrent.Callable;
         description = "Encrypt a specified file with j-vault encryption format"
 )
 public class EncryptFile implements Callable<Integer> {
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
     @CommandLine.ParentCommand
     private FileCommand command;
 

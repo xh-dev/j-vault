@@ -9,9 +9,12 @@ import java.util.concurrent.Callable;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
-        name = "unset"
+        name = "unset",
+        description = "unset a key value entry by key"
 )
 public class Unset implements Callable<Integer> {
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
 

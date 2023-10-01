@@ -15,7 +15,8 @@ import java.util.concurrent.Callable;
         name = "J-Vault",
         subcommands = {
                 Deen.class, FileCommand.class, Token.class
-        }
+        },
+        description = "j-vault is a very simple key value based password vault cli program. "
 )
 public class Main implements Callable<Integer> {
 

@@ -12,9 +12,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.*;
 
 @CommandLine.Command(
-        name = "set"
+        name = "set",
+        description = "set a key value entry"
 )
 public class Set implements Callable<Integer> {
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
 

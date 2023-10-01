@@ -9,9 +9,12 @@ import java.util.concurrent.Callable;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.*;
 
 @CommandLine.Command(
-        name = "view"
+        name = "view",
+        description = "view the vault content"
 )
 public class View implements Callable<Integer> {
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
 

@@ -8,10 +8,13 @@ import java.util.Base64;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(
-        name = "gen"
+        name = "gen",
+        description = "generate token"
+
 )
 public class GenToken implements Callable<Integer> {
-
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
     @CommandLine.Option(names = {"-p","--password"}, description = "`password` to generate", defaultValue = "")
     private String password;
 

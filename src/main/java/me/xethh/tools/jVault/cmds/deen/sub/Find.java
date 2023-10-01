@@ -16,9 +16,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.*;
 
 @CommandLine.Command(
-        name = "find"
+        name = "find",
+        description = "find the vault content by key"
 )
 public class Find implements Callable<Integer> {
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
 
