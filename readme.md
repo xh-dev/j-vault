@@ -79,7 +79,8 @@ java -jar j-vault.jar token gen -p {password}
 ##### Vault
 The `vault` command support `set`, `unset`, `view` and `find` sub command.\
 Any of the calling for the above command by default generate `vault.kv` file with basic information.\
-if don't want the vault named as `vault.kv`, user can add  command option `-f {vault name}` to specify the customized file name.
+if don't want the vault named as `vault.kv`, user can add  command option `-f {vault name}` to specify the customized file name. \
+The command line format is like `vault -c {token} {sub command} [-f {vault name] {option 1}...{option n}`
 
 ```shell
 java -jar j-vault.jar vault -c HnP2kqQL/Zm9qYLG6KX2bg==:qNLriw== set -k k -v v
