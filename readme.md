@@ -9,6 +9,13 @@ The `Ansible Vault` require python environment.
 The problem that i'm facing is that I have to store some `secret` like credential.
 The environment only have Java installed and I don't find out of the box implementation. So that I write it on my own.
 
+### Downloads
+You can download the java-archive [`j-vault.jar`](https://github.com/xh-dev/j-vault/releases/latest/download/j-vault.jar). \
+Or use curl to download the java-archive.
+```shell
+curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault.jar
+```
+
 ### Architecture
 The vault is a very simple key value pair based data store.
 ```
