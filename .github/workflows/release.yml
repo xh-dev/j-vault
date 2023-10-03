@@ -16,6 +16,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - name: gen version
+      run: python get_version.py > src/main/resources/version.txt
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Create Release
