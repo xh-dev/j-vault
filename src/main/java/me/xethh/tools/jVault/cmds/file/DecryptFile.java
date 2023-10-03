@@ -59,7 +59,7 @@ public class DecryptFile implements Callable<Integer> {
                     .forEach(i->{
                         ba[i]=bArray.get(i).byteValue();
                     });
-            var deObj = DeenObj.fromLine(command.getCredential(), new String(ba));
+            var deObj = DeenObj.fromLine(creds, new String(ba));
             if (toOs) {
                 String line;
                 try (var br = new BufferedReader(new InputStreamReader(deObj.decryptInputStream(is)))) {
