@@ -14,7 +14,6 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         mixinStandardHelpOptions = true,
         versionProvider = VP.class,
-//        version = "build version: 1.0.0",
         name = "J-Vault",
         subcommands = {
                 Deen.class, FileCommand.class, Token.class
@@ -25,14 +24,6 @@ public class Main implements Callable<Integer> {
 
     public static void main(String[] args) {
         CommandLine cmd = new CommandLine(new Main());
-//        cmd.parseArgs(args);
-//        if (cmd.isUsageHelpRequested()) {
-//            cmd.usage(System.out);
-//            return;
-//        } else if (cmd.isVersionHelpRequested()) {
-//            cmd.printVersionHelp(System.out);
-//            return;
-//        }
         cmd.execute(args);
     }
 

@@ -3,7 +3,6 @@ package me.xethh.tools.jVault.cmds.file;
 import me.xethh.tools.jVault.cmds.deen.CredentialOwner;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(
