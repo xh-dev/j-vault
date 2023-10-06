@@ -1,14 +1,13 @@
 package me.xethh.tools.jVault.cmds.file;
 
 import me.xethh.tools.jVault.cmds.deen.DeenObj;
-import me.xethh.tools.jVault.cmds.token.GenToken;
-import me.xethh.tools.jVault.cmds.token.Token;
+import me.xethh.tools.jVault.cmds.deen.sub.DebugLog;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.channels.Channels;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(
@@ -22,6 +21,13 @@ public class EncryptFile implements Callable<Integer> {
     private FileCommand command;
 
     @CommandLine.Option(
+            names = {"-k", "--keep"},
+            description = "self destruct file after encrypt",
+            defaultValue = "false"
+    )
+    private boolean keep;
+
+    @CommandLine.Option(
             names = {"-f","--in-file"},
             description = "file to be decrypt or encrypt",
             required = true
@@ -30,15 +36,16 @@ public class EncryptFile implements Callable<Integer> {
 
     @CommandLine.Option(
             names = {"-o", "--out-file"},
-            description = "output file",
-            required = true
+            description = "output file"
     )
-
-    private File outFile;
+    private File outFile = null;
     @Override
     public Integer call() throws Exception {
         var creds = command.finalCredential();
         var deObj = DeenObj.fromLine(creds, DeenObj.genSaltWithIV());
+        outFile = Optional.ofNullable(outFile)
+                .orElseGet(()->new File(infile.toPath().toAbsolutePath().getParent().toFile(), infile.getName()+".crypt"))
+                ;
         try (
                 var is = deObj.encryptInputStream(new FileInputStream(infile));
                 var os = new FileOutputStream(outFile)
@@ -46,6 +53,11 @@ public class EncryptFile implements Callable<Integer> {
             os.write(String.format("%s\n", deObj.fileHeader).getBytes());
             os.flush();
             is.transferTo(os);
+        }
+
+        if(!keep){
+            boolean rs = infile.delete();
+            DebugLog.log(()->"delete file result: " + rs);
         }
         return 0;
     }

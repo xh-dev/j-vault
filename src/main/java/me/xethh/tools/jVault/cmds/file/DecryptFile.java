@@ -1,10 +1,10 @@
 package me.xethh.tools.jVault.cmds.file;
 
 import me.xethh.tools.jVault.cmds.deen.DeenObj;
+import me.xethh.tools.jVault.cmds.deen.sub.DebugLog;
 import picocli.CommandLine;
 
 import java.io.*;
-import java.nio.channels.Channels;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,6 +22,12 @@ public class DecryptFile implements Callable<Integer> {
     @CommandLine.ParentCommand
     private FileCommand command;
 
+    @CommandLine.Option(
+            names = {"-k", "--keep"},
+            description = "self destruct file after encrypt",
+            defaultValue = "false"
+    )
+    private boolean keep;
     @CommandLine.Option(
             names = {"--stdout"},
             description = "output result to stdout"
@@ -68,8 +74,19 @@ public class DecryptFile implements Callable<Integer> {
                     }
                 }
             } else {
+                if(outFile==null){
+                    if(inFile.toString().endsWith(".crypt")){
+                        outFile = new File(inFile.toPath().toAbsolutePath().getParent().toFile(), inFile.getName().substring(0, inFile.getName().length()-".crypt".length()));
+                    } else {
+                        throw new RuntimeException("Please specify output file");
+                    }
+                }
                 try( var os = new FileOutputStream(outFile) ){
                     deObj.decryptInputStream(is).transferTo(os);
+                }
+                if(!keep){
+                    boolean rs = inFile.delete();
+                    DebugLog.log(()->"delete file result: " + rs);
                 }
             }
         }

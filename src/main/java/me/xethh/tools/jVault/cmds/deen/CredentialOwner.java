@@ -15,7 +15,13 @@ public interface CredentialOwner {
         return Optional.of(getCredential())
                 .map(it -> {
                     if (it.isEmpty()) {
-                        return System.getenv("x-credential");
+                        if(System.getenv("x-credential")!=null){
+                            return System.getenv("x-credential");
+                        } else if (System.getenv("x_credential")!=null){
+                            return System.getenv("x_credential");
+                        } else {
+                            return null;
+                        }
                     } else {
                         return it;
                     }
