@@ -50,9 +50,7 @@ public class DecryptFile implements Callable<Integer> {
     public Integer call() throws Exception {
         var creds = command.finalCredential();
 
-        try (
-                var is = new FileInputStream(inFile);
-        ) {
+        try (var is = new FileInputStream(inFile)) {
             var bArray = Stream.generate(()->{
                 try{
                     return is.read();
@@ -70,7 +68,7 @@ public class DecryptFile implements Callable<Integer> {
                 String line;
                 try (var br = new BufferedReader(new InputStreamReader(deObj.decryptInputStream(is)))) {
                     while ((line = br.readLine()) != null) {
-                        Out.println(line);
+                        Out.get().println(line);
                     }
                 }
             } else {

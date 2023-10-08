@@ -23,7 +23,8 @@ import static me.xethh.tools.jVault.cmds.deen.sub.Common.PATTERN;
         },
         description = "allow user modify and read vault information"
 )
-public class Deen implements Callable<Integer>, CredentialOwner{
+public class Vault implements Callable<Integer>, CredentialOwner {
+
     public interface Consumer2{
         void handle(String line, Matcher matcher, AtomicBoolean byPass) throws Exception;
     }

@@ -1,6 +1,6 @@
 package me.xethh.tools.jVault.cmds.deen.sub;
 
-import me.xethh.tools.jVault.cmds.deen.Deen;
+import me.xethh.tools.jVault.cmds.deen.Vault;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -13,7 +13,8 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static me.xethh.tools.jVault.cmds.deen.sub.Common.*;
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "find",
@@ -30,15 +31,14 @@ public class Find implements Callable<Integer> {
 
 
     @CommandLine.ParentCommand
-    private Deen deen;
+    private Vault deen;
 
     @Override
     public Integer call() throws Exception {
         var path = file.toPath().toAbsolutePath();
         var deObj = deen.getDeenObj(path);
 
-        try (
-                var is = new FileInputStream(path.toFile());
+        try (var is = new FileInputStream(path.toFile());
                 var isr = new BufferedReader(
                         new InputStreamReader(
                                 deObj.decryptInputStream(is)
@@ -61,14 +61,10 @@ public class Find implements Callable<Integer> {
             );
 
             foundValue.get().ifPresent(it->{
-                Out.println(URLDecoder.decode(it, StandardCharsets.UTF_8));
+                Out.get().println(URLDecoder.decode(it, StandardCharsets.UTF_8));
             });
         }
         return 1;
     }
 
-    public static void main(String[] args) {
-        var cmd = new CommandLine(new Find());
-        System.out.println(cmd.execute(args));
-    }
 }

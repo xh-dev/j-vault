@@ -1,6 +1,3 @@
-a.sh*
-a.txt
-vault.kv
 target
 dependency-reduced-pom.xml
 .idea

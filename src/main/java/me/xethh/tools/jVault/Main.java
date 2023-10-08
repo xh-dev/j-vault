@@ -4,7 +4,7 @@ package me.xethh.tools.jVault;
 // then press Enter. You can now see whitespace characters in your code.
 
 
-import me.xethh.tools.jVault.cmds.deen.Deen;
+import me.xethh.tools.jVault.cmds.deen.Vault;
 import me.xethh.tools.jVault.cmds.file.FileCommand;
 import me.xethh.tools.jVault.cmds.token.Token;
 import picocli.CommandLine;
@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
         versionProvider = VP.class,
         name = "J-Vault",
         subcommands = {
-                Deen.class, FileCommand.class, Token.class
+                Vault.class, FileCommand.class, Token.class
         },
         description = "j-vault is a very simple key value based password vault cli program. "
 )

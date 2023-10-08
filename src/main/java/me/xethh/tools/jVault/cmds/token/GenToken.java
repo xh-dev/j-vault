@@ -7,6 +7,8 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.Callable;
 
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
+
 @CommandLine.Command(
         name = "gen",
         description = "generate token"
@@ -26,13 +28,8 @@ public class GenToken implements Callable<Integer> {
             rand.nextBytes(bs);
             password = Base64.getEncoder().encodeToString(bs);
         }
-        System.out.println(DeenObj.getFullPassword(password));
+        Out.get().println(DeenObj.getFullPassword(password));
         return 0;
-    }
-
-    public static void main(String[] args) {
-        var cmd = new CommandLine(new GenToken());
-        System.out.println(cmd.execute(args));
     }
 
 }

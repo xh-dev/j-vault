@@ -1,6 +1,6 @@
 package me.xethh.tools.jVault.cmds.deen.sub;
 
-import me.xethh.tools.jVault.cmds.deen.Deen;
+import me.xethh.tools.jVault.cmds.deen.Vault;
 import picocli.CommandLine;
 
 import java.io.*;
@@ -22,7 +22,7 @@ public class Unset implements Callable<Integer> {
     private String key;
 
     @CommandLine.ParentCommand
-    private Deen deen;
+    private Vault deen;
 
     @Override
     public Integer call() throws Exception {

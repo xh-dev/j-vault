@@ -1,6 +1,6 @@
 package me.xethh.tools.jVault.cmds.deen.sub;
 
-import me.xethh.tools.jVault.cmds.deen.Deen;
+import me.xethh.tools.jVault.cmds.deen.Vault;
 import picocli.CommandLine;
 
 import java.io.*;
@@ -9,7 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static me.xethh.tools.jVault.cmds.deen.sub.Common.*;
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "set",
@@ -28,7 +29,7 @@ public class Set implements Callable<Integer> {
     private String value;
 
     @CommandLine.ParentCommand
-    private Deen deen;
+    private Vault deen;
 
     @Override
     public Integer call() throws Exception {
@@ -37,8 +38,7 @@ public class Set implements Callable<Integer> {
 
         var deObj = deen.getDeenObj(path);
 
-        try (
-                var is = new FileInputStream(path.toFile());
+        try (var is = new FileInputStream(path.toFile());
                 var os = new FileOutputStream(tmpPath.toFile());
                 var isr = new BufferedReader(
                         new InputStreamReader(
@@ -60,10 +60,10 @@ public class Set implements Callable<Integer> {
                         if (found.get()) {
                             DebugLog.log(() -> "Duplicate line found");
                             // Already found refers to duplicate key existing, should be ignored
-                            Out.printf("Key[%s] already exist, skipped%n", key);
+                            Out.get().printf("Key[%s] already exist, skipped%n", key);
                         } else {
                             DebugLog.log(() -> "First value encounter");
-                            Out.printf("Found key[%s] and replace%n", key);
+                            Out.get().printf("Found key[%s] and replace%n", key);
                             found.set(true);
                             cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
                             DebugLog.log(() -> "Complete write value");
@@ -85,10 +85,5 @@ public class Set implements Callable<Integer> {
         deen.switchTempFile(path, tmpPath);
         return 0;
 
-    }
-
-    public static void main(String[] args) {
-        var cmd = new CommandLine(new Set());
-        System.out.println(cmd.execute(args));
     }
 }

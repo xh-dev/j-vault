@@ -17,6 +17,7 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 
 public class DeenObj {
+    public static final int DEFAULT_SALT1_LENGTH = 4;
     private static boolean DEBUG = false;
     public final SecretKey key;
     public final IvParameterSpec iv;
@@ -112,7 +113,7 @@ public class DeenObj {
 
     public static String getFullPassword(String rawPassword) {
         var rand = new SecureRandom();
-        byte[] salt = new byte[4];
+        byte[] salt = new byte[DEFAULT_SALT1_LENGTH];
         rand.nextBytes(salt);
         return String.format("%s:%s", rawPassword, Base64.getEncoder().encodeToString(salt));
     }

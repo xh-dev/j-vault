@@ -6,20 +6,19 @@ import java.io.*;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Common {
-    public static final PrintStream Out = System.out;
+    public static final Supplier<PrintStream> Out = () -> System.out;
 
     public static DeenObj getDeenObj(Path path, String credsEnv) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         if (!path.toFile().exists()) {
             var saltWithIV = DeenObj.genSaltWithIV();
             var deObj = DeenObj.fromLine(credsEnv, saltWithIV);
-            try (
-                    var os = new FileOutputStream(path.toString());
-                    var cis = deObj.encryptInputStream(new ByteArrayInputStream("".getBytes()));
-            ) {
+            try (var os = new FileOutputStream(path.toString());
+                 var cis = deObj.encryptInputStream(new ByteArrayInputStream("".getBytes()))) {
                 os.write(String.format("%s\n", saltWithIV).getBytes());
                 cis.transferTo(os);
                 os.flush();
@@ -28,9 +27,7 @@ public class Common {
             }
             return deObj;
         } else {
-            try (
-                    var fbs = new BufferedReader(new InputStreamReader(new FileInputStream(path.toFile())))
-            ) {
+            try (var fbs = new BufferedReader(new InputStreamReader(new FileInputStream(path.toFile())))) {
                 final var line = fbs.readLine();
                 return DeenObj.fromLine(credsEnv, line);
             }

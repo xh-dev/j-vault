@@ -1,12 +1,15 @@
 package me.xethh.tools.jVault.cmds.deen.sub;
 
-import me.xethh.tools.jVault.cmds.deen.Deen;
+import me.xethh.tools.jVault.cmds.deen.Vault;
 import picocli.CommandLine;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jVault.cmds.deen.sub.Common.*;
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "view",
@@ -19,7 +22,7 @@ public class View implements Callable<Integer> {
     private File file;
 
     @CommandLine.ParentCommand
-    private Deen deen;
+    private Vault deen;
 
 
     @Override
