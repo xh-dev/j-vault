@@ -103,7 +103,9 @@ java -jar j-vault.jar vault -c HnP2kqQL/Zm9qYLG6KX2bg==:qNLriw== find -k k
 #
 # {key}={value}
 
-```
+
+The `-c {credential}` option can be replaced by setting up environment variable `x-credential` or `x_credential` in the shell.
+
 ##### File
 The `file` command support `decrypt` and `encrypt` sub command.\
 It simply encrypt and existing file to encrypted file with sample encryption structure as `vault`.\
