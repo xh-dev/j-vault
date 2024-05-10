@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -27,8 +27,25 @@ jobs:
           native-image-job-reports: 'true'
           cache: maven
       - run: mvn -Dmaven.test.skip=true clean compile package
+      - run: native-image ./target/j-vault.jar
       - run: dir
   job2:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: maven
+      - run: mvn "-Dmaven.test.skip=true" clean compile package
+      - run: dir
+  job3:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-python@v4
