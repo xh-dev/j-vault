@@ -34,6 +34,14 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
+    - name: save url
+      run: echo "${{ steps.create_release.outputs.upload_url }}">artifact-url
+    - name: cache upload_url
+      id: cache-artifact-url
+      uses: actions/cache@v3
+      with:
+        path: artifact-url
+        key: sha-${{ github.ref }}
     - name: upload jar artifact
       uses: actions/upload-release-asset@v1
       env:
@@ -52,6 +60,13 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+      - uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: artifact-url
+          key: sha-${{ github.ref }}
+      - name: show url
+        run: echo ${{steps.cache.outputsA}}
       - name: gen version
         run: python get_version.py > src/main/resources/version.txt
       - uses: graalvm/setup-graalvm@v1
