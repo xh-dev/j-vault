@@ -34,7 +34,7 @@ jobs:
         draft: false
         prerelease: false
     - name: save url
-      run: echo "${{ steps.create_release.outputs.upload_url }}">artifact-url
+      run: echo "${{ steps.create_release.outputs.upload_url }}">artifactUrl
     - name: cache upload_url
       id: cache-artifact-url
       uses: actions/cache@v3
