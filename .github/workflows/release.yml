@@ -4,13 +4,10 @@ on:
   push:
     tags:
       - "v*"
-permissions:
-  contents: write
-  pull-requests: write
-  repository-projects: write
 jobs:
   basic-jar-build:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
