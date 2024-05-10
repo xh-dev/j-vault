@@ -40,7 +40,7 @@ jobs:
       uses: actions/cache/save@v3
       with:
         path: artifactUrl
-        key: sha-${{ github.ref }}
+        key: sha-${{ github.ref }}-temp
     - name: upload jar artifact
       uses: actions/upload-release-asset@v1
       env:
@@ -63,7 +63,7 @@ jobs:
         id: cache
         with:
           path: artifactUrl
-          key: sha-${{ github.ref }}
+          key: sha-${{ github.ref }}-temp
       - name: show url
         run: echo upload_url="$(cat artifactUrl)" >> $GITHUB_ENV
       - name: gen version
@@ -101,7 +101,7 @@ jobs:
         id: cache
         with:
           path: artifactUrl
-          key: sha-${{ github.ref }}
+          key: sha-${{ github.ref }}-temp
       - name: show url
         run: |
           $url = Get-Content ".\artifactUrl" -Raw
