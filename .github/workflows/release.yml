@@ -41,7 +41,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: target/j-vault.jar
-        asset_name: j-vault.jar
+        asset_name: jar/j-vault.jar
         asset_content_type: application/java-archive
   build-linux-executable:
     runs-on: ubuntu-latest
@@ -63,6 +63,15 @@ jobs:
           cache: maven
       - run: mvn -Dmaven.test.skip=true clean compile package
       - run: native-image -jar ./target/j-vault.jar
+      - name: upload jar artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: j-vault
+          asset_name: linux/j-vault
+          asset_content_type: application/octet-stream
   build-windows-executor:
     runs-on: windows-latest
     needs:
@@ -85,3 +94,12 @@ jobs:
           cache: maven
       - run: mvn "-Dmaven.test.skip=true" clean compile package
       - run: native-image -jar target/j-vault.jar
+      - name: upload jar artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: j-vault.exe
+          asset_name: win/j-vault.exe
+          asset_content_type: application/octet-stream
