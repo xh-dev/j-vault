@@ -30,6 +30,7 @@ jobs:
       - run: native-image -jar ./target/j-vault.jar
       - run: dir
       - run: ./j-vault -h
+      - run: ./j-vault token gen
   job2:
     runs-on: ${{ matrix.os }}
     strategy:
