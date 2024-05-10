@@ -13,10 +13,7 @@ on:
     branches: [ "test" ]
 jobs:
   job1:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -40,10 +37,7 @@ jobs:
       - run: ./j-vault vault -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" view
       - run: ./j-vault -V
   job2:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -69,5 +63,12 @@ jobs:
   job3:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v4
-      - run: echo "hi"
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: maven
+      - run: mvn clean compile package
