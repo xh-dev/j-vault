@@ -27,6 +27,7 @@ jobs:
           native-image-job-reports: 'true'
           cache: maven
       - run: mvn -Dmaven.test.skip=true clean compile package
+      - run: dir
   job2:
     runs-on: ubuntu-latest
     steps:
