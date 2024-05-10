@@ -65,7 +65,7 @@ jobs:
           path: artifact-url
           key: sha-${{ github.ref }}
       - name: show url
-        run: cat artifact-url
+        run: echo upload_url="$(cat artifact-url)" >> $GITHUB_ENV
       - name: gen version
         run: python get_version.py > src/main/resources/version.txt
       - uses: graalvm/setup-graalvm@v1
@@ -82,7 +82,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ env.upload_url }}
           asset_path: j-vault
           asset_name: linux/j-vault
           asset_content_type: application/octet-stream
