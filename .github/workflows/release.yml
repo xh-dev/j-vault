@@ -66,7 +66,7 @@ jobs:
           path: artifact-url
           key: sha-${{ github.ref }}
       - name: show url
-        run: echo ${{steps.cache.outputsA}}
+        run: cat artifact-url
       - name: gen version
         run: python get_version.py > src/main/resources/version.txt
       - uses: graalvm/setup-graalvm@v1
