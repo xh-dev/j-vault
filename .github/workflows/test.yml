@@ -29,6 +29,7 @@ jobs:
       - run: mvn -Dmaven.test.skip=true clean compile package
       - run: native-image -jar ./target/j-vault.jar
       - run: dir
+      - run: ./j-vault -h
   job2:
     runs-on: ${{ matrix.os }}
     strategy:
