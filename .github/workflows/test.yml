@@ -61,7 +61,7 @@ jobs:
       - run: echo "hi">a.txt
       - run: cat a.txt
       - run: ./j-vault.exe file -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" encrypt -f a.txt
-      - run: ls -al
+      - run: ls
       - run: ./j-vault.exe file -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" decrypt -f a.txt.crypt --stdout
       - run: ./j-vault.exe vault -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" set -k=ss -v=xxxxx
       - run: ./j-vault.exe vault -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" view
