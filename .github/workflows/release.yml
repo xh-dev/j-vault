@@ -4,7 +4,10 @@ on:
   push:
     tags:
       - "v*"
-permissions: write-all
+permissions:
+  contents: write
+  pull-requests: write
+  repository-projects: write
 jobs:
   basic-jar-build:
     runs-on: ubuntu-latest
