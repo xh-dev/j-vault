@@ -102,6 +102,7 @@ jobs:
         with:
           path: artifactUrl
           key: sha-${{ github.ref }}-temp
+          enableCrossOsArchive: true
       - name: show url
         run: |
           $url = Get-Content ".\artifactUrl" -Raw
