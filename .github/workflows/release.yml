@@ -4,7 +4,8 @@ on:
   push:
     tags:
       - "v*"
-
+permissions:
+  contents: write
 jobs:
   basic-jar-build:
     runs-on: ubuntu-latest
