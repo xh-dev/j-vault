@@ -37,7 +37,7 @@ jobs:
       run: echo "${{ steps.create_release.outputs.upload_url }}">artifactUrl
     - name: cache upload_url
       id: cache-artifact-url
-      uses: actions/cache@v3
+      uses: actions/cache/save@v3
       with:
         path: artifactUrl
         key: sha-${{ github.ref }}
