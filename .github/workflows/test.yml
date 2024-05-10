@@ -26,7 +26,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           cache: maven
-      - run: mvn -Dskiptest=true clean compile package
+      - run: mvn -Dmaven.test.skip=true clean compile package
   job2:
     runs-on: ubuntu-latest
     steps:
