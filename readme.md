@@ -147,5 +147,18 @@ java -jar j-vault.jar file -c HnP2kqQL/Zm9qYLG6KX2bg==:qNLriw== decrypt \
 # 
 
 ```
-
+# Graalvm native image
+```shell
+sudo rm -f out/j-vault \
+  && mvn clean compile package \ 
+  && docker run \
+    --rm -it \
+    -v "$(pwd)/target/j-vault.jar:/app/j-vault.jar" \
+    -v "$(pwd)/out:/out" \
+    ghcr.io/graalvm/native-image-community:21 \
+      --no-fallback \
+      -H:IncludeResources="version.txt" \
+      -jar j-vault.jar \
+      /out/j-vault
+```
 

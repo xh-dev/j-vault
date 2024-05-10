@@ -1,3 +1,8 @@
 target
 dependency-reduced-pom.xml
 .idea
+check_github_project_latest_version.py
+j-vault
+maven_looper.py
+vault.kv
+out
