@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs:
-  build:
+  basic-jar-build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -42,3 +42,43 @@ jobs:
         asset_path: target/j-vault.jar
         asset_name: j-vault.jar
         asset_content_type: application/java-archive
+  build-linux-executable:
+    runs-on: ubuntu-latest
+    needs:
+      - basic-jar-build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: gen version
+        run: python get_version.py > src/main/resources/version.txt
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: maven
+      - run: mvn -Dmaven.test.skip=true clean compile package
+      - run: native-image -jar ./target/j-vault.jar
+  build-windows-executor:
+    runs-on: windows-latest
+    needs:
+      - basic-jar-build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: gen version
+        run: python get_version.py > src/main/resources/version.txt
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: maven
+      - run: mvn "-Dmaven.test.skip=true" clean compile package
+      - run: native-image -jar target/j-vault.jar
