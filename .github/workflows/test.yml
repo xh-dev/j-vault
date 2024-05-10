@@ -31,6 +31,10 @@ jobs:
       - run: ls -al
       - run: ./j-vault -h
       - run: ./j-vault token gen
+      - run: echo "hi">a.txt
+      - run: cat a.txt
+      - run: ./j-vault -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" vault set -k=ss -v=xxxxx
+      - run: ./j-vault -c "3k81PijCExKERmAX1VlU2A==:jIw/zw==" vault view
   job2:
     runs-on: ${{ matrix.os }}
     strategy:
