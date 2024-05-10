@@ -103,7 +103,9 @@ jobs:
           path: artifact-url
           key: sha-${{ github.ref }}
       - name: show url
-        run: echo upload_url="$(cat artifact-url)" >> $GITHUB_ENV
+        run: |
+          $url = Get-Content ".\artifact-url" -Raw
+          echo "upload_url=$url" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
       - name: gen version
         run: python get_version.py > src/main/resources/version.txt
       - uses: graalvm/setup-graalvm@v1
