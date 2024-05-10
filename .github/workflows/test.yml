@@ -46,7 +46,8 @@ jobs:
           native-image-job-reports: 'true'
           cache: maven
       - run: mvn "-Dmaven.test.skip=true" clean compile package
-      - run: dir
+      - run: native-image -jar target/j-vault.jar
+      - run: j-vault.exe -h
   job3:
     runs-on: ubuntu-latest
     steps:
