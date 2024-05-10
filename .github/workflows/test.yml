@@ -27,7 +27,7 @@ jobs:
           native-image-job-reports: 'true'
           cache: maven
       - run: mvn -Dmaven.test.skip=true clean compile package
-      - run: native-image ./target/j-vault.jar
+      - run: native-image -jar ./target/j-vault.jar
       - run: dir
   job2:
     runs-on: ${{ matrix.os }}
