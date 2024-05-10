@@ -55,7 +55,7 @@ jobs:
           cache: maven
       - run: mvn "-Dmaven.test.skip=true" clean compile package
       - run: native-image -jar target/j-vault.jar
-      - run: ls -al
+      - run: ls
       - run: ./j-vault.exe -h
       - run: ./j-vault.exe token gen
       - run: echo "hi">a.txt
