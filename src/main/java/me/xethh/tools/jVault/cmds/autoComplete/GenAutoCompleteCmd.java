@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(
         name = "autocomplete",
-        description = "manage token"
+        description = "generate bash autocomplete script"
 )
 public class GenAutoCompleteCmd implements Callable<Integer> {
     @Override

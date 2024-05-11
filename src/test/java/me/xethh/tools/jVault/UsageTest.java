@@ -22,9 +22,11 @@ public class UsageTest {
                     "  -h, --help      Show this help message and exit.\n" +
                     "  -V, --version   Print version information and exit.\n" +
                     "Commands:\n" +
-                    "  vault  allow user modify and read vault information\n" +
-                    "  file   file encrypt and decrypt with j-vault\n" +
-                    "  token  manage token\n", os.toString());
+                    "  vault         allow user modify and read vault information\n" +
+                    "  file          file encrypt and decrypt with j-vault\n" +
+                    "  token         manage token\n" +
+                    "  autocomplete  generate bash autocomplete script\n"
+                    , os.toString());
         });
     }
 
