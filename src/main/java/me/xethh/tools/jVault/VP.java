@@ -2,7 +2,6 @@ package me.xethh.tools.jVault;
 
 import picocli.CommandLine;
 
-import java.io.FileInputStream;
 import java.util.Objects;
 
 public class VP implements CommandLine.IVersionProvider {
