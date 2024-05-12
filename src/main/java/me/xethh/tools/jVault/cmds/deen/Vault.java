@@ -29,7 +29,7 @@ public class Vault implements Callable<Integer>, CredentialOwner {
         void handle(String line, AtomicBoolean byPass) throws Exception;
     }
 
-    @CommandLine.Option(names = {"-c","--credential"}, defaultValue = "", description = "The credential to use, if missing, would try find env variable `x-credential`")
+    @CommandLine.Option(names = {"-c","--credential"}, defaultValue = "", description = "The credential to use, if missing, would try find env variable `x-credential` or `x_credential`")
     private String credential;
     public String getCredential() {
         return credential;
