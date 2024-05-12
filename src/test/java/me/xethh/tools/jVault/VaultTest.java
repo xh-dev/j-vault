@@ -2,6 +2,7 @@ package me.xethh.tools.jVault;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -33,8 +34,9 @@ public class VaultTest {
         new CommandLine(new Main()).execute("vault", "-c", token, "view", "-f", file.toString());
     }
 
+    @Nested
     @DisplayName("Given no vault.kv exists")
-    public static class GivenNoVaultExists {
+    class GivenNoVaultExists {
         Supplier<String> password = () -> "abcd:dddd";
 
         @BeforeEach

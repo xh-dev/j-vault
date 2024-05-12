@@ -9,9 +9,6 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-
-import static me.xethh.tools.jVault.cmds.deen.sub.Common.PATTERN;
 
 @CommandLine.Command(
         name = "vault",
@@ -26,7 +23,7 @@ import static me.xethh.tools.jVault.cmds.deen.sub.Common.PATTERN;
 public class Vault implements Callable<Integer>, CredentialOwner {
 
     public interface Consumer2{
-        void handle(String line, Matcher matcher, AtomicBoolean byPass) throws Exception;
+        void handle(String line, Common.KVExtractor.KV kv, AtomicBoolean byPass) throws Exception;
     }
     public interface Consumer3{
         void handle(String line, AtomicBoolean byPass) throws Exception;
@@ -66,18 +63,19 @@ public class Vault implements Callable<Integer>, CredentialOwner {
         while ((line = isr.readLine()) != null) {
             String finalLine = line;
             DebugLog.log(() -> "KV line: " + finalLine);
-            final var matcher = PATTERN.matcher(line);
-            DebugLog.log(() -> "Match result: " + matcher.matches());
+            final var kv = Common.KVExtractor.extract(line);
+            //final var matcher = PATTERN.matcher(line);
+            DebugLog.log(() -> "Match result: " + kv.isMatch());
             var byPass = new AtomicBoolean(false);
-            if (matcher.matches()) {
-                var name = matcher.group(1);
-                DebugLog.log(() -> "Match name: " + matcher.group(1));
+            if (kv.isMatch()) {
+                var name = kv.getKey();
+                DebugLog.log(() -> "Match name: " + name);
                 if (name.equals(key)) {
-                    matchKeyLogic.handle(line, matcher, byPass);
+                    matchKeyLogic.handle(line, kv, byPass);
                     if(byPass.get())
                         break;
                 } else {
-                    inMatchKeyLogic.handle(line, matcher,byPass);
+                    inMatchKeyLogic.handle(line, kv,byPass);
                     if(byPass.get())
                         break;
                 }

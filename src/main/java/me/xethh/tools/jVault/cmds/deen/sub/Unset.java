@@ -51,9 +51,9 @@ public class Unset implements Callable<Integer> {
                     (line,matcher,byPass) -> {
                         // should be ignored, because not matching the standard format
                     },
-                    (line, matcher,byPass) -> {
-                        var name = matcher.group(1);
-                        DebugLog.log(() -> "Match name: " + matcher.group(1));
+                    (line, kv,byPass) -> {
+                        var name = kv.getKey();
+                        DebugLog.log(() -> "Match name: " + name);
                         if (!name.equals(key)) {
                             DebugLog.log(() -> "In-match key, write to new file");
                             cos.write(String.format("%s\n", line).getBytes());

@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
@@ -23,6 +25,12 @@ public class View implements Callable<Integer> {
 
     @CommandLine.ParentCommand
     private Vault deen;
+
+    @CommandLine.Option(names = {"--out-bash-env"}, required = false, description = "Output as bash export env", defaultValue = "false")
+    private boolean outBash;
+
+    @CommandLine.Option(names = {"--out-win-env"}, required = false, description = "Output as windows set env string", defaultValue = "false")
+    private boolean outCmd;
 
 
     @Override
@@ -41,7 +49,15 @@ public class View implements Callable<Integer> {
             ) {
                 String line;
                 while ((line = isr.readLine()) != null) {
-                    System.out.println(line);
+                    final var kv = Common.KVExtractor.extract(URLDecoder.decode(line, StandardCharsets.UTF_8));
+                    if(outBash){
+                        System.out.println(String.format("export %s=%s", kv.getKey().replace("-","_"), kv.getValue()));
+                    } else if(outCmd){
+                        System.out.println(String.format("set %s=%s", kv.getKey(), kv.getValue()));
+                    }
+                    else {
+                        System.out.println(line);
+                    }
                 }
             }
         }
