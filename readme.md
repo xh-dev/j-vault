@@ -12,9 +12,22 @@ The environment only have Java installed and I don't find out of the box impleme
 ### Downloads
 You can download the java-archive [`j-vault.jar`](https://github.com/xh-dev/j-vault/releases/latest/download/j-vault.jar). \
 Or use curl to download the java-archive.
+
+#### Jar file
 ```shell
 curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault.jar
 ```
+
+#### Linux executable file
+```shell
+curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault
+```
+
+#### Windows executable file
+```shell
+curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault.exe
+```
+
 
 ### Architecture
 The vault is a very simple key value pair based data store.
@@ -145,6 +158,17 @@ java -jar j-vault.jar file -c HnP2kqQL/Zm9qYLG6KX2bg==:qNLriw== decrypt \
 # cat a.txt.decrypted
 # helloworld
 # 
+
+For linux bash, it is recommanded to store the password as enviornment variable by following script
+```bash
+# prevent history command get logged
+set +o history
+
+export x_credential={credential}
+
+# unlock the history command logging
+set -o history
+```
 
 ```
 # Graalvm native image
