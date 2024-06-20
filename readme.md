@@ -159,6 +159,8 @@ java -jar j-vault.jar file -c HnP2kqQL/Zm9qYLG6KX2bg==:qNLriw== decrypt \
 # helloworld
 # 
 
+```
+
 For linux bash, it is recommanded to store the password as enviornment variable by following script
 ```bash
 # prevent history command get logged
@@ -170,7 +172,8 @@ export x_credential={credential}
 set -o history
 ```
 
-```
+
+
 # Graalvm native image
 ```shell
 sudo rm -f out/j-vault \
