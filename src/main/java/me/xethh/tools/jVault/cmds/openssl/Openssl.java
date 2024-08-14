@@ -25,12 +25,16 @@ public class Openssl implements Callable<Integer> {
     public static class Encrypt implements Callable<Integer> {
         @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
         private boolean helpRequested;
+
         @CommandLine.Option(names = {"--token-file"}, required = false, description = "file name of token", defaultValue = "kv-pass")
         private String kvFile;
 
+        @CommandLine.Option(names = {"--encoded-token-file"}, required = false, description = "file name of encoded token file", defaultValue = "kv-pass.enc")
+        private String kvPass;
+
         @Override
         public Integer call() throws Exception {
-            String cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -in kv-pass -out %s", kvFile);
+            String cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -in %s -out %s", kvFile, kvPass);
             Out.get().println(cmd);
             return 0;
         }
@@ -42,8 +46,8 @@ public class Openssl implements Callable<Integer> {
     public static class Decrypt implements Callable<Integer> {
         @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
         private boolean helpRequested;
-        @CommandLine.Option(names = {"--token-file"}, required = false, description = "file name of token", defaultValue = "kv-pass")
-        private String kvFile;
+        @CommandLine.Option(names = {"--encoded-token-file"}, required = false, description = "file name of encoded token file", defaultValue = "kv-pass.enc")
+        private String kvPass;
 
         @CommandLine.Option(names = {"--out-bash-env"}, required = false, description = "Output as bash export env", defaultValue = "false")
         private boolean outBash;
@@ -52,7 +56,7 @@ public class Openssl implements Callable<Integer> {
         public Integer call() throws Exception {
             String cmd = "";
             if (outBash) {
-                cmd = String.format("export x_credential=\"$(openssl aes-256-cbc -d -a -salt -pbkdf2 -in %s)\"", kvFile);
+                cmd = String.format("export x_credential=\"$(openssl aes-256-cbc -d -a -salt -pbkdf2 -in %s)\"", kvPass);
             } else {
                 cmd = String.format("openssl aes-256-cbc -d -a -salt -pbkdf2 -in kv-pass.enc");
             }
