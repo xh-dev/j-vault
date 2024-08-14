@@ -70,9 +70,9 @@ public class Find implements Callable<Integer> {
             foundValue.get().ifPresent(it->{
                 final var v=URLDecoder.decode(it, StandardCharsets.UTF_8);
                 if(outBash){
-                    System.out.println(String.format("export %s=%s", key.replace("-","_"), v));
+                    Out.get().println(String.format("export %s=%s", key.replace("-","_"), v));
                 } else if(outCmd){
-                    System.out.println(String.format("set %s=%s", key, v));
+                    Out.get().println(String.format("set %s=%s", key, v));
                 } else{
                     Out.get().println(v);
                 }

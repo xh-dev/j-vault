@@ -11,6 +11,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
@@ -32,6 +33,9 @@ public class View implements Callable<Integer> {
     @CommandLine.Option(names = {"--out-win-env"}, required = false, description = "Output as windows set env string", defaultValue = "false")
     private boolean outCmd;
 
+    @CommandLine.Option(names = {"--out-raw"}, required = false, description = "Output as url encoded form", defaultValue = "false")
+    private boolean outRaw;
+
 
     @Override
     public Integer call() throws Exception {
@@ -51,12 +55,13 @@ public class View implements Callable<Integer> {
                 while ((line = isr.readLine()) != null) {
                     final var kv = Common.KVExtractor.extract(URLDecoder.decode(line, StandardCharsets.UTF_8));
                     if(outBash){
-                        System.out.println(String.format("export %s=%s", kv.getKey().replace("-","_"), kv.getValue()));
+                        Out.get().println(String.format("export %s=%s", kv.getKey().replace("-","_"), kv.getValue()));
                     } else if(outCmd){
-                        System.out.println(String.format("set %s=%s", kv.getKey(), kv.getValue()));
-                    }
-                    else {
-                        System.out.println(line);
+                        Out.get().println(String.format("set %s=%s", kv.getKey(), kv.getValue()));
+                    } else if(outRaw){
+                        Out.get().println(line);
+                    } else {
+                        Out.get().println(String.format("%s=%s", kv.getKey(), kv.getValue()));
                     }
                 }
             }

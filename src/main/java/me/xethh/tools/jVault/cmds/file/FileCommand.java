@@ -5,6 +5,8 @@ import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
 
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
+
 @CommandLine.Command(
         name = "file",
         subcommands = {EncryptFile.class, DecryptFile.class},
@@ -16,7 +18,7 @@ public class FileCommand implements Callable<Integer>, CredentialOwner {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, System.out);
+        CommandLine.usage(this, Out.get());
         return 0;
     }
 

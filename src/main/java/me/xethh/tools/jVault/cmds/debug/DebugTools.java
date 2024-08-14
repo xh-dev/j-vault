@@ -4,6 +4,8 @@ import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
 
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
+
 @CommandLine.Command(
         name="debug-tools",
         subcommands = {
@@ -21,15 +23,15 @@ public class DebugTools implements Callable<Integer> {
 
         @Override
         public Integer call() throws Exception {
-            System.out.println("==================== Debug tools - Print all env");
-            System.getenv().forEach((key, value) -> System.out.printf("'%s'=`%s`%n", key, value));
-            System.out.println("==================== Debug tools - Print all env [Done]");
+            Out.get().println("==================== Debug tools - Print all env");
+            System.getenv().forEach((key, value) -> Out.get().printf("'%s'=`%s`%n", key, value));
+            Out.get().println("==================== Debug tools - Print all env [Done]");
             return 0;
         }
     }
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, System.out);
+        CommandLine.usage(this, Out.get());
         return 0;
     }
 }
