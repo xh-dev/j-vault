@@ -7,13 +7,15 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         name="debug-tools",
         subcommands = {
-
+                DebugTools.PrintEnvs.class
         }
 )
 public class DebugTools implements Callable<Integer> {
     @CommandLine.Command(
             name="print-env",
-            description = "Print environment variables"
+            description = "Print environment variables",
+            subcommands = {
+            }
     )
     public static class PrintEnvs implements Callable<Integer> {
 
