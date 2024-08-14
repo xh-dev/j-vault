@@ -23,7 +23,7 @@ public class Openssl implements Callable<Integer> {
 
         @Override
         public Integer call() throws Exception {
-            String cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -out kv-pass.enc");
+            String cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -in kv-pass -out kv-pass.enc");
             Out.get().println(cmd);
             return 0;
         }
