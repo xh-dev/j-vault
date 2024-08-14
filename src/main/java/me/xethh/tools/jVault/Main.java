@@ -5,6 +5,7 @@ package me.xethh.tools.jVault;
 
 
 import me.xethh.tools.jVault.cmds.autoComplete.GenAutoCompleteCmd;
+import me.xethh.tools.jVault.cmds.debug.DebugTools;
 import me.xethh.tools.jVault.cmds.deen.Vault;
 import me.xethh.tools.jVault.cmds.file.FileCommand;
 import me.xethh.tools.jVault.cmds.token.Token;
@@ -17,7 +18,7 @@ import java.util.concurrent.Callable;
         versionProvider = VP.class,
         name = "J-Vault",
         subcommands = {
-                Vault.class, FileCommand.class, Token.class, GenAutoCompleteCmd.class
+                Vault.class, FileCommand.class, Token.class, GenAutoCompleteCmd.class, DebugTools.class
         },
         description = "j-vault is a very simple key value based password vault cli program. "
 )
