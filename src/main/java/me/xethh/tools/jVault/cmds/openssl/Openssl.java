@@ -20,17 +20,10 @@ public class Openssl implements Callable<Integer> {
             description = "encryption script of using openssl to generate a file called kv-pass.enc"
     )
     public static class Encrypt implements Callable<Integer> {
-        @CommandLine.Option(names = {"--out-bash-env"}, required = false, description = "Output as bash export env", defaultValue = "false")
-        private boolean outBash;
 
         @Override
         public Integer call() throws Exception {
-            String cmd = "";
-            if(outBash) {
-                cmd = String.format("export x_credential=\"$(openssl aes-256-cbc -a -salt -pbkdf2 -in kv-pass -out kv-pass.enc)\"");
-            } else {
-                cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -in kv-pass -out kv-pass.enc");
-            }
+            String cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -in kv-pass -out kv-pass.enc");
             Out.get().println(cmd);
             return 0;
         }
@@ -40,10 +33,17 @@ public class Openssl implements Callable<Integer> {
             description = "decrypt script of using openssl to generate a file called kv-pass.enc"
     )
     public static class Decrypt implements Callable<Integer> {
+        @CommandLine.Option(names = {"--out-bash-env"}, required = false, description = "Output as bash export env", defaultValue = "false")
+        private boolean outBash;
 
         @Override
         public Integer call() throws Exception {
-            String cmd = String.format("openssl aes-256-cbc -d -a -salt -pbkdf2 -in kv-pass.enc");
+            String cmd = "";
+            if (outBash) {
+                cmd = String.format("export x_credential=\"$(openssl aes-256-cbc -d -a -salt -pbkdf2 -in kv-pass.enc)\"");
+            } else {
+                cmd = String.format("openssl aes-256-cbc -d -a -salt -pbkdf2 -in kv-pass.enc");
+            }
             Out.get().println(cmd);
             return 0;
         }
