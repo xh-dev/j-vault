@@ -6,6 +6,7 @@ import picocli.CommandLine;
 import java.io.*;
 import java.util.concurrent.Callable;
 
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
@@ -73,6 +74,6 @@ public class Unset implements Callable<Integer> {
 
     public static void main(String[] args) {
         var cmd = new CommandLine(new Unset());
-        System.out.println(cmd.execute(args));
+        Out.get().println(cmd.execute(args));
     }
 }

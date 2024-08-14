@@ -8,17 +8,20 @@ import me.xethh.tools.jVault.cmds.autoComplete.GenAutoCompleteCmd;
 import me.xethh.tools.jVault.cmds.debug.DebugTools;
 import me.xethh.tools.jVault.cmds.deen.Vault;
 import me.xethh.tools.jVault.cmds.file.FileCommand;
+import me.xethh.tools.jVault.cmds.openssl.Openssl;
 import me.xethh.tools.jVault.cmds.token.Token;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
+
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         mixinStandardHelpOptions = true,
         versionProvider = VP.class,
         name = "J-Vault",
         subcommands = {
-                Vault.class, FileCommand.class, Token.class, GenAutoCompleteCmd.class, DebugTools.class
+                Vault.class, FileCommand.class, Token.class, GenAutoCompleteCmd.class, DebugTools.class, Openssl.class
         },
         description = "j-vault is a very simple key value based password vault cli program. "
 )
@@ -31,7 +34,7 @@ public class Main implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, System.out);
+        CommandLine.usage(this, Out.get());
         return 0;
     }
 }

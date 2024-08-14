@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
+
 @CommandLine.Command(
         name = "vault",
         subcommands = {
@@ -37,7 +39,7 @@ public class Vault implements Callable<Integer>, CredentialOwner {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, System.out);
+        CommandLine.usage(this, Out.get());
         return 0;
     }
 
