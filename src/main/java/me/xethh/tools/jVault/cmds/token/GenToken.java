@@ -17,6 +17,9 @@ import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
 
 )
 public class GenToken implements Callable<Integer> {
+    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
+
     @CommandLine.Option(names = {"-p","--password"}, description = "`password` to generate", defaultValue = "")
     private String password;
 
@@ -40,21 +43,22 @@ public class GenToken implements Callable<Integer> {
             rand.nextBytes(bs);
             password = Base64.getEncoder().encodeToString(bs);
         }
+        String fPass = DeenObj.getFullPassword(password);
         if(outBash) {
-            Out.get().println(String.format("export x_credential=%s", password));
+            Out.get().println(String.format("export x_credential=%s", fPass));
         } else if (outCmd) {
-            Out.get().println(String.format("set x-credential=%s", password));
+            Out.get().println(String.format("set x-credential=%s", fPass));
         } else {
             if(asKvPass){
                 try(
                         FileOutputStream os = new FileOutputStream(kvFile);
                         ) {
-                    os.write(password.getBytes());
+                    os.write(fPass.getBytes());
                 } catch (Throwable throwable){
                     throwable.printStackTrace();
                 }
             }
-            Out.get().println(DeenObj.getFullPassword(password));
+            Out.get().println(fPass);
         }
         return 0;
     }
