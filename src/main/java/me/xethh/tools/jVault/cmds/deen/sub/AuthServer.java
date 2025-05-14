@@ -23,10 +23,13 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @CommandLine.Command(
         name = "auth-server",
@@ -127,25 +130,24 @@ public class AuthServer implements Callable<Integer> {
         var verifier = new DefaultCodeVerifier(codeGen,timeProvider);
         verifier.setTimePeriod(timePeriod);
         verifier.setAllowedTimePeriodDiscrepancy(2);
-        var result = verifier.isValidCode(secrete, codeNow);
 
         KeyPair kp = RsaEncryption.keyPair();
-        KeyPair kp2 = RsaEncryption.keyPair();
+        //KeyPair kp2 = RsaEncryption.keyPair();
 
-        DeEnCryptorImpl deenClient = DeEnCryptor.instance(kp2.getPublic(), kp2.getPrivate());
+        //DeEnCryptorImpl deenClient = DeEnCryptor.instance(kp2.getPublic(), kp2.getPrivate());
         DeEnCryptorImpl deenServer = DeEnCryptor.instance(kp.getPublic(), kp.getPrivate());
 
-        var senderKey = Base64.getEncoder().encodeToString(kp2.getPublic().getEncoded());
+        //var senderKey = Base64.getEncoder().encodeToString(kp2.getPublic().getEncoded());
 
-        var req = new Request();
-        Instant now = Instant.now();
-        req.setKey("xeth");
-        req.setCode(codeNow);
-        req.setExpiresInM(60);
-        req.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now.atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
-        String data = Base64.getEncoder().encodeToString(deenClient.encryptToJsonContainer(kp.getPublic(),new ObjectMapper().writeValueAsString(req)).getBytes());
+        //var req = new Request();
+        //Instant now = Instant.now();
+        //req.setKey("xeth");
+        //req.setCode(codeNow);
+        //req.setExpiresInM(60);
+        //req.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now.atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
 
-        System.out.println(String.format("curl -X POST -H \"sender: %s\" -d %s http://localhost:8001/b",senderKey, data));
+        //String data = Base64.getEncoder().encodeToString(deenClient.encryptToJsonContainer(kp.getPublic(),new ObjectMapper().writeValueAsString(req)).getBytes());
+        //System.out.println(String.format("curl -X POST -H \"sender: %s\" -d %s http://localhost:8001/b",senderKey, data));
 
 
         server.createContext("/a", new HttpHandler() {
@@ -160,44 +162,61 @@ public class AuthServer implements Callable<Integer> {
             }
         });
 
+        Function<HttpExchange, Optional<PublicKey>> getSender = exchange->{
+            if(!exchange.getRequestMethod().equalsIgnoreCase("post")){
+                return Optional.empty();
+            }
+            var sender = exchange.getRequestHeaders().get("sender");
+            if(sender == null) {
+                return Optional.empty();
+            }
+            if(sender.isEmpty()){
+                return Optional.empty();
+            }
+
+            try{
+                return Optional.of(RsaEncryption.getPublicKey(Base64.getDecoder().decode(sender.get(0).getBytes())));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        BiFunction<HttpExchange, PublicKey, Optional<String>> decryptBody = (exchange,key) -> {
+            try{
+                byte[] d = exchange.getRequestBody().readAllBytes();
+                String dd = new String(Base64.getDecoder().decode(d), StandardCharsets.UTF_8);
+                if(dd.isEmpty()){
+                    return Optional.empty();
+                }
+                var ddd=deenServer.decryptJsonContainer(key,dd);
+                return ddd;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
         server.createContext("/b", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                if(!exchange.getRequestMethod().equalsIgnoreCase("post")){
-                    exchange.sendResponseHeaders(400, 0);
-                    exchange.getResponseBody().close();
-                    return;
-                }
-                var sender = exchange.getRequestHeaders().get("sender");
-                if(sender == null) {
-                    exchange.sendResponseHeaders(400, 0);
-                    exchange.getResponseBody().close();
-                    return;
-                }
-                if(sender.isEmpty()){
-                    exchange.sendResponseHeaders(400, 0);
-                    exchange.getResponseBody().close();
-                    return;
-                }
-
                 try{
-                    PublicKey publicKey = RsaEncryption.getPublicKey(Base64.getDecoder().decode(sender.get(0).getBytes()));
-                    byte[] d = exchange.getRequestBody().readAllBytes();
-                    String dd = new String(Base64.getDecoder().decode(d), StandardCharsets.UTF_8);
-                    var ddd=deenServer.decryptJsonContainer(publicKey,dd);
-                    if(dd.isEmpty()){
+                    var pubKeyOpt = getSender.apply(exchange);
+                    if(pubKeyOpt.isEmpty()){
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
                     }
-                    var os = exchange.getResponseBody();
-                    if(ddd.isEmpty()){
+                    PublicKey publicKey = pubKeyOpt.get();
+
+                    var dddOpt=decryptBody.apply(exchange,publicKey);
+                    if(dddOpt.isEmpty()){
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
                     }
 
-                    var req = new ObjectMapper().readValue(ddd.get(), Request.class);
+                    var ddd = dddOpt.get();
+                    var os = exchange.getResponseBody();
+
+                    var req = new ObjectMapper().readValue(ddd, Request.class);
                     // Test timing
                     var now=Instant.now();
                     var upper = now.plus(1, ChronoUnit.MINUTES);
@@ -224,11 +243,10 @@ public class AuthServer implements Callable<Integer> {
                     var tempCert = new TempCert();
                     tempCert.setExpiresInM(req.getExpiresInM());
                     tempCert.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.now().atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
-                    tempCert.setTo(sender.get(0));
+                    tempCert.setTo(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
                     var fff = deenServer.encryptToJsonContainer(kp.getPublic(), new ObjectMapper().writeValueAsString(tempCert));
                     var ffff = Base64.getEncoder().encodeToString(fff.getBytes(StandardCharsets.UTF_8));
 
-                    System.out.println(String.format("\ncurl -X POST -H \"sender: %s\" -d %s http://localhost:8001/c",senderKey, Base64.getEncoder().encodeToString(deenClient.encryptToJsonContainer(kp.getPublic(), ffff).getBytes(StandardCharsets.UTF_8))));
                     exchange.getResponseHeaders().set("Content-Type", "text/plain");
                     exchange.sendResponseHeaders(200, ffff.length());
                     os.write(ffff.getBytes());
@@ -237,7 +255,6 @@ public class AuthServer implements Callable<Integer> {
                 catch(Exception e){
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
-                    return;
                 }
             }
         });
@@ -251,30 +268,25 @@ public class AuthServer implements Callable<Integer> {
                     exchange.getResponseBody().close();
                     return;
                 }
-                var sender = exchange.getRequestHeaders().get("sender");
-                if(sender == null) {
+                var pubKeyOpt = getSender.apply(exchange);
+                if(pubKeyOpt.isEmpty()){
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                     return;
                 }
-                if(sender.isEmpty()){
+                PublicKey publicKey = pubKeyOpt.get();
+
+                var dddOpt=decryptBody.apply(exchange,publicKey);
+                if(dddOpt.isEmpty()){
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                     return;
                 }
+
+                var ddd = dddOpt.get();
 
                 try{
-                    PublicKey publicKey = RsaEncryption.getPublicKey(Base64.getDecoder().decode(sender.get(0).getBytes()));
-                    byte[] d = exchange.getRequestBody().readAllBytes();
-                    String dd = new String(Base64.getDecoder().decode(d), StandardCharsets.UTF_8);
-
-                    var ddd=deenServer.decryptJsonContainer(publicKey,dd);
-                    if(ddd.isEmpty()){
-                        exchange.sendResponseHeaders(400, 0);
-                        exchange.getResponseBody().close();
-                        return;
-                    }
-                    var certStrOpt = deenServer.decryptJsonContainer(kp.getPublic(),new String(Base64.getDecoder().decode(ddd.get()), StandardCharsets.UTF_8));
+                    var certStrOpt = deenServer.decryptJsonContainer(kp.getPublic(),new String(Base64.getDecoder().decode(ddd), StandardCharsets.UTF_8));
                     if(certStrOpt.isEmpty()){
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
