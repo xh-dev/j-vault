@@ -1,5 +1,6 @@
 package me.xethh.tools.jVault.cmds.deen;
 
+import me.xethh.tools.jVault.authServ.AuthServerClient;
 import me.xethh.tools.jVault.cmds.deen.sub.*;
 import picocli.CommandLine;
 
@@ -33,8 +34,26 @@ public class Vault implements Callable<Integer>, CredentialOwner {
 
     @CommandLine.Option(names = {"-c","--credential"}, defaultValue = "", description = "The credential to use, if missing, would try find env variable `x-credential` or `x_credential`")
     private String credential;
+
+    @CommandLine.Option(names = {"--auth-server"}, defaultValue = "", description = "The authentication server`")
+    private String authServer;
+
     public String getCredential() {
-        return credential;
+        if(!authServer.equalsIgnoreCase("")) {
+            if(authServer.endsWith("/")){
+                authServer = authServer.substring(0,authServer.length()-1);
+            }
+            var as = new AuthServerClient(){
+                @Override
+                public String authServer() {
+                    return authServer;
+                }
+            };
+
+            return as.getCode();
+        } else {
+            return credential;
+        }
     }
 
     @Override
