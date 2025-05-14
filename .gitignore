@@ -6,3 +6,6 @@ j-vault
 maven_looper.py
 vault.kv
 out
+a.sh.crypt
+a.sh
+x/*
