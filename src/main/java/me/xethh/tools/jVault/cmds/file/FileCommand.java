@@ -1,38 +1,13 @@
 package me.xethh.tools.jVault.cmds.file;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.samstevens.totp.code.DefaultCodeGenerator;
-import dev.samstevens.totp.code.HashingAlgorithm;
-import dev.samstevens.totp.exceptions.CodeGenerationException;
-import dev.samstevens.totp.time.SystemTimeProvider;
-import me.xethh.libs.encryptDecryptLib.encryption.RSAFormatting;
-import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
-import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
 import me.xethh.tools.jVault.authServ.AuthServerClient;
 import me.xethh.tools.jVault.cmds.deen.CredentialOwner;
-import me.xethh.tools.jVault.cmds.deen.sub.AuthServer;
-import me.xethh.utils.dateManipulation.BaseTimeZone;
 import picocli.CommandLine;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.security.PublicKey;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Scanner;
+import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
-import static org.bouncycastle.asn1.x509.ObjectDigestInfo.publicKey;
 
 @CommandLine.Command(
         name = "file",
@@ -45,6 +20,9 @@ public class FileCommand implements Callable<Integer>, CredentialOwner {
 
     @CommandLine.Option(names = {"--auth-server"}, defaultValue = "", description = "The authentication server`")
     private String authServer;
+
+    @CommandLine.Option(names = {"--user"}, defaultValue = "", description = "The user`")
+    private String user="";
 
     @Override
     public Integer call() throws Exception {
@@ -66,7 +44,10 @@ public class FileCommand implements Callable<Integer>, CredentialOwner {
                 }
             };
 
-            return as.getCode();
+            user = Optional.ofNullable(user)
+                    .flatMap(t-> t.equalsIgnoreCase("")?Optional.empty():Optional.of(t))
+                    .orElseThrow(()->new RuntimeException("user is entered"));
+            return as.getCode(user);
         } else {
             return credential;
         }

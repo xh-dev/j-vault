@@ -30,7 +30,7 @@ import java.util.function.Function;
 
 public interface AuthServerClient {
     String authServer();
-    default String getCode(){
+    default String getCode(String user){
         final boolean debugging = Optional.ofNullable(System.getenv().get("DEV")).isPresent();
         try{
             var client = HttpClient.newHttpClient();
@@ -87,7 +87,7 @@ public interface AuthServerClient {
                     var req = new AuthServer.Request();
                     req.setExpiresInM(30);
                     req.setCode(codeInput);
-                    req.setKey("xeth");
+                    req.setKey(user);
                     req.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.now().atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
 
                     final var bodyToPush = om.writeValueAsString(req);

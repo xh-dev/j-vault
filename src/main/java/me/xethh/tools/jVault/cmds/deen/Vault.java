@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,6 +39,9 @@ public class Vault implements Callable<Integer>, CredentialOwner {
     @CommandLine.Option(names = {"--auth-server"}, defaultValue = "", description = "The authentication server`")
     private String authServer;
 
+    @CommandLine.Option(names = {"--user"}, defaultValue = "", description = "The user`")
+    private String user="";
+
     public String getCredential() {
         if(!authServer.equalsIgnoreCase("")) {
             if(authServer.endsWith("/")){
@@ -50,7 +54,10 @@ public class Vault implements Callable<Integer>, CredentialOwner {
                 }
             };
 
-            return as.getCode();
+            user = Optional.ofNullable(user)
+                    .flatMap(t-> t.equalsIgnoreCase("")?Optional.empty():Optional.of(t))
+                    .orElseThrow(()->new RuntimeException("user is entered"));
+            return as.getCode(user);
         } else {
             return credential;
         }

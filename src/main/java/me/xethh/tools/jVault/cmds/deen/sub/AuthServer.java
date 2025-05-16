@@ -19,12 +19,12 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -108,26 +108,51 @@ public class AuthServer implements Callable<Integer> {
 
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
-    @CommandLine.Option(names = {"-k", "--key"}, description = "The key")
+    @CommandLine.Option(names = {"-k", "--key"}, required = false, description = "The key")
     private String key;
 
-    @CommandLine.Option(names = {"-s", "--secret"}, description = "The secret")
+    @CommandLine.Option(names = {"-s", "--secret"}, required = false, description = "The secret")
     private String secrete;
 
-    @CommandLine.Option(names = {"-v", "--value"}, description = "The value")
+    @CommandLine.Option(names = {"-v", "--value"}, required = false, description = "The value")
     private String value;
 
-    @CommandLine.Option(names = {"--port"}, defaultValue = "8001", description = "The tcp port to open for the server")
+    @CommandLine.Option(names = {"--port"}, required = false, defaultValue = "8001", description = "The tcp port to open for the server")
     private int port;
+
+    @CommandLine.Option(names = {"--use-env"}, required = false, arity = "1", description = "Enable to get config from ENV")
+    private boolean useEnv = false;
 
 
 
     @Override
     public Integer call() throws Exception {
+        final var debugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
         System.out.println("Launching server with port: " + port);
+        if(debugging){
+            System.out.println("Debugging enabled");
+        }
+
+        if(useEnv) {
+            secrete = Optional.ofNullable(System.getenv("J_VAULT_SECRET"))
+                    .orElseThrow(()->new RuntimeException("SECRET not set"));
+            key = Optional.ofNullable(System.getenv("J_VAULT_KEY"))
+                    .orElseThrow(()->new RuntimeException("KEY not set"));
+            value = Optional.ofNullable(System.getenv("J_VAULT_VALUE"))
+                    .orElseThrow(()->new RuntimeException("VALUE not set"));
+            port = Optional.ofNullable(System.getenv("J_VAULT_PORT"))
+                    .map(Integer::parseInt)
+                    .orElseThrow(()->new RuntimeException("PORT not set"));
+
+            if(debugging){
+                System.out.println("KEY: " + key);
+                //System.out.println("VAULT: " + value);
+                System.out.println("PORT: " + port);
+            }
+        }
+
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
-        final var debugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
 
         var timePeriod=30;
         var timeProvider = new SystemTimeProvider();
@@ -395,13 +420,20 @@ public class AuthServer implements Callable<Integer> {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         server.setExecutor(executor);
         server.start();
-        Scanner scanner = new Scanner(System.in);
         System.out.printf("[Auth Server Started - %d] \nenter to exit: \n", port);
-        scanner.nextLine();
-        System.out.println("\n[Auth Server Stopping...]");
-        server.stop(1);
-        System.out.println("[Auth Server Stopped]");
-        System.exit(0);
+        var s=true;
+        while(s){
+            Thread.sleep(Duration.ofMinutes(60).toMillis());
+            if(!s){
+                break;
+            }
+        }
+        //Scanner scanner = new Scanner(System.in);
+        //scanner.nextLine();
+        //System.out.println("\n[Auth Server Stopping...]");
+        //server.stop(1);
+        //System.out.println("[Auth Server Stopped]");
+        //System.exit(0);
         return 0;
     }
 }
