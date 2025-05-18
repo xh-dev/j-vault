@@ -172,6 +172,22 @@ export x_credential={credential}
 set -o history
 ```
 
+# Releases
+| Version | Date        | Description                                                                                                                                |
+|---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| v1.3.1  | 16 May 2025 | Add docker build for image for simple authentication server                                                                                |
+| v1.3.0  | 15 May 2025 | Add support authentication server to preventing frequently password traveling                                                              |
+| v1.2.7  | 14 Aug 2024 | Refine `token gen` to support `as-kv-pass` argument                                                                                        |
+| v1.2.6  | 14 Aug 2024 | Refine `openssl encrypt`script to support `out-bash-env` argument                                                                          |
+| v1.2.5  | 14 Aug 2024 | Refine `openssl encrypt`script                                                                                                             |
+| v1.2.4  | 14 Aug 2024 | - Support more output format on `token gen` and `vault veiw` command <br> - Add `openssl encrypt` and `openssl decrypt` script gen feature |
+| v1.2.3  | 14 Aug 2024 | Add command of `debug-tools print-env` of feature viewing the system environment variable                                                  |
+| v1.2.1  | 12 May 2024 | Support generate exporting linux and windows environment setup script                                                                      |
+| v1.2.0  | 11 May 2024 | Add `autocomplete` script generation                                                                                                       |
+| v1.1.x  | -           | Add support to `github action` build with jar and executable                                                                               |
+| v1.0.4  | 6 Oct 2023  | Add `-k` args for encrypt and decrypt file                                                                                                 |
+| v1.0.3  | 3 Oct 2023  | Add `-V` args for checking build version                                                                                                   |
+| v1.0.0  | 30 Sep 2023 | First official release                                                                                                                     |
 
 
 # Graalvm native image
