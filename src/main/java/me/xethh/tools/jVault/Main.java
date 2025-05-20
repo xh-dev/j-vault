@@ -10,6 +10,7 @@ import me.xethh.tools.jVault.cmds.deen.Vault;
 import me.xethh.tools.jVault.cmds.deen.sub.AuthServer;
 import me.xethh.tools.jVault.cmds.file.FileCommand;
 import me.xethh.tools.jVault.cmds.openssl.Openssl;
+import me.xethh.tools.jVault.cmds.pdf.PdfManaging;
 import me.xethh.tools.jVault.cmds.token.Token;
 import picocli.CommandLine;
 
@@ -22,7 +23,7 @@ import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
         versionProvider = VP.class,
         name = "J-Vault",
         subcommands = {
-                Vault.class, FileCommand.class, Token.class, GenAutoCompleteCmd.class, DebugTools.class, Openssl.class, AuthServer.class
+                Vault.class, FileCommand.class, Token.class, PdfManaging.class, GenAutoCompleteCmd.class, DebugTools.class, Openssl.class, AuthServer.class
         },
         description = "j-vault is a very simple key value based password vault cli program. "
 )
