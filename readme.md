@@ -175,6 +175,7 @@ set -o history
 # Releases
 | Version | Date        | Description                                                                                                                                |
 |---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| v1.5.1  | 26 May 2025 | Refactor the --password option to upper level argument                                                                                      |
 | v1.5.0  | 25 May 2025 | Add zip file set and unset password function                                                                                               |
 | v1.4.0  | 22 May 2025 | Merge [deen-pdf](https://github.com/xh-dev/deen-pdf) into this project                                                                     |
 | v1.3.1  | 16 May 2025 | Add docker build for image for simple authentication server                                                                                |
