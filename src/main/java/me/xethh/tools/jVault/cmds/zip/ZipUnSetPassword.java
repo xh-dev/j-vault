@@ -20,12 +20,9 @@ public class ZipUnSetPassword implements Callable<Integer> {
     @CommandLine.ParentCommand
     private ZipManaging zipManaging;
 
-    @CommandLine.Option(names = {"--existing-password" }, defaultValue = "", description = "if present, will also test if the password correct")
-    private String oldPassword;
-
     @Override
     public Integer call() throws Exception {
-        final var zipFile = oldPassword.isEmpty()? new ZipFile(zipManaging.getFile()): new ZipFile(zipManaging.getFile(), oldPassword.toCharArray());
+        final var zipFile = zipManaging.getZipFile();
         final var newZipFileName = Path.of(zipManaging.getFile().toString()+".tmp");
         final var newZipFile = new ZipFile(newZipFileName.toFile());
 

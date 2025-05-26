@@ -1,7 +1,6 @@
 package me.xethh.tools.jVault.cmds.zip;
 
 import me.xethh.tools.jVault.Log;
-import me.xethh.tools.jVault.cmds.pdf.PdfManaging;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
@@ -9,7 +8,6 @@ import net.lingala.zip4j.model.enums.EncryptionMethod;
 import picocli.CommandLine;
 
 import java.nio.file.Path;
-import java.util.Calendar;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
@@ -22,9 +20,6 @@ public class ZipSetPassword implements Callable<Integer> {
     @CommandLine.ParentCommand
     private ZipManaging zipManaging;
 
-    @CommandLine.Option(names = {"--existing-password" }, defaultValue = "", description = "if present, will also test if the password correct")
-    private String oldPassword;
-
     @CommandLine.Option(names = { "-p", "--password" },required = true,  defaultValue = "", description = "if present, will also test if the password correct")
     private String password;
 
@@ -33,7 +28,7 @@ public class ZipSetPassword implements Callable<Integer> {
         if(password.isEmpty()){
             System.err.println("password is empty");
         } else {
-            final var zipFile = oldPassword.isEmpty()? new ZipFile(zipManaging.getFile()): new ZipFile(zipManaging.getFile(), oldPassword.toCharArray());
+            final var zipFile = zipManaging.getZipFile();
             final var newZipFileName = Path.of(zipManaging.getFile().toString()+".tmp");
             final var newZipFile = new ZipFile(newZipFileName.toFile(), password.toCharArray());
 

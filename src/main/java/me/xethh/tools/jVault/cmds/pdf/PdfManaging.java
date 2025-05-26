@@ -127,6 +127,9 @@ public class PdfManaging implements Callable<Integer> {
     @CommandLine.Option(names = { "-f", "--file" }, required = true, description = "file to use")
     private File file;
 
+    @CommandLine.Option(names = { "-p", "--password" }, description = "password to unlock the zip file in case encrypted")
+    private Optional<String> password;
+
     @Override
     public Integer call() throws Exception {
         return 0;
@@ -134,5 +137,9 @@ public class PdfManaging implements Callable<Integer> {
 
     public File getFile() {
         return file;
+    }
+
+    public Optional<String> getPassword() {
+        return password;
     }
 }

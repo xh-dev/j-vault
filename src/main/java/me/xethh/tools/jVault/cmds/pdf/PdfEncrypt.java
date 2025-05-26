@@ -18,8 +18,8 @@ public class PdfEncrypt implements Callable<Integer> {
     @CommandLine.ParentCommand
     private PdfManaging pdfManaging;
 
-    @CommandLine.Option(names = {"--existing-password" }, defaultValue = "", description = "if present, will also test if the password correct")
-    private String oldPassword;
+    //@CommandLine.Option(names = {"--existing-password" }, defaultValue = "", description = "if present, will also test if the password correct")
+    //private String oldPassword;
 
     @CommandLine.Option(names = { "-p", "--password" },required = true,  defaultValue = "", description = "if present, will also test if the password correct")
     private String password;
@@ -33,7 +33,7 @@ public class PdfEncrypt implements Callable<Integer> {
         if(password.isEmpty()){
             System.err.println("password is empty");
         } else {
-            if(oldPassword.isEmpty()){
+            if(pdfManaging.getPassword().isEmpty()){
                 final var unlockedFile = loadFile(pdfManaging.getFile(), Optional.empty());
                 if(unlockedFile.isPresent()){
                     final var doc = unlockedFile.get();
@@ -53,7 +53,7 @@ public class PdfEncrypt implements Callable<Integer> {
                     System.err.printf("Fail to open pdf file[%s], the file maybe locked by password or the file is corrupted %n");
                 }
             } else {
-                final var unlockedFile = loadFile(pdfManaging.getFile(), Optional.of(password));
+                final var unlockedFile = loadFile(pdfManaging.getFile(), pdfManaging.getPassword());
                 if(unlockedFile.isPresent()){
                     final var doc = unlockedFile.get();
                     PdfModification.modify(pdfManaging.getFile(), doc, docTemp->{

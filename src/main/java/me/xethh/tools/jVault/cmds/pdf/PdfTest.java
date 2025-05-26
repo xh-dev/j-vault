@@ -16,8 +16,8 @@ public class PdfTest implements Callable<Integer> {
     @CommandLine.ParentCommand
     private PdfManaging pdfManaging;
 
-    @CommandLine.Option(names = { "-p", "--password" }, defaultValue = "", description = "if present, will also test if the password correct")
-    private String password;
+    //@CommandLine.Option(names = { "-p", "--password" }, defaultValue = "", description = "if present, will also test if the password correct")
+    //private String password;
 
     @Override
     public Integer call() throws Exception {
@@ -26,7 +26,7 @@ public class PdfTest implements Callable<Integer> {
         try{
             final var file = pdfManaging.getFile();
 
-            if(password.isEmpty()){
+            if(pdfManaging.getPassword().isEmpty()){
                 final var f = loadFile(file, Optional.empty());
                 if(f.isPresent()){
                     System.out.println("The file is not protected by password");
@@ -36,7 +36,7 @@ public class PdfTest implements Callable<Integer> {
             } else{
                 if(loadFile(file, Optional.empty()).isPresent()){
                     System.out.println("The file is not protected by password");
-                } else if(loadFile(file, Optional.of(password)).isEmpty()){
+                } else if(loadFile(file, pdfManaging.getPassword()).isEmpty()){
                     System.out.println("The provided password is not correct");
                 } else {
                     System.out.println("The provided password is correct");
