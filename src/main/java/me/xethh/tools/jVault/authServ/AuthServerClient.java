@@ -6,7 +6,7 @@ import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
-import me.xethh.tools.jVault.cmds.deen.sub.AuthServer;
+import me.xethh.tools.jVault.cmds.deen.sub.SimpleAuthServer;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 
 import java.io.FileInputStream;
@@ -84,7 +84,7 @@ public interface AuthServerClient {
                     System.out.println("Please enter the totp: ");
                     var codeInput = scanner.nextLine();
                     System.out.println("Input code: "+codeInput);
-                    var req = new AuthServer.Request();
+                    var req = new SimpleAuthServer.Request();
                     req.setExpiresInM(30);
                     req.setCode(codeInput);
                     req.setKey(user);
