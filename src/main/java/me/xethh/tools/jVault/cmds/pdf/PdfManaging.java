@@ -38,6 +38,7 @@ public class PdfManaging implements Callable<Integer> {
             final var tmpJVaultFolder  =Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
             System.setProperty("java.library.path", tmpJVaultFolder.toString());
         }
+        loadNativeLib();
         log("java.library.path: "+System.getProperty("java.library.path"));
     }
 
@@ -117,7 +118,7 @@ public class PdfManaging implements Callable<Integer> {
                 throw new RuntimeException(e);
             }
         } else {
-            System.out.println("Not running under native-image");
+            log("Not running under native-image");
         }
     }
 

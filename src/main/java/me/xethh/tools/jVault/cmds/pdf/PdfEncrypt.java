@@ -29,7 +29,6 @@ public class PdfEncrypt implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        PdfManaging.loadNativeLib();
         if(password.isEmpty()){
             System.err.println("password is empty");
         } else {

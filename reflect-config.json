@@ -9,7 +9,7 @@
     "allPublicFields": true
   },
   {
-    "name": "me.xethh.tools.jVault.cmds.deen.sub.AuthServer$Request",
+    "name": "me.xethh.tools.jVault.cmds.deen.sub.SimpleAuthServer$Request",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
@@ -18,7 +18,7 @@
     "allPublicFields": true
   },
   {
-    "name": "me.xethh.tools.jVault.cmds.deen.sub.AuthServer$TempCert",
+    "name": "me.xethh.tools.jVault.cmds.deen.sub.SimpleAuthServer$TempCert",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
@@ -46,6 +46,15 @@
   },
   {
     "name": "java.awt.image.ColorModel",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "java.awt.image.IndexColorModel",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

@@ -10,3 +10,5 @@ a.sh.crypt
 a.sh
 x/*
 td559_e-fillable_chi.pdf
+*.so
+configs

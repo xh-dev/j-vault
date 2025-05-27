@@ -20,8 +20,17 @@ curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault.j
 
 #### Linux executable file
 ```shell
-curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault
+curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault && chmod +x j-vault
 ```
+
+Install
+```shell
+curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault && chmod +x j-vault
+sudo su mv j-vault /usr/bin
+j-vault autocomplete > /etc/bash_completion.d/j-vault
+```
+
+
 
 #### Windows executable file
 ```shell
@@ -175,6 +184,7 @@ set -o history
 # Releases
 | Version | Date        | Description                                                                                                                                |
 |---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| v1.5.3  | 28 May 2025 | Fix bug on build script for native image                                                                                                   |
 | v1.5.2  | 27 May 2025 | Refactor auth-server command structure                                                                                                     |
 | v1.5.1  | 26 May 2025 | Refactor the --password option to upper level argument                                                                                     |
 | v1.5.0  | 25 May 2025 | Add zip file set and unset password function                                                                                               |

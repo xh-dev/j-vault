@@ -21,8 +21,6 @@ public class PdfTest implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        PdfManaging.loadNativeLib();
-
         try{
             final var file = pdfManaging.getFile();
 

@@ -76,12 +76,13 @@ jobs:
           native-image-job-reports: 'true'
           cache: maven
       - run: mvn -Dmaven.test.skip=true clean compile package
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf test
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf set-password -p 12345 -u 54321
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf test
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf unset-password -p 12345
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf test
-      - run: native-image -H:IncludeResources="version.txt" -H:IncludeResources="^.*.(so|dll)$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c01 -jar target/j-vault.jar auth-server code-gen -i xxx -n yyy
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c02 -jar target/j-vault.jar pdf -f stuff/test.pdf test
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c03 -jar target/j-vault.jar pdf -f stuff/test.pdf set-password -p 12345 -u 54321
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c04 -jar target/j-vault.jar pdf -f stuff/test.pdf test
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c05 -jar target/j-vault.jar pdf -f stuff/test.pdf unset-password -p 12345
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c06 -jar target/j-vault.jar pdf -f stuff/test.pdf test
+      - run: native-image -H:ConfigurationFileDirectories=configs/c01,configs/c02,configs/c03,configs/c04,configs/c05,configs/c06 -H:IncludeResources="version.txt" -H:IncludeResources="^.*.(so|dll)$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
       - run: python get-so.py
       - run: python zip-native-libs.py native-libs-linux.zip
       - name: upload native-libs-linux.zip
@@ -94,7 +95,7 @@ jobs:
           asset_name: native-libs-linux.zip
           asset_content_type: application/octet-stream
       - run: mvn -Dmaven.test.skip=true clean compile package
-      - run: native-image -H:IncludeResources="version.txt" -H:IncludeResources="^.*.(so|dll)$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
+      - run: native-image -H:ConfigurationFileDirectories=configs/c01,configs/c02,configs/c03,configs/c04,configs/c05,configs/c06 -H:IncludeResources="version.txt" -H:IncludeResources="^.*.(so|dll)$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
       - name: upload jar artifact
         uses: actions/upload-release-asset@v1
         env:
@@ -135,13 +136,13 @@ jobs:
           native-image-job-reports: 'true'
           cache: maven
       - run: mvn "-Dmaven.test.skip=true" clean compile package
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf test
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf set-password -p 12345 -u 54321
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf test
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf unset-password -p 12345
-      - run: java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/j-vault.jar pdf -f stuff/test.pdf test
-#      - run: native-image -H:IncludeResources="version.txt" -H:JNIConfigurationFiles=config/jni-config.json -H:IncludeResources="^.*.dll$" -H:IncludeResources="^.*.so$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
-      - run: native-image -H:IncludeResources="version.txt" -H:IncludeResources="^.*.dll$" -H:IncludeResources="^.*.so$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c01 -jar target/j-vault.jar auth-server code-gen -i xxx -n yyy
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c02 -jar target/j-vault.jar pdf -f stuff/test.pdf test
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c03 -jar target/j-vault.jar pdf -f stuff/test.pdf set-password -p 12345 -u 54321
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c04 -jar target/j-vault.jar pdf -f stuff/test.pdf test
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c05 -jar target/j-vault.jar pdf -f stuff/test.pdf unset-password -p 12345
+      - run: java -agentlib:native-image-agent=config-output-dir=configs/c06 -jar target/j-vault.jar pdf -f stuff/test.pdf test
+      - run: native-image -H:ConfigurationFileDirectories=configs/c01,configs/c02,configs/c03,configs/c04,configs/c05,configs/c06 -H:IncludeResources="version.txt" -H:IncludeResources="^.*.dll$" -H:IncludeResources="^.*.so$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
       - run: python get-so.py
       - run: python zip-native-libs.py native-libs-windows.zip
       - name: upload native-libs-windows.zip
@@ -154,7 +155,7 @@ jobs:
           asset_name: native-libs-windows.zip
           asset_content_type: application/octet-stream
       - run: mvn "-Dmaven.test.skip=true" clean compile package
-      - run: native-image -H:IncludeResources="version.txt" -H:IncludeResources="^.*.dll$" -H:IncludeResources="^.*.so$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
+      - run: native-image -H:ConfigurationFileDirectories=configs/c01,configs/c02,configs/c03,configs/c04,configs/c05,configs/c06 -H:IncludeResources="version.txt" -H:IncludeResources="^.*.dll$" -H:IncludeResources="^.*.so$" -H:IncludeResources="native.txt" -H:+AddAllCharsets -H:ReflectionConfigurationFiles=reflect-config.json -jar target/j-vault.jar
       - name: upload jar artifact
         uses: actions/upload-release-asset@v1
         env:

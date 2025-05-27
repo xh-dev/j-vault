@@ -20,7 +20,6 @@ public class PdfDecrypt implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        PdfManaging.loadNativeLib();
         var ifNoPassPdfModification = loadFile(pdfManaging.getFile(), Optional.empty());
         if (ifNoPassPdfModification.isPresent()) {
             System.out.println("The file is not encrypted");
