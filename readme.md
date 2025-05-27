@@ -26,8 +26,8 @@ curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault &
 Install
 ```shell
 curl -L -O  https://github.com/xh-dev/j-vault/releases/latest/download/j-vault && chmod +x j-vault
-sudo su mv j-vault /usr/bin
-j-vault autocomplete > /etc/bash_completion.d/j-vault
+sudo mv j-vault /usr/bin # move the executable to system path
+j-vault autocomplete > /etc/bash_completion.d/j-vault # export autocomplete script, the path may be different for different platform
 ```
 
 
