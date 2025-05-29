@@ -83,6 +83,11 @@ public class DecryptFile implements Callable<Integer> {
                     deObj.decryptInputStream(is).transferTo(os);
                 }
                 if(!keep){
+                    try{
+                        is.close();
+                    } catch (Exception ex){
+                        throw new RuntimeException(ex.getMessage(), ex);
+                    }
                     boolean rs = inFile.delete();
                     DebugLog.log(()->"delete file result: " + rs);
                 }
