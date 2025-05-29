@@ -184,6 +184,7 @@ set -o history
 # Releases
 | Version | Date        | Description                                                                                                                                |
 |---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| v1.5.4  | 28 May 2025 | Fix bugs                                                                                                                                   |
 | v1.5.3  | 28 May 2025 | Fix bug on build script for native image                                                                                                   |
 | v1.5.2  | 27 May 2025 | Refactor auth-server command structure                                                                                                     |
 | v1.5.1  | 26 May 2025 | Refactor the --password option to upper level argument                                                                                     |
