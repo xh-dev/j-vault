@@ -56,28 +56,28 @@ public class Set implements Callable<Integer> {
                     isr,
                     key,
                     (line,matcher,byPass) -> {
-                        DebugLog.log(() -> "Matching key: ");
+                        Log.debug(() -> "Matching key: ");
                         if (found.get()) {
-                            DebugLog.log(() -> "Duplicate line found");
+                            Log.debug(() -> "Duplicate line found");
                             // Already found refers to duplicate key existing, should be ignored
                             Out.get().printf("Key[%s] already exist, skipped%n", key);
                         } else {
-                            DebugLog.log(() -> "First value encounter");
+                            Log.debug(() -> "First value encounter");
                             Out.get().printf("Found key[%s] and replace%n", key);
                             found.set(true);
                             cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
-                            DebugLog.log(() -> "Complete write value");
+                            Log.debug(() -> "Complete write value");
                         }
                     },
                     (line, matcher,byPass) -> {
-                        DebugLog.log(() -> "In-matching key: ");
+                        Log.debug(() -> "In-matching key: ");
                         cos.write(String.format("%s\n", line).getBytes());
                     },
                     (line,byPass) -> {}
             );
 
             if (!found.get()) { // The key not found in the whole vault, add to the end
-                DebugLog.log(() -> "Append KV to the end of vault");
+                Log.debug(() -> "Append KV to the end of vault");
                 cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
             }
             cos.flush();

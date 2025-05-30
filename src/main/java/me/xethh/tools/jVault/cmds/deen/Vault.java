@@ -20,7 +20,8 @@ import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
                 View.class,
                 Find.class,
                 Set.class,
-                Unset.class
+                Unset.class,
+                RestServer.class,
         },
         description = "allow user modify and read vault information"
 )
@@ -75,9 +76,9 @@ public class Vault implements Callable<Integer>, CredentialOwner {
     }
     public void switchTempFile(Path path, Path tmpPath){
         var delRs = path.toFile().delete();
-        DebugLog.log(() -> "delete file result: " + delRs);
+        Log.debug(() -> "delete file result: " + delRs);
         var renameRs = tmpPath.toFile().renameTo(path.toFile());
-        DebugLog.log(() -> "rename file result: " + renameRs);
+        Log.debug(() -> "rename file result: " + renameRs);
     }
 
     public void loopAndFindKey(
@@ -90,14 +91,14 @@ public class Vault implements Callable<Integer>, CredentialOwner {
         String line;
         while ((line = isr.readLine()) != null) {
             String finalLine = line;
-            DebugLog.log(() -> "KV line: " + finalLine);
+            Log.debug(() -> "KV line: " + finalLine);
             final var kv = Common.KVExtractor.extract(line);
             //final var matcher = PATTERN.matcher(line);
-            DebugLog.log(() -> "Match result: " + kv.isMatch());
+            Log.debug(() -> "Match result: " + kv.isMatch());
             var byPass = new AtomicBoolean(false);
             if (kv.isMatch()) {
                 var name = kv.getKey();
-                DebugLog.log(() -> "Match name: " + name);
+                Log.debug(() -> "Match name: " + name);
                 if (name.equals(key)) {
                     matchKeyLogic.handle(line, kv, byPass);
                     if(byPass.get())

@@ -83,6 +83,6 @@ public class Common {
                 throw new RuntimeException(e);
             }
         }).dropWhile(it->!it.equals((int)'\n')).findFirst();
-        DebugLog.log(()->"Skipped the first line: "+first.isPresent());
+        Log.debug(()->"Skipped the first line: "+first.isPresent());
     }
 }

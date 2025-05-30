@@ -1,7 +1,7 @@
 package me.xethh.tools.jVault.cmds.file;
 
 import me.xethh.tools.jVault.cmds.deen.DeenObj;
-import me.xethh.tools.jVault.cmds.deen.sub.DebugLog;
+import me.xethh.tools.jVault.cmds.deen.sub.Log;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -57,7 +57,7 @@ public class EncryptFile implements Callable<Integer> {
 
         if(!keep){
             boolean rs = infile.delete();
-            DebugLog.log(()->"delete file result: " + rs);
+            Log.debug(()->"delete file result: " + rs);
         }
         return 0;
     }

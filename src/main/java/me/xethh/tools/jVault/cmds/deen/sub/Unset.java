@@ -54,12 +54,12 @@ public class Unset implements Callable<Integer> {
                     },
                     (line, kv,byPass) -> {
                         var name = kv.getKey();
-                        DebugLog.log(() -> "Match name: " + name);
+                        Log.debug(() -> "Match name: " + name);
                         if (!name.equals(key)) {
-                            DebugLog.log(() -> "In-match key, write to new file");
+                            Log.debug(() -> "In-match key, write to new file");
                             cos.write(String.format("%s\n", line).getBytes());
                         } else {
-                            DebugLog.log(() -> "Match key, skipped");
+                            Log.debug(() -> "Match key, skipped");
                         }
                     },
                     (line, byPass) -> {}
