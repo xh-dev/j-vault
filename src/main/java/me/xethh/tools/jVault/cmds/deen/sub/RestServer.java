@@ -1,8 +1,10 @@
 package me.xethh.tools.jVault.cmds.deen.sub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import me.xethh.tools.jVault.cmds.deen.Vault;
+import org.apache.commons.codec.digest.DigestUtils;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -12,9 +14,11 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.MessageDigest;
+import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
@@ -31,8 +35,14 @@ public class RestServer implements Callable<Integer> {
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
 
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = "8000", description = "the port to use for setup restful server", required = true)
+    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = "7910", description = "the port to use for setup restful server", required = true)
     private String port;
+
+    @CommandLine.Option(names = {"--harden"}, required = false, description = "If defined, a secure token will be generate.")
+    private boolean lessSecure;
+
+    @CommandLine.Option(names = {"-s", "--secure"}, required = false, description = "If defined, a secure token will be generate when start up the server.")
+    private boolean genToken;
 
     @CommandLine.ParentCommand
     private Vault deen;
@@ -90,9 +100,38 @@ public class RestServer implements Callable<Integer> {
             final var portInt = Integer.valueOf(port);
             final var om = new ObjectMapper();
 
+            var tokenGen = genToken ? UUID.randomUUID().toString():null;
+            if (tokenGen == null && lessSecure) {
+                tokenGen = DigestUtils.md5Hex(String.format("http://0.0.0.0:%s", port));
+                genToken = true;
+            }
+
             HttpServer server = HttpServer.create(new InetSocketAddress(portInt), 0);
+
+            System.out.println("Token: \n" + tokenGen +"\n---\n\n");
+
+            final var tokenProvider = (Function<HttpExchange,Optional<String>>)(exchange)->Arrays.stream(exchange.getRequestURI().getRawQuery().split("&"))
+                    .filter(x->x.split("=").length>=2)
+                    .map(x->x.split("="))
+                    .filter(x -> x[0].equalsIgnoreCase("token"))
+                    .map(x->x[1])
+                    .findFirst();
+
+            String finalTokenGen = tokenGen;
             server.createContext("/keys", exchange -> {
                 if(exchange.getRequestMethod().toLowerCase().equals("get")) {
+                    if(genToken){
+                        var param = tokenProvider.apply(exchange);
+                        if(param.isEmpty()){
+                            exchange.sendResponseHeaders(403, 0);
+                            var os = exchange.getResponseBody();
+                            os.close();
+                        } else if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                            exchange.sendResponseHeaders(403, 0);
+                            var os = exchange.getResponseBody();
+                            os.close();
+                        }
+                    }
                     final var rs = om.writeValueAsString(map.keySet());
                     exchange.getResponseHeaders().set("Content-Type", "application/json");
                     exchange.sendResponseHeaders(200, rs.length());
@@ -107,6 +146,18 @@ public class RestServer implements Callable<Integer> {
             });
             server.createContext("/kv", exchange -> {
                 if(exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    if(genToken){
+                        var param = tokenProvider.apply(exchange);
+                        if(param.isEmpty()){
+                            exchange.sendResponseHeaders(403, 0);
+                            var os = exchange.getResponseBody();
+                            os.close();
+                        } else if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                            exchange.sendResponseHeaders(403, 0);
+                            var os = exchange.getResponseBody();
+                            os.close();
+                        }
+                    }
                     final var p = exchange.getRequestURI().getPath();
                     final var pattern = Pattern.compile("/kv/([\\w+][\\w+-_0-9]*)");
                     final var matcher = pattern.matcher(p);
@@ -137,7 +188,18 @@ public class RestServer implements Callable<Integer> {
             });
             server.createContext("/kvs", exchange -> {
                 if(exchange.getRequestMethod().toLowerCase().equals("get")) {
-                    final var q = parseQueryParams(exchange.getRequestURI().getQuery());
+                    if(genToken){
+                        var param = tokenProvider.apply(exchange);
+                        if(param.isEmpty()){
+                            exchange.sendResponseHeaders(403, 0);
+                            var os = exchange.getResponseBody();
+                            os.close();
+                        } else if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                            exchange.sendResponseHeaders(403, 0);
+                            var os = exchange.getResponseBody();
+                            os.close();
+                        }
+                    }
                     final var mapResult = om.writeValueAsString(map);
                     exchange.getResponseHeaders().set("Content-Type", "application/json");
                     final var body = exchange.getResponseBody();
