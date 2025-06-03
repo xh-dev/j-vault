@@ -184,7 +184,8 @@ set -o history
 # Releases
 | Version | Date        | Description                                                                                                                                |
 |---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| v1.6.1  | 2 Jun 2025  | - Default port to `7910` instead of `` <br> - Add secure mode (`--harden`, `--secure`) to `j-vault vault rest-server`                        |
+| v1.7.0  | 3 Jun 2025  | change sub command `rest-server` to `over-http` and small refactoring                                                                      |
+| v1.6.1  | 2 Jun 2025  | - Default port to `7910 instead of `` <br> - Add secure mode (`--harden`, `--secure`) to `j-vault vault rest-server`                       |
 | v1.6.0  | 31 May 2025 | Add new command `j-vault vault rest-server` and code refactor                                                                              |
 | v1.5.4  | 28 May 2025 | Fix bugs                                                                                                                                   |
 | v1.5.3  | 28 May 2025 | Fix bug on build script for native image                                                                                                   |

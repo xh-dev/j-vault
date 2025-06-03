@@ -14,19 +14,17 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jVault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
-        name = "rest-server",
-        description = "restful access to the j-vault"
+        name = "over-http",
+        description = "the restful access to the j-vault"
 )
 public class RestServer implements Callable<Integer> {
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
@@ -35,13 +33,14 @@ public class RestServer implements Callable<Integer> {
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
 
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = "7910", description = "the port to use for setup restful server", required = true)
+    final static String DefaultPort = "7910";
+    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = DefaultPort, description = "the port to be used for setup restful server, default as `"+DefaultPort+"`", required = true)
     private String port;
 
-    @CommandLine.Option(names = {"--harden"}, required = false, description = "If defined, a secure token will be generate.")
+    @CommandLine.Option(names = {"--harden"}, description = "If defined, a secure token will be generate.")
     private boolean lessSecure;
 
-    @CommandLine.Option(names = {"-s", "--secure"}, required = false, description = "If defined, a secure token will be generate when start up the server.")
+    @CommandLine.Option(names = {"-s", "--secure"}, description = "If defined, a secure token will be generate when start up the server.")
     private boolean genToken;
 
     @CommandLine.ParentCommand
