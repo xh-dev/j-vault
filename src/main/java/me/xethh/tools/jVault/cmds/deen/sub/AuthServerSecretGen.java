@@ -2,7 +2,6 @@ package me.xethh.tools.jVault.cmds.deen.sub;
 
 import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.qr.QrData;
-import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.qr.ZxingPngQrGenerator;
 import dev.samstevens.totp.secret.DefaultSecretGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
