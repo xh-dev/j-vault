@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault.cmds.token;
 
+import me.xethh.tools.jvault.DevScope;
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
 import picocli.CommandLine;
 
@@ -55,7 +56,7 @@ public class GenToken implements Callable<Integer> {
                         ) {
                     os.write(fPass.getBytes());
                 } catch (Throwable throwable){
-                    throwable.printStackTrace();
+                    DevScope.printStackTrace(throwable);
                 }
             }
             Out.get().println(fPass);

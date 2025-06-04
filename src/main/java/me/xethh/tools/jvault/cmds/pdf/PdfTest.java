@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
+import me.xethh.tools.jvault.DevScope;
 import picocli.CommandLine;
 
 import java.util.Optional;
@@ -41,7 +42,7 @@ public class PdfTest implements Callable<Integer> {
                 }
             }
         } catch (Exception e){
-            e.printStackTrace();
+            DevScope.printStackTrace(e);
         }
         return 0;
     }

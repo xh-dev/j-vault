@@ -11,6 +11,7 @@ import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptorImpl;
+import me.xethh.tools.jvault.DevScope;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 import picocli.CommandLine;
 
@@ -337,7 +338,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     }
                 }
                 catch(Exception e){
-                    e.printStackTrace();
+                    DevScope.printStackTrace(e);
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                 }
@@ -422,7 +423,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     }
                 }
                 catch(Exception e){
-                    e.printStackTrace();
+                    DevScope.printStackTrace(e);
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                 }

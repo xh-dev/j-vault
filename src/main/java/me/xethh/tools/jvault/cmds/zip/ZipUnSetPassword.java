@@ -1,6 +1,6 @@
 package me.xethh.tools.jvault.cmds.zip;
 
-import me.xethh.tools.jvault.Log;
+import me.xethh.tools.jvault.DevScope;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
@@ -45,7 +45,7 @@ public class ZipUnSetPassword implements Callable<Integer> {
         zipFile.close();
         zipManaging.getFile().delete();
         newZipFileName.toFile().renameTo(zipManaging.getFile());
-        Log.log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));
+        DevScope.log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));
         return 0;
     }
 }
