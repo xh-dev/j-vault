@@ -8,16 +8,16 @@ public class Log {
      * debug option, should never be valued as true in production
      */
     public static final boolean DEBUG = false;
-    public static final PrintStream DebugLog = System.err;
-    public static final PrintStream console = System.out;
+    public static final PrintStream DEBUG_LOG = System.err;
+    public static final PrintStream CONSOLE = System.out;
 
     public static void debug(Supplier<String> logMsg){
         if(DEBUG){
-            DebugLog.println(logMsg.get());
+            DEBUG_LOG.println(logMsg.get());
         }
     }
 
     public static void msg(Supplier<String> logMsg){
-        console.println(logMsg.get());
+        CONSOLE.println(logMsg.get());
     }
 }
