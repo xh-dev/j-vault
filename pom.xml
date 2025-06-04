@@ -94,7 +94,7 @@
                             <transformers>
                                 <!-- add Main-Class to manifest file -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>me.xethh.tools.jVault.Main</mainClass>
+                                    <mainClass>me.xethh.tools.jvault.Main</mainClass>
                                 </transformer>
                             </transformers>
                             <filters>
@@ -118,7 +118,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>me.xethh.tools.jVault.Main</mainClass>
+                            <mainClass>me.xethh.tools.jvault.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
