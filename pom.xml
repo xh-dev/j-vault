@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>me.xethh.tools</groupId>
     <artifactId>j-vault</artifactId>
     <version>1.7.0</version>
 
@@ -17,6 +17,7 @@
         <profile>
             <properties>
                 <sonar.organization>xh-dev</sonar.organization>
+                <sonar.projectKey>xh-dev_j-vault</sonar.projectKey>
             </properties>
             <id>coverage</id>
             <build>
