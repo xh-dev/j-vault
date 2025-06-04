@@ -41,6 +41,9 @@ import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.TEXT_PL
 public class SimpleAuthServer implements Callable<Integer> {
 
     public static class Const {
+        private Const() {
+            throw new IllegalStateException("Not expected to be executed!");
+        }
         public static final String CONTENT_TYPE = "Content-Type";
         public static final String TEXT_PLAIN = "text/plain";
         public static final String APPLICATION_JSON = "application/json";

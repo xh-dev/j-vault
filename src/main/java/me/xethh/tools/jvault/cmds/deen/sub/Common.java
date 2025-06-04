@@ -11,6 +11,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Common {
+    private Common(){
+        throw new IllegalStateException("Not expected to be instantiated");
+    }
+
     public static Supplier<PrintStream> Out = () -> System.out;
 
     public static DeenObj getDeenObj(Path path, String credsEnv) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
