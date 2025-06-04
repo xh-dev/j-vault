@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
+import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
 
 @CommandLine.Command(
         name = "over-http",
@@ -132,7 +133,7 @@ public class RestServer implements Callable<Integer> {
                         }
                     }
                     final var rs = om.writeValueAsString(map.keySet());
-                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    exchange.getResponseHeaders().set(CONTENT_TYPE, APPLICATION_JSON);
                     exchange.sendResponseHeaders(200, rs.length());
                     var os = exchange.getResponseBody();
                     os.write(rs.getBytes(StandardCharsets.UTF_8));
@@ -163,7 +164,7 @@ public class RestServer implements Callable<Integer> {
                     if(matcher.matches()) {
                         final var k=matcher.group(1);
                         if(map.containsKey(k)){
-                            exchange.getResponseHeaders().set("Content-Type", "text/plain");
+                            exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                             final var v = map.get(k);
                             final var body = exchange.getResponseBody();
                             exchange.sendResponseHeaders(200, v.length());
@@ -200,7 +201,7 @@ public class RestServer implements Callable<Integer> {
                         }
                     }
                     final var mapResult = om.writeValueAsString(map);
-                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    exchange.getResponseHeaders().set(CONTENT_TYPE, APPLICATION_JSON);
                     final var body = exchange.getResponseBody();
                     exchange.sendResponseHeaders(200, mapResult.length());
                     body.write(mapResult.getBytes(StandardCharsets.UTF_8));

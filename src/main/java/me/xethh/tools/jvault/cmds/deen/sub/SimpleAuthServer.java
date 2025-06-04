@@ -31,12 +31,20 @@ import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.CONTENT_TYPE;
+import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.TEXT_PLAIN;
+
 @CommandLine.Command(
         name = "auth-server",
         description = "auth-server"
 )
 public class SimpleAuthServer implements Callable<Integer> {
 
+    public static class Const {
+        public static final String CONTENT_TYPE = "Content-Type";
+        public static final String TEXT_PLAIN = "text/plain";
+        public static final String APPLICATION_JSON = "application/json";
+    }
     public static class Request{
         private String key;
         private String code;
@@ -170,7 +178,7 @@ public class SimpleAuthServer implements Callable<Integer> {
             public void handle(HttpExchange exchange) throws IOException {
                 System.out.println("received request: "+exchange.getRequestURI());
                 var response = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
-                exchange.getResponseHeaders().set("Content-Type", "text/plain");
+                exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                 exchange.sendResponseHeaders(200, response.length());
                 var os = exchange.getResponseBody();
                 os.write(response.getBytes());
@@ -317,7 +325,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                         System.out.println("encrypted json: "+fff);
                     }
 
-                    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+                    exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                     exchange.sendResponseHeaders(200, ffff.length());
                     os.write(ffff.getBytes());
                     os.close();
@@ -402,7 +410,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     var fff = deenServer.encryptToJsonContainer(publicKey, value);
                     var ffff = Base64.getEncoder().encodeToString(fff.getBytes(StandardCharsets.UTF_8));
 
-                    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+                    exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                     exchange.sendResponseHeaders(200, ffff.length());
                     os.write(ffff.getBytes());
                     os.close();
