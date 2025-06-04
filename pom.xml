@@ -15,6 +15,9 @@
     </properties>
     <profiles>
         <profile>
+            <properties>
+                <sonar.organization>xh-dev</sonar.organization>
+            </properties>
             <id>coverage</id>
             <build>
                 <plugins>

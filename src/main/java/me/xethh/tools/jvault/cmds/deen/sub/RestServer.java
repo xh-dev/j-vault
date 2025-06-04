@@ -118,18 +118,22 @@ public class RestServer implements Callable<Integer> {
                     .findFirst();
 
             String finalTokenGen = tokenGen;
+            assert finalTokenGen != null; // officially guaranteed in the coding level
+
             server.createContext("/keys", exchange -> {
-                if(exchange.getRequestMethod().toLowerCase().equals("get")) {
+                if(exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     if(genToken){
                         var param = tokenProvider.apply(exchange);
                         if(param.isEmpty()){
                             exchange.sendResponseHeaders(403, 0);
                             var os = exchange.getResponseBody();
                             os.close();
-                        } else if(!finalTokenGen.equalsIgnoreCase(param.get())){
-                            exchange.sendResponseHeaders(403, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                        } else {
+                            if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                                exchange.sendResponseHeaders(403, 0);
+                                var os = exchange.getResponseBody();
+                                os.close();
+                            }
                         }
                     }
                     final var rs = om.writeValueAsString(map.keySet());
