@@ -108,7 +108,7 @@ public interface AuthServerClient extends ConsoleOwner {
                                     .header("sender", sender)
                                     .build(),
                             HttpResponse.BodyHandlers.ofString());
-                    ;
+
                     if (console().isDebugging()) {
                         console().debug("response code: " + response.statusCode());
                         final var respBody = response.body();
@@ -215,6 +215,4 @@ public interface AuthServerClient extends ConsoleOwner {
             throw new RuntimeException(e);
         }
     }
-
-    ;
 }

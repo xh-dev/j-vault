@@ -18,8 +18,8 @@ import java.util.Base64;
 
 public class DeenObj {
     public static final int DEFAULT_SALT1_LENGTH = 4;
-    public final static String ALGO = "AES/CBC/PKCS5Padding";
-    private static boolean DEBUG = false;
+    public static final String ALGO = "AES/CBC/PKCS5Padding";
+    //private static final boolean DEBUG = false;
     public final SecretKey key;
     public final IvParameterSpec iv;
     public final String fileHeader;
@@ -79,19 +79,11 @@ public class DeenObj {
     }
 
     public InputStream decryptInputStream(InputStream is) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        if (DEBUG) {
-            return is;
-        } else {
-            return new CipherInputStream(is, decryptCipher());
-        }
+        return new CipherInputStream(is, decryptCipher());
     }
 
     public OutputStream decryptOutputStream(OutputStream os) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        if (DEBUG) {
-            return os;
-        } else {
-            return new CipherOutputStream(os, decryptCipher());
-        }
+        return new CipherOutputStream(os, decryptCipher());
     }
 
     public Cipher encryptCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
@@ -101,18 +93,10 @@ public class DeenObj {
     }
 
     public InputStream encryptInputStream(InputStream is) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        if (DEBUG) {
-            return is;
-        } else {
-            return new CipherInputStream(is, encryptCipher());
-        }
+        return new CipherInputStream(is, encryptCipher());
     }
 
     public OutputStream encryptOutputStream(OutputStream os) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        if (DEBUG) {
-            return os;
-        } else {
-            return new CipherOutputStream(os, encryptCipher());
-        }
+        return new CipherOutputStream(os, encryptCipher());
     }
 }
