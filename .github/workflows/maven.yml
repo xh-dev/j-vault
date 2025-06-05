@@ -37,7 +37,7 @@ jobs:
 
       - name: Build with Maven and JaCoCo
         run: |
-          mvn -B verify org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.skip=false
+          mvn -B verify org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.skip=false -Pcoverage
           # This command ensures tests run and JaCoCo generates its report.
           # `install` also ensures `target/classes` exists for SonarCloud.
 
@@ -51,8 +51,8 @@ jobs:
           # These can be found in your SonarCloud project settings.
           # Example: -Dsonar.organization=your-org-key -Dsonar.projectKey=your-project-key
           args: >
-            -Dsonar.organization=your-organization-key
-            -Dsonar.projectKey=your-project-key
+            -Dsonar.organization=xh-dev
+            -Dsonar.projectKey=xh-dev_j-vault
             -Dsonar.java.binaries=target/classes # Important for Java analysis
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml # Path to your JaCoCo report
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive

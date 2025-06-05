@@ -15,10 +15,6 @@
     </properties>
     <profiles>
         <profile>
-            <properties>
-                <sonar.organization>xh-dev</sonar.organization>
-                <sonar.projectKey>xh-dev_j-vault</sonar.projectKey>
-            </properties>
             <id>coverage</id>
             <build>
                 <plugins>
