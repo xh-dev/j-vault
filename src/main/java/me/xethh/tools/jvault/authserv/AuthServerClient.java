@@ -1,9 +1,11 @@
 package me.xethh.tools.jvault.authserv;
 
 import com.beust.jcommander.internal.Console;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.HashingAlgorithm;
+import dev.samstevens.totp.exceptions.CodeGenerationException;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
@@ -72,7 +74,7 @@ public interface AuthServerClient extends ConsoleOwner {
                 }
                 return Optional.empty();
             };
-            BiFunction<HttpClient, PublicKey, String> getCert = (httpClient, key) -> {
+            BiFunction<HttpClient, PublicKey, Optional<String>> getCert = (httpClient, key) -> {
                 try{
                     if(debugging){
                         final var timePeriod=30;
@@ -123,13 +125,18 @@ public interface AuthServerClient extends ConsoleOwner {
                         System.out.println("response code: "+response.statusCode());
                         final var respBody=response.body();
                         System.out.println("response body: "+respBody);
-                        return respBody;
+                        return Optional.ofNullable(respBody);
                     } else {
-                        return response.body();
+                        return Optional.ofNullable(response.body());
                     }
-                } catch (Exception e) {
+                } catch (InterruptedException e){
+                    console().printStackTrace(e);
+                    Thread.currentThread().interrupt();
+                } catch (IOException | URISyntaxException | CodeGenerationException e) {
                     throw new RuntimeException(e);
                 }
+                return Optional.empty();
+
             };
             BiFunction<HttpClient, PublicKey, Optional<String>> getCode = (httpClient, key) -> {
                 try {
@@ -197,7 +204,7 @@ public interface AuthServerClient extends ConsoleOwner {
                     System.out.println("Cert generated: "+tempCert);
                 }
                 var os = new FileOutputStream(path.toFile());
-                os.write(tempCert.getBytes());
+                os.write(tempCert.orElseThrow().getBytes());
                 os.close();
             }
             if(pubKey.isEmpty()){
@@ -230,7 +237,7 @@ public interface AuthServerClient extends ConsoleOwner {
                     System.out.println("Temp cert requested");
                 }
                 var os = new FileOutputStream(path.toFile());
-                os.write(tempCert.getBytes());
+                os.write(tempCert.orElseThrow().getBytes());
                 os.close();
                 if(debugging){
                     System.out.println("Temp cert stored");
