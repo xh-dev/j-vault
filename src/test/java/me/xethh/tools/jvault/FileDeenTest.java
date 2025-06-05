@@ -15,7 +15,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("File decrypt and encrypt test")
-public class FileDeenTest implements ConsoleOwner {
+class FileDeenTest implements ConsoleOwner {
 
 
     @Test
