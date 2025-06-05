@@ -40,14 +40,14 @@ public class VaultTest {
         Supplier<String> password = () -> "abcd:dddd";
 
         @BeforeEach
-        public void before() {
+        void before() {
             prepareEmptyDirectoryAsHome(homeSupplier.get().toFile(), home -> {
             });
         }
 
         @Test
         @DisplayName("When run j-vault vault view")
-        public void testVaultView() {
+        void testVaultView() {
             prepareEmptyDirectoryAsHome(homeSupplier.get().toFile(), (home) -> {
                 var vaultKv = home.resolve("vault.kv");
                 borrowStdOut(os -> {

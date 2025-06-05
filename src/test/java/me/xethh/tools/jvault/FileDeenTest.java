@@ -20,7 +20,7 @@ public class FileDeenTest implements ConsoleOwner {
 
     @Test
     @DisplayName("When run j-vault file encrypt -f target/test-case/a.txt")
-    public void testGenDefault() {
+    void testGenDefault() {
         final var TOKEN = "abcd:sss";
         final var MESSAGE = "helloworld";
         var parent = new File("target/test-case/");
@@ -74,7 +74,7 @@ public class FileDeenTest implements ConsoleOwner {
 
     @Test
     @DisplayName("When run j-vault file encrypt -f target/test-case/a.txt --stdout")
-    public void testFileEncryptDecryptAsStdout() {
+    void testFileEncryptDecryptAsStdout() {
         PasswordGenTest.borrowStdOut(bos -> {
             final var TOKEN = "abcd:sss";
             final var MESSAGE = "helloworld";

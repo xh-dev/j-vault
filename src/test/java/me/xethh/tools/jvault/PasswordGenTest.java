@@ -51,7 +51,7 @@ public class PasswordGenTest {
 
     @Test
     @DisplayName("When run j-vault token gen")
-    public void testGenDefault() {
+    void testGenDefault() {
         borrowStdOut((os) -> {
             CommandLine cmd = new CommandLine(new Main());
             cmd.execute("token", "gen");
@@ -68,7 +68,7 @@ public class PasswordGenTest {
 
     @Test
     @DisplayName("When run j-vault token gen with default password")
-    public void testGen() {
+    void testGen() {
         borrowStdOut((os) -> {
             CommandLine cmd = new CommandLine(new Main());
             cmd.execute("token", "gen", "-p", "abcd");
