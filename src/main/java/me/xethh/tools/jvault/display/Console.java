@@ -48,9 +48,21 @@ public class Console {
 
     public void debug(String msg) {
         try {
-            error.write(msg.getBytes(StandardCharsets.UTF_8));
+            if(DEBUGGING){
+                error.write((msg+"\n").getBytes(StandardCharsets.UTF_8));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isDebugging() {
+        return DEBUGGING;
+    }
+
+    public void doIfDebug(Runnable runnable) {
+        if(DEBUGGING){
+            runnable.run();
         }
     }
 

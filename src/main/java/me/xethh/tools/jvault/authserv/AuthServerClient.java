@@ -8,6 +8,7 @@ import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
 import me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer;
+import me.xethh.tools.jvault.display.Console;
 import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 
@@ -33,7 +34,7 @@ import java.util.function.Function;
 public interface AuthServerClient extends ConsoleOwner {
     String authServer();
     default String getCode(String user){
-        final boolean debugging = Optional.ofNullable(System.getenv().get("DEV")).isPresent();
+        //final boolean debugging = Optional.ofNullable(System.getenv().get("DEV")).isPresent();
         try{
             var client = HttpClient.newHttpClient();
             var om = new ObjectMapper();
@@ -42,26 +43,24 @@ public interface AuthServerClient extends ConsoleOwner {
             var dir =System.getProperty("user.home");
             var path= Path.of(dir).resolve(".j-vault-c");
 
-            if(debugging){
-                System.out.println("User home: "+path);
-                System.out.println("Path of j-vault credential: "+ path);
-            }
+            console().debug("User home: "+path);
+            console().debug("Path of j-vault credential: "+ path);
 
             Function<HttpClient, Optional<PublicKey>> getPubKey = (httpClient)->{
                 HttpRequest req = null;
                 try {
                     final var url=authServer()+"/a";
-                    if(debugging){
-                        System.out.println("requesting for public key: "+url);
-                    }
+
+                    console().debug("requesting for public key: " + url);
+
                     req = HttpRequest.newBuilder(new URI(url))
                             .GET()
                             .build();
                     var response=httpClient.send(req, HttpResponse.BodyHandlers.ofString());
-                    if(debugging){
-                        System.out.println("response code: "+response.statusCode());
-                        System.out.println("response body: "+response.body());
-                    }
+
+                    console().debug("response code: "+response.statusCode());
+                    console().debug("response body: "+response.body());
+
                     var bs = Base64.getDecoder().decode(response.body());
                     return Optional.ofNullable(RsaEncryption.getPublicKey(bs));
                 } catch (URISyntaxException | IOException  e) {
@@ -96,22 +95,14 @@ public interface AuthServerClient extends ConsoleOwner {
                     req.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.now().atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
 
                     final var bodyToPush = om.writeValueAsString(req);
-                    if(debugging){
-                        System.out.println("body to push: "+bodyToPush);
-                    }
+                    console().debug("body to push: "+bodyToPush);
                     final var body=Base64.getEncoder().encodeToString(deClient.encryptToJsonContainer(key, bodyToPush).getBytes(StandardCharsets.UTF_8));
-                    if(debugging){
-                        System.out.println("body: "+body);
-                    }
+                    console().debug("body: "+body);
                     final var sender = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
-                    if(debugging){
-                        System.out.println("sender: "+sender);
-                    }
+                    console().debug("sender: "+sender);
 
                     final var url = authServer()+"/b";
-                    if(debugging){
-                        System.out.println("requesting for temp cert: "+url);
-                    }
+                    console().debug("requesting for temp cert: "+url);
 
                     var response = client.send(HttpRequest.newBuilder(new URI(url))
                                     .POST(HttpRequest.BodyPublishers.ofString(body))
@@ -119,7 +110,7 @@ public interface AuthServerClient extends ConsoleOwner {
                                     .build(),
                             HttpResponse.BodyHandlers.ofString());
                     ;
-                    if(debugging){
+                    if(console().isDebugging()){
                         System.out.println("response code: "+response.statusCode());
                         final var respBody=response.body();
                         System.out.println("response body: "+respBody);
@@ -139,35 +130,25 @@ public interface AuthServerClient extends ConsoleOwner {
             BiFunction<HttpClient, PublicKey, Optional<String>> getCode = (httpClient, key) -> {
                 try {
                     if(!path.toFile().exists()){
-                        if(debugging){
-                            System.out.println("j-vault credential not exists ");
-                        }
+                        console().debug("j-vault credential not exists ");
                         return Optional.empty();
                     }
 
                     var tempCert = new String(new FileInputStream(path.toFile()).readAllBytes(), StandardCharsets.UTF_8);
 
-                    if(debugging){
-                        System.out.println("temp cert: "+tempCert);
-                    }
+                    console().debug("temp cert: "+tempCert);
 
                     var sender = Base64.getEncoder().encodeToString(deClient.getPublicKey().getEncoded());
-                    if(debugging){
-                        System.out.println("sender: "+sender);
-                    }
+                    console().debug("sender: "+sender);
                     var body = Base64.getEncoder().encodeToString(deClient.encryptToJsonContainer(key, tempCert).getBytes(StandardCharsets.UTF_8));
-                    if(debugging){
-                        System.out.println("body: "+body);
-                    }
+                    console().debug("body: "+body);
                     var req = HttpRequest.newBuilder(new URI(authServer()+"/c"))
                             .POST(HttpRequest.BodyPublishers.ofString(body))
                             .header("sender", sender)
                             .build();
                     final var response = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
-                    if(debugging){
-                        System.out.println("response status: "+response.statusCode());
-                        System.out.println("response body: "+response.body());
-                    }
+                    console().debug("response status: "+response.statusCode());
+                    console().debug("response body: "+response.body());
                     if(response.statusCode()!=200){
                         return Optional.empty();
                     } else {
@@ -187,59 +168,39 @@ public interface AuthServerClient extends ConsoleOwner {
             // Logic starting
             Optional<PublicKey> pubKey=Optional.empty();
             if(!path.toFile().exists()){
-                if(debugging){
-                    System.out.println("Creating new key: "+path);
-                }
+                console().debug("Creating new key: "+path);
                 pubKey=  getPubKey.apply(client);
                 if(pubKey.isEmpty()){
                     System.out.println("Fail to obtain public key: "+path);
                 }
-                if(debugging){
-                    System.out.println("Public key obtained");
-                }
+                console().debug("Public key obtained");
                 var tempCert= getCert.apply(client, pubKey.orElseThrow());
-                if(debugging){
-                    System.out.println("Cert generated: "+tempCert);
-                }
+                console().debug("Cert generated: "+tempCert);
                 var os = new FileOutputStream(path.toFile());
                 os.write(tempCert.orElseThrow().getBytes());
                 os.close();
             }
             if(pubKey.isEmpty()){
-                if(debugging){
-                    System.out.println("Public key is not set yet ");
-                }
+                console().debug("Public key is not set yet ");
                 pubKey=  getPubKey.apply(client);
             }
 
             var code = getCode.apply(client, pubKey.orElseThrow());
             if(code.isEmpty()){
-                if(debugging){
-                    System.out.println("Code not ready, retry code obtaining process... ");
-                }
+                console().debug("Code not ready, retry code obtaining process... ");
                 if(path.toFile().exists()){
-                    if(debugging){
-                        System.out.println("File already exists ");
-                    }
+                    console().debug("File already exists ");
                     final var pathDeleteResult = path.toFile().delete();
-                    if(debugging){
-                        System.out.println("Try delete existing j-vault credential: "+pathDeleteResult);
-                    }
+                    console().debug("Try delete existing j-vault credential: "+pathDeleteResult);
                 }
 
-                if(debugging){
-                    System.out.println("Request for temp cert again");
-                }
+                console().debug("Request for temp cert again");
                 var tempCert= getCert.apply(client, pubKey.orElseThrow());
-                if(debugging){
-                    System.out.println("Temp cert requested");
-                }
+                console().debug("Temp cert requested");
                 var os = new FileOutputStream(path.toFile());
                 os.write(tempCert.orElseThrow().getBytes());
                 os.close();
-                if(debugging){
-                    System.out.println("Temp cert stored");
-                }
+                console().debug("Temp cert stored");
                 var c = getCode.apply(client, pubKey.orElseThrow());
                 if(c.isEmpty()){
                     throw new RuntimeException("Code obtaining failed");
@@ -247,9 +208,7 @@ public interface AuthServerClient extends ConsoleOwner {
                     return c.get();
                 }
             } else {
-                if(debugging){
-                    System.out.println("obtain code: "+code);
-                }
+                console().debug("obtain code: "+code);
                 return code.get();
             }
 
