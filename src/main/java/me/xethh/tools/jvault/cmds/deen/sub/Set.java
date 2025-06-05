@@ -17,7 +17,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
         description = "set a key value entry"
 )
 public class Set implements ConsoleOwner, Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
@@ -39,13 +39,13 @@ public class Set implements ConsoleOwner, Callable<Integer> {
         var deObj = deen.getDeenObj(path);
 
         try (var is = new FileInputStream(path.toFile());
-                var os = new FileOutputStream(tmpPath.toFile());
-                var isr = new BufferedReader(
-                        new InputStreamReader(
-                                deObj.decryptInputStream(is)
-                        )
-                );
-                var cos = deObj.encryptOutputStream(os);
+             var os = new FileOutputStream(tmpPath.toFile());
+             var isr = new BufferedReader(
+                     new InputStreamReader(
+                             deObj.decryptInputStream(is)
+                     )
+             );
+             var cos = deObj.encryptOutputStream(os);
         ) {
             SkipFirstLine(is);
             deen.writeHeader(os, deObj);
@@ -55,7 +55,7 @@ public class Set implements ConsoleOwner, Callable<Integer> {
             deen.loopAndFindKey(
                     isr,
                     key,
-                    (line,matcher,byPass) -> {
+                    (line, matcher, byPass) -> {
                         Log.debug(() -> "Matching key: ");
                         if (found.get()) {
                             Log.debug(() -> "Duplicate line found");
@@ -69,11 +69,12 @@ public class Set implements ConsoleOwner, Callable<Integer> {
                             Log.debug(() -> "Complete write value");
                         }
                     },
-                    (line, matcher,byPass) -> {
+                    (line, matcher, byPass) -> {
                         Log.debug(() -> "In-matching key: ");
                         cos.write(String.format("%s\n", line).getBytes());
                     },
-                    (line,byPass) -> {}
+                    (line, byPass) -> {
+                    }
             );
 
             if (!found.get()) { // The key not found in the whole vault, add to the end

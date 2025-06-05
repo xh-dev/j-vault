@@ -13,13 +13,7 @@ import java.util.concurrent.Callable;
 )
 public class Token implements ConsoleOwner, Callable<Integer> {
 
-    @Override
-    public Integer call() throws Exception {
-        CommandLine.usage(this, console().getDisplay());
-        return 0;
-    }
-
-    public static boolean validate(String line){
+    public static boolean validate(String line) {
         if (Objects.isNull(line) || line.isEmpty()) {
             throw new RuntimeException("credential is empty");
         }
@@ -28,6 +22,12 @@ public class Token implements ConsoleOwner, Callable<Integer> {
             throw new RuntimeException("credential not corrected formatted");
         }
         return true;
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        CommandLine.usage(this, console().getDisplay());
+        return 0;
     }
 
 }

@@ -40,14 +40,14 @@ public class PdfModification {
             doc2.save(path.resolve(fnTemp).toFile());
             doc2.close();
             final var delRes = path.resolve(fn).toFile().delete();
-            if(!delRes) {
+            if (!delRes) {
                 Console.getConsole().log("Failed to delete " + fnTemp);
             }
             if (path.resolve(fn).toFile().exists()) {
                 throw new RuntimeException("File not deleted!");
             }
             final var rnRes = path.resolve(fnTemp).toFile().renameTo(path.resolve(fn).toFile());
-            if(!rnRes) {
+            if (!rnRes) {
                 Console.getConsole().log("Failed to rename " + fnTemp);
             }
             if (path.resolve(fnTemp).toFile().exists()) {

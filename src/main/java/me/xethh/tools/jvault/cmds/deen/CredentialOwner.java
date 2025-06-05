@@ -9,17 +9,18 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
 
 public interface CredentialOwner {
-    String CRED_WIN_ENV="x-credential";
-    String CRED_NIX_ENV="x_credential";
+    String CRED_WIN_ENV = "x-credential";
+    String CRED_NIX_ENV = "x_credential";
+
     String getCredential();
 
-    default String finalCredential(){
+    default String finalCredential() {
         return Optional.of(getCredential())
                 .map(it -> {
                     if (it.isEmpty()) {
-                        if(System.getenv(CRED_WIN_ENV)!=null){
+                        if (System.getenv(CRED_WIN_ENV) != null) {
                             return System.getenv(CRED_WIN_ENV);
-                        } else if (System.getenv(CRED_NIX_ENV)!=null){
+                        } else if (System.getenv(CRED_NIX_ENV) != null) {
                             return System.getenv(CRED_NIX_ENV);
                         } else {
                             return null;

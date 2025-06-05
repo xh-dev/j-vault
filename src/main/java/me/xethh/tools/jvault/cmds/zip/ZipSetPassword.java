@@ -20,19 +20,19 @@ public class ZipSetPassword implements ConsoleOwner, Callable<Integer> {
     @CommandLine.ParentCommand
     private ZipManaging zipManaging;
 
-    @CommandLine.Option(names = { "-p", "--password" },required = true,  defaultValue = "", description = "if present, will also test if the password correct")
+    @CommandLine.Option(names = {"-p", "--password"}, required = true, defaultValue = "", description = "if present, will also test if the password correct")
     private String password;
 
     @Override
     public Integer call() throws Exception {
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             console().debug("password is empty");
         } else {
             final var zipFile = zipManaging.getZipFile();
-            final var newZipFileName = Path.of(zipManaging.getFile().toString()+".tmp");
+            final var newZipFileName = Path.of(zipManaging.getFile().toString() + ".tmp");
             final var newZipFile = new ZipFile(newZipFileName.toFile(), password.toCharArray());
 
-            final var getZipParameter = (Supplier<ZipParameters>) ()->{
+            final var getZipParameter = (Supplier<ZipParameters>) () -> {
                 ZipParameters newZipParameters = new ZipParameters();
                 newZipParameters.setEncryptFiles(true);
                 newZipParameters.setEncryptionMethod(EncryptionMethod.AES);
@@ -40,7 +40,7 @@ public class ZipSetPassword implements ConsoleOwner, Callable<Integer> {
                 return newZipParameters;
             };
 
-            for(var zippedFile : zipFile.getFileHeaders()){
+            for (var zippedFile : zipFile.getFileHeaders()) {
                 final var is = zipFile.getInputStream(zippedFile);
                 final var parameters = getZipParameter.get();
                 parameters.setFileNameInZip(zippedFile.getFileName());
@@ -53,8 +53,8 @@ public class ZipSetPassword implements ConsoleOwner, Callable<Integer> {
             if (!res) {
                 console().log("Failed to delete zip file");
             }
-            res =newZipFileName.toFile().renameTo(zipManaging.getFile());
-            if(!res){
+            res = newZipFileName.toFile().renameTo(zipManaging.getFile());
+            if (!res) {
                 console().log("Failed to rename zip file");
             }
             console().log(String.format("file [%s] is now zip with password.", zipManaging.getFile().getName()));

@@ -26,28 +26,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 )
 public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
 
-    public interface Consumer2{
-        void handle(String line, Common.KVExtractor.KV kv, AtomicBoolean byPass) throws Exception;
-    }
-    public interface Consumer3{
-        void handle(String line, AtomicBoolean byPass) throws Exception;
-    }
-
-    @CommandLine.Option(names = {"-c","--credential"}, defaultValue = "", description = "The credential to use, if missing, would try find env variable `x-credential` or `x_credential`")
+    @CommandLine.Option(names = {"-c", "--credential"}, defaultValue = "", description = "The credential to use, if missing, would try find env variable `x-credential` or `x_credential`")
     private String credential;
-
     @CommandLine.Option(names = {"--auth-server"}, defaultValue = "", description = "The authentication server`")
     private String authServer;
-
     @CommandLine.Option(names = {"--user"}, defaultValue = "", description = "The user`")
-    private String user="";
+    private String user = "";
 
     public String getCredential() {
-        if(!authServer.equalsIgnoreCase("")) {
-            if(authServer.endsWith("/")){
-                authServer = authServer.substring(0,authServer.length()-1);
+        if (!authServer.equalsIgnoreCase("")) {
+            if (authServer.endsWith("/")) {
+                authServer = authServer.substring(0, authServer.length() - 1);
             }
-            var as = new AuthServerClient(){
+            var as = new AuthServerClient() {
                 @Override
                 public String authServer() {
                     return authServer;
@@ -55,8 +46,8 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
             };
 
             user = Optional.ofNullable(user)
-                    .flatMap(t-> t.equalsIgnoreCase("")?Optional.empty():Optional.of(t))
-                    .orElseThrow(()->new RuntimeException("user is entered"));
+                    .flatMap(t -> t.equalsIgnoreCase("") ? Optional.empty() : Optional.of(t))
+                    .orElseThrow(() -> new RuntimeException("user is entered"));
             return as.getCode(user);
         } else {
             return credential;
@@ -73,7 +64,8 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
         os.write(String.format("%s\n", deObj.fileHeader).getBytes());
         os.flush();
     }
-    public void switchTempFile(Path path, Path tmpPath){
+
+    public void switchTempFile(Path path, Path tmpPath) {
         var delRs = path.toFile().delete();
         Log.debug(() -> "delete file result: " + delRs);
         var renameRs = tmpPath.toFile().renameTo(path.toFile());
@@ -99,18 +91,26 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
                 Log.debug(() -> "Match name: " + name);
                 if (name.equals(key)) {
                     matchKeyLogic.handle(line, kv, byPass);
-                    if(byPass.get())
+                    if (byPass.get())
                         break;
                 } else {
-                    inMatchKeyLogic.handle(line, kv,byPass);
-                    if(byPass.get())
+                    inMatchKeyLogic.handle(line, kv, byPass);
+                    if (byPass.get())
                         break;
                 }
             } else {
-                notAcceptedLineLogic.handle(line,byPass);
-                if(byPass.get())
+                notAcceptedLineLogic.handle(line, byPass);
+                if (byPass.get())
                     break;
             }
         }
+    }
+
+    public interface Consumer2 {
+        void handle(String line, Common.KVExtractor.KV kv, AtomicBoolean byPass) throws Exception;
+    }
+
+    public interface Consumer3 {
+        void handle(String line, AtomicBoolean byPass) throws Exception;
     }
 }

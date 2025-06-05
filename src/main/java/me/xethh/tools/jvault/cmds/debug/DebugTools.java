@@ -8,15 +8,21 @@ import java.util.concurrent.Callable;
 
 
 @CommandLine.Command(
-        name="debug-tools",
+        name = "debug-tools",
         subcommands = {
                 DebugTools.PrintEnvs.class,
                 DebugTools.PrintProps.class,
         }
 )
 public class DebugTools implements ConsoleOwner, Callable<Integer> {
+    @Override
+    public Integer call() throws Exception {
+        CommandLine.usage(this, Console.getConsole().getDisplay());
+        return 0;
+    }
+
     @CommandLine.Command(
-            name="print-props",
+            name = "print-props",
             description = "Print java properties in the running jvm",
             subcommands = {
             }
@@ -31,8 +37,9 @@ public class DebugTools implements ConsoleOwner, Callable<Integer> {
             return 0;
         }
     }
+
     @CommandLine.Command(
-            name="print-env",
+            name = "print-env",
             description = "Print environment variables",
             subcommands = {
             }
@@ -46,10 +53,5 @@ public class DebugTools implements ConsoleOwner, Callable<Integer> {
             Console.getConsole().log("==================== Debug tools - Print all env [Done]");
             return 0;
         }
-    }
-    @Override
-    public Integer call() throws Exception {
-        CommandLine.usage(this, Console.getConsole().getDisplay());
-        return 0;
     }
 }

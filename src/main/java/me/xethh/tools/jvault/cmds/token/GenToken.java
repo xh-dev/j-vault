@@ -16,10 +16,10 @@ import java.util.concurrent.Callable;
 
 )
 public class GenToken implements ConsoleOwner, Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 
-    @CommandLine.Option(names = {"-p","--password"}, description = "`password` to generate", defaultValue = "")
+    @CommandLine.Option(names = {"-p", "--password"}, description = "`password` to generate", defaultValue = "")
     private String password;
 
     @CommandLine.Option(names = {"--out-bash-env"}, required = false, description = "Output as bash export env", defaultValue = "false")
@@ -36,24 +36,24 @@ public class GenToken implements ConsoleOwner, Callable<Integer> {
 
     @Override
     public Integer call() {
-        if(password.isBlank()) {
+        if (password.isBlank()) {
             var rand = new SecureRandom();
-            byte[] bs= new byte[16];
+            byte[] bs = new byte[16];
             rand.nextBytes(bs);
             password = Base64.getEncoder().encodeToString(bs);
         }
         String fPass = DeenObj.getFullPassword(password);
-        if(outBash) {
+        if (outBash) {
             console().log(String.format("export x_credential=%s%n", fPass));
         } else if (outCmd) {
             console().log(String.format("set x-credential=%s%n", fPass));
         } else {
-            if(asKvPass){
-                try(
+            if (asKvPass) {
+                try (
                         FileOutputStream os = new FileOutputStream(kvFile);
-                        ) {
+                ) {
                     os.write(fPass.getBytes());
-                } catch (Throwable throwable){
+                } catch (Throwable throwable) {
                     console().printStackTrace(throwable);
                 }
             }

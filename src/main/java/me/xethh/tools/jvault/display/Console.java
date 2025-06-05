@@ -6,7 +6,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class Console {
+    public final static boolean DEBUGGING = Optional.ofNullable(System.getenv("DEV")).isPresent();
     private static Console instance;
+    private final PrintStream display;
+    private final PrintStream error;
+    private Console(PrintStream display, PrintStream error) {
+        this.display = display;
+        this.error = error;
+    }
 
     public static Console getConsole() {
         if (instance == null) {
@@ -15,12 +22,9 @@ public class Console {
         return new Console(System.out, System.err);
     }
 
-    public static void restConsole(){
+    public static void restConsole() {
         instance = null;
     }
-
-    private final PrintStream display;
-    private final PrintStream error;
 
     public PrintStream getDisplay() {
         return display;
@@ -30,17 +34,9 @@ public class Console {
         return error;
     }
 
-    private Console(PrintStream display, PrintStream error) {
-        this.display = display;
-        this.error = error;
-    }
-
-    public final static boolean DEBUGGING = Optional.ofNullable(System.getenv("DEV")).isPresent();
-
-
     public void log(String msg) {
         try {
-            display.write((msg+"\n").getBytes(StandardCharsets.UTF_8));
+            display.write((msg + "\n").getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,8 +44,8 @@ public class Console {
 
     public void debug(String msg) {
         try {
-            if(DEBUGGING){
-                error.write((msg+"\n").getBytes(StandardCharsets.UTF_8));
+            if (DEBUGGING) {
+                error.write((msg + "\n").getBytes(StandardCharsets.UTF_8));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -61,7 +57,7 @@ public class Console {
     }
 
     public void doIfDebug(Runnable runnable) {
-        if(DEBUGGING){
+        if (DEBUGGING) {
             runnable.run();
         }
     }

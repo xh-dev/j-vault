@@ -18,10 +18,10 @@ import java.util.Base64;
 
 public class DeenObj {
     public static final int DEFAULT_SALT1_LENGTH = 4;
+    public final static String ALGO = "AES/CBC/PKCS5Padding";
     private static boolean DEBUG = false;
     public final SecretKey key;
     public final IvParameterSpec iv;
-
     public final String fileHeader;
 
     public DeenObj(SecretKey key, IvParameterSpec iv, String fileHeader) {
@@ -30,7 +30,47 @@ public class DeenObj {
         this.fileHeader = fileHeader;
     }
 
-    public final static String ALGO = "AES/CBC/PKCS5Padding";
+    public static DeenObj fromLine(String credentialLine, String vaultStr) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        Token.validate(credentialLine);
+        Token.validate(vaultStr);
+
+        var de = Base64.getDecoder();
+
+        var creds = credentialLine.split(":");
+        var secret = creds[0];
+
+        var vaultS = vaultStr.split(":");
+        var iv = new IvParameterSpec(de.decode(vaultS[1]));
+
+        var salt = (creds[1] + vaultS[0]).getBytes();
+
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(secret.toCharArray(), salt, 65536, 256);
+        SecretKey key = new SecretKeySpec(factory.generateSecret(spec)
+                .getEncoded(), "AES");
+
+        return new DeenObj(key, iv, vaultStr);
+
+    }
+
+    public static String genSaltWithIV() {
+        var rand = new SecureRandom();
+        byte[] iv = new byte[16];
+        rand.nextBytes(iv);
+        byte[] salt = new byte[32];
+        rand.nextBytes(salt);
+        var en = Base64.getEncoder();
+        return en.encodeToString(salt) +
+                ":" +
+                en.encodeToString(iv);
+    }
+
+    public static String getFullPassword(String rawPassword) {
+        var rand = new SecureRandom();
+        byte[] salt = new byte[DEFAULT_SALT1_LENGTH];
+        rand.nextBytes(salt);
+        return String.format("%s:%s", rawPassword, Base64.getEncoder().encodeToString(salt));
+    }
 
     public Cipher decryptCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         var cipher = Cipher.getInstance(ALGO);
@@ -74,47 +114,5 @@ public class DeenObj {
         } else {
             return new CipherOutputStream(os, encryptCipher());
         }
-    }
-
-    public static DeenObj fromLine(String credentialLine, String vaultStr) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        Token.validate(credentialLine);
-        Token.validate(vaultStr);
-
-        var de = Base64.getDecoder();
-
-        var creds = credentialLine.split(":");
-        var secret = creds[0];
-
-        var vaultS = vaultStr.split(":");
-        var iv = new IvParameterSpec(de.decode(vaultS[1]));
-
-        var salt = (creds[1] + vaultS[0]).getBytes();
-
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(secret.toCharArray(), salt, 65536, 256);
-        SecretKey key = new SecretKeySpec(factory.generateSecret(spec)
-                .getEncoded(), "AES");
-
-        return new DeenObj(key, iv, vaultStr);
-
-    }
-
-    public static String genSaltWithIV() {
-        var rand = new SecureRandom();
-        byte[] iv = new byte[16];
-        rand.nextBytes(iv);
-        byte[] salt = new byte[32];
-        rand.nextBytes(salt);
-        var en = Base64.getEncoder();
-        return en.encodeToString(salt) +
-                ":" +
-                en.encodeToString(iv);
-    }
-
-    public static String getFullPassword(String rawPassword) {
-        var rand = new SecureRandom();
-        byte[] salt = new byte[DEFAULT_SALT1_LENGTH];
-        rand.nextBytes(salt);
-        return String.format("%s:%s", rawPassword, Base64.getEncoder().encodeToString(salt));
     }
 }

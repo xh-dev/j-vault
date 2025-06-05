@@ -25,23 +25,29 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
     final static boolean deleteOnExit = Optional.ofNullable(System.getenv("DELETE_ON_EXIT")).isPresent();
     final static boolean testLibExists = Optional.ofNullable(System.getenv("TEST_LIB_EXISTS")).isPresent();
 
-    static void log(String msg) {
-        Console.getConsole().debug(msg);
-    }
-
     static {
-        if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             log("running on windows");
         } else {
             log("not running on Windows");
             final var tmpDir = System.getProperty("java.io.tmpdir");
-            final var tmpJVaultFolder  =Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
+            final var tmpJVaultFolder = Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
             System.setProperty("java.library.path", tmpJVaultFolder.toString());
         }
         loadNativeLib();
-        log("java.library.path: "+System.getProperty("java.library.path"));
+        log("java.library.path: " + System.getProperty("java.library.path"));
     }
 
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+    private boolean helpRequested;
+    @CommandLine.Option(names = {"-f", "--file"}, required = true, description = "file to use")
+    private File file;
+    @CommandLine.Option(names = {"-p", "--password"}, description = "password to unlock the zip file in case encrypted")
+    private Optional<String> password;
+
+    static void log(String msg) {
+        Console.getConsole().debug(msg);
+    }
 
     public static boolean libExists(String libName) {
         log(String.format("Testing lib: %s for existence", libName));
@@ -55,11 +61,11 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
         }
     }
 
-    public static boolean setFileHidden(Path path){
+    public static boolean setFileHidden(Path path) {
         try {
             final var view = Files.getFileAttributeView(path, DosFileAttributeView.class);
             view.setHidden(true);
-            if(Files.isHidden(path)) {
+            if (Files.isHidden(path)) {
                 log("File set hidden now");
                 return true;
             } else {
@@ -71,18 +77,18 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
         }
     }
 
-    static void loadNativeLib(){
+    static void loadNativeLib() {
         log("Running under graalvm");
-        if(System.getProperty("org.graalvm.nativeimage.imagecode") != null) {
+        if (System.getProperty("org.graalvm.nativeimage.imagecode") != null) {
             try (
                     var res = PdfManaging.class.getClassLoader().getResourceAsStream("native.txt");
             ) {
-                if(res == null){
+                if (res == null) {
                     throw new RuntimeException("native.txt not found");
                 }
                 final var nativeTxt = new String(res.readAllBytes(), StandardCharsets.UTF_8);
                 final var tmpDir = System.getProperty("java.io.tmpdir");
-                final var tmpJVaultFolder  = System.getProperty("os.name").toLowerCase().contains("windows")?Path.of(".").toAbsolutePath():Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
+                final var tmpJVaultFolder = System.getProperty("os.name").toLowerCase().contains("windows") ? Path.of(".").toAbsolutePath() : Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
                 if (!tmpJVaultFolder.toFile().mkdirs()) {
                     Console.getConsole().log("failed to create tmp dir");
                 }
@@ -131,15 +137,6 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
             log("Not running under native-image");
         }
     }
-
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
-    private boolean helpRequested;
-
-    @CommandLine.Option(names = { "-f", "--file" }, required = true, description = "file to use")
-    private File file;
-
-    @CommandLine.Option(names = { "-p", "--password" }, description = "password to unlock the zip file in case encrypted")
-    private Optional<String> password;
 
     @Override
     public Integer call() throws Exception {

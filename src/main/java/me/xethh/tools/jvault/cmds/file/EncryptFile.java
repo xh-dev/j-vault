@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
         description = "Encrypt a specified file with j-vault encryption format"
 )
 public class EncryptFile implements Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.ParentCommand
     private FileCommand command;
@@ -28,7 +28,7 @@ public class EncryptFile implements Callable<Integer> {
     private boolean keep;
 
     @CommandLine.Option(
-            names = {"-f","--in-file"},
+            names = {"-f", "--in-file"},
             description = "file to be decrypt or encrypt",
             required = true
     )
@@ -39,13 +39,14 @@ public class EncryptFile implements Callable<Integer> {
             description = "output file"
     )
     private File outFile = null;
+
     @Override
     public Integer call() throws Exception {
         var creds = command.finalCredential();
         var deObj = DeenObj.fromLine(creds, DeenObj.genSaltWithIV());
         outFile = Optional.ofNullable(outFile)
-                .orElseGet(()->new File(infile.toPath().toAbsolutePath().getParent().toFile(), infile.getName()+".crypt"))
-                ;
+                .orElseGet(() -> new File(infile.toPath().toAbsolutePath().getParent().toFile(), infile.getName() + ".crypt"))
+        ;
         try (
                 var is = deObj.encryptInputStream(new FileInputStream(infile));
                 var os = new FileOutputStream(outFile)
@@ -55,9 +56,9 @@ public class EncryptFile implements Callable<Integer> {
             is.transferTo(os);
         }
 
-        if(!keep){
+        if (!keep) {
             boolean rs = infile.delete();
-            Log.debug(()->"delete file result: " + rs);
+            Log.debug(() -> "delete file result: " + rs);
         }
         return 0;
     }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Common {
-    private Common(){
+    private Common() {
         throw new IllegalStateException("Not expected to be instantiated");
     }
 
@@ -35,7 +35,29 @@ public class Common {
         }
     }
 
+    public static void SkipFirstLine(InputStream is) throws IOException {
+        var first = Stream.generate(() -> {
+            try {
+                return is.read();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).dropWhile(it -> !it.equals((int) '\n')).findFirst();
+        Log.debug(() -> "Skipped the first line: " + first.isPresent());
+    }
+
     public static class KVExtractor {
+        final private static Pattern PATTERN = Pattern.compile("(^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\._-]*)=(.*)$");
+
+        public static KV extract(String line) {
+            final var matcher = PATTERN.matcher(line);
+            if (!matcher.matches()) {
+                return new KV("", "", false);
+            } else {
+                return new KV(matcher.group(1), matcher.group(2), true);
+            }
+        }
+
         public static class KV {
             private final String key;
             private final String value;
@@ -59,29 +81,7 @@ public class Common {
                 return match;
             }
         }
-        final private static Pattern PATTERN = Pattern.compile("(^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\._-]*)=(.*)$");
-
-        public static KV extract(String line){
-            final var matcher = PATTERN.matcher(line);
-            if(!matcher.matches()){
-                return new KV("","", false);
-            } else {
-                return new KV(matcher.group(1), matcher.group(2), true);
-            }
-        }
 
 
-
-    }
-
-    public static void SkipFirstLine(InputStream is) throws IOException {
-        var first = Stream.generate(()->{
-            try {
-                return is.read();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).dropWhile(it->!it.equals((int)'\n')).findFirst();
-        Log.debug(()->"Skipped the first line: "+first.isPresent());
     }
 }

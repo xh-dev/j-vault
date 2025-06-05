@@ -16,7 +16,7 @@ public class PdfDecrypt implements ConsoleOwner, Callable<Integer> {
     @CommandLine.ParentCommand
     private PdfManaging pdfManaging;
 
-    @CommandLine.Option(names = { "-p", "--password" },required = true,  defaultValue = "", description = "if present, will also test if the password correct")
+    @CommandLine.Option(names = {"-p", "--password"}, required = true, defaultValue = "", description = "if present, will also test if the password correct")
     private String password;
 
     @Override

@@ -16,7 +16,7 @@ import java.util.stream.Stream;
         description = "Decrypt a specified file with j-vault encryption format"
 )
 public class DecryptFile implements ConsoleOwner, Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.ParentCommand
     private FileCommand command;
@@ -34,7 +34,7 @@ public class DecryptFile implements ConsoleOwner, Callable<Integer> {
     private boolean toOs;
 
     @CommandLine.Option(
-            names = {"-f","--in-file"},
+            names = {"-f", "--in-file"},
             description = "file to be decrypt or encrypt",
             required = true
     )
@@ -50,17 +50,17 @@ public class DecryptFile implements ConsoleOwner, Callable<Integer> {
         var creds = command.finalCredential();
 
         try (var is = new FileInputStream(inFile)) {
-            var bArray = Stream.generate(()->{
-                try{
+            var bArray = Stream.generate(() -> {
+                try {
                     return is.read();
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     throw new RuntimeException(ex.getMessage(), ex);
                 }
-            }).takeWhile(it-> '\n' != it).collect(Collectors.toList());
+            }).takeWhile(it -> '\n' != it).collect(Collectors.toList());
             byte[] ba = new byte[bArray.size()];
             IntStream.range(0, bArray.size())
-                    .forEach(i->{
-                        ba[i]=bArray.get(i).byteValue();
+                    .forEach(i -> {
+                        ba[i] = bArray.get(i).byteValue();
                     });
             var deObj = DeenObj.fromLine(creds, new String(ba));
             if (toOs) {
@@ -71,24 +71,24 @@ public class DecryptFile implements ConsoleOwner, Callable<Integer> {
                     }
                 }
             } else {
-                if(outFile==null){
-                    if(inFile.toString().endsWith(".crypt")){
-                        outFile = new File(inFile.toPath().toAbsolutePath().getParent().toFile(), inFile.getName().substring(0, inFile.getName().length()-".crypt".length()));
+                if (outFile == null) {
+                    if (inFile.toString().endsWith(".crypt")) {
+                        outFile = new File(inFile.toPath().toAbsolutePath().getParent().toFile(), inFile.getName().substring(0, inFile.getName().length() - ".crypt".length()));
                     } else {
                         throw new RuntimeException("Please specify output file");
                     }
                 }
-                try( var os = new FileOutputStream(outFile) ){
+                try (var os = new FileOutputStream(outFile)) {
                     deObj.decryptInputStream(is).transferTo(os);
                 }
-                if(!keep){
-                    try{
+                if (!keep) {
+                    try {
                         is.close();
-                    } catch (Exception ex){
+                    } catch (Exception ex) {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                     boolean rs = inFile.delete();
-                    Log.debug(()->"delete file result: " + rs);
+                    Log.debug(() -> "delete file result: " + rs);
                 }
             }
         }

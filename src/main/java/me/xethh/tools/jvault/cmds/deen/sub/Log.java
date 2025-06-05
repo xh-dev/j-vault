@@ -11,13 +11,13 @@ public class Log {
     public static final PrintStream DEBUG_LOG = System.err;
     public static final PrintStream CONSOLE = System.out;
 
-    public static void debug(Supplier<String> logMsg){
-        if(DEBUG){
+    public static void debug(Supplier<String> logMsg) {
+        if (DEBUG) {
             DEBUG_LOG.println(logMsg.get());
         }
     }
 
-    public static void msg(Supplier<String> logMsg){
+    public static void msg(Supplier<String> logMsg) {
         CONSOLE.println(logMsg.get());
     }
 }

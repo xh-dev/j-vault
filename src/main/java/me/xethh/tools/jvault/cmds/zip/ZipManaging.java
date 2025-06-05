@@ -14,13 +14,13 @@ import java.util.concurrent.Callable;
         description = "handle zip file"
 )
 public class ZipManaging implements ConsoleOwner, Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 
-    @CommandLine.Option(names = { "-f", "--file" }, required = true, description = "file to use")
+    @CommandLine.Option(names = {"-f", "--file"}, required = true, description = "file to use")
     private File file;
 
-    @CommandLine.Option(names = { "-p", "--password" }, description = "password to unlock the zip file in case encrypted")
+    @CommandLine.Option(names = {"-p", "--password"}, description = "password to unlock the zip file in case encrypted")
     private Optional<String> password;
 
     @Override
@@ -37,8 +37,8 @@ public class ZipManaging implements ConsoleOwner, Callable<Integer> {
     }
 
     public ZipFile getZipFile() {
-        if(password.isPresent()) {
-            return new ZipFile(getFile(),password.get().toCharArray());
+        if (password.isPresent()) {
+            return new ZipFile(getFile(), password.get().toCharArray());
         } else {
             return new ZipFile(getFile());
         }

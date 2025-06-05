@@ -21,7 +21,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
         description = "find the vault content by key"
 )
 public class Find implements ConsoleOwner, Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
@@ -36,7 +36,6 @@ public class Find implements ConsoleOwner, Callable<Integer> {
     private boolean outCmd;
 
 
-
     @CommandLine.ParentCommand
     private Vault deen;
 
@@ -46,11 +45,11 @@ public class Find implements ConsoleOwner, Callable<Integer> {
         var deObj = deen.getDeenObj(path);
 
         try (var is = new FileInputStream(path.toFile());
-                var isr = new BufferedReader(
-                        new InputStreamReader(
-                                deObj.decryptInputStream(is)
-                        )
-                )
+             var isr = new BufferedReader(
+                     new InputStreamReader(
+                             deObj.decryptInputStream(is)
+                     )
+             )
         ) {
             SkipFirstLine(is);
 
@@ -64,16 +63,17 @@ public class Find implements ConsoleOwner, Callable<Integer> {
                     },
                     (line1, matcher, byPass) -> {
                     },
-                    (line1,byPass) -> {}
+                    (line1, byPass) -> {
+                    }
             );
 
-            foundValue.get().ifPresent(it->{
-                final var v=URLDecoder.decode(it, StandardCharsets.UTF_8);
-                if(outBash){
+            foundValue.get().ifPresent(it -> {
+                final var v = URLDecoder.decode(it, StandardCharsets.UTF_8);
+                if (outBash) {
                     console().log(String.format("export %s=%s", key.replace("-", "_"), v));
-                } else if(outCmd){
+                } else if (outCmd) {
                     console().log(String.format("set %s=%s", key, v));
-                } else{
+                } else {
                     console().log(v);
                 }
             });

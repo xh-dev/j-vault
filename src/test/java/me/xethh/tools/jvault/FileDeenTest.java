@@ -24,14 +24,14 @@ public class FileDeenTest implements ConsoleOwner {
         final var TOKEN = "abcd:sss";
         final var MESSAGE = "helloworld";
         var parent = new File("target/test-case/");
-        if(!parent.mkdirs()){
+        if (!parent.mkdirs()) {
             console().log("Folder creation failed");
         }
 
         assertTrue(parent.exists(), "parent folder should exists");
         for (var x : Objects.requireNonNull(parent.listFiles())) {
             final var res = x.delete();
-            if(!res){
+            if (!res) {
                 console().log(String.format("File[%s] deleted fail", x.toString()));
             }
 
@@ -42,7 +42,7 @@ public class FileDeenTest implements ConsoleOwner {
         var fo = new File(parent, "a.txt.crypt");
         if (f.exists()) {
             var res = f.delete();
-            if(!res){
+            if (!res) {
                 console().log(String.format("File[%s] deleted fail", f.toString()));
             }
         }
@@ -79,13 +79,13 @@ public class FileDeenTest implements ConsoleOwner {
             final var TOKEN = "abcd:sss";
             final var MESSAGE = "helloworld";
             var parent = new File("target/test-case/");
-            if(parent.mkdirs()){
+            if (parent.mkdirs()) {
                 console().log("Folder creation failed");
             }
 
             assertTrue(parent.exists(), "parent folder should exists");
             for (var x : Objects.requireNonNull(parent.listFiles())) {
-                if(!x.delete()){
+                if (!x.delete()) {
                     console().log(String.format("File[%s] deleted fail", x.toString()));
                 }
             }
@@ -95,7 +95,7 @@ public class FileDeenTest implements ConsoleOwner {
             var fo = new File(parent, "a.txt.crypt");
             if (f.exists()) {
                 var res = f.delete();
-                if(!res){
+                if (!res) {
                     console().log(String.format("File[%s] deleted fail", f.toString()));
                 }
             }

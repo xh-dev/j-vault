@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
         name = "code-gen",
         description = "authentication server secret gen"
 )
-public class AuthServerSecretGen implements ConsoleOwner,Callable<Integer> {
+public class AuthServerSecretGen implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 
@@ -42,16 +42,16 @@ public class AuthServerSecretGen implements ConsoleOwner,Callable<Integer> {
                 .build();
 
         console().log("App: " + issueTo);
-        console().log("Name:  " +name);
-        console().log("Secret :  "+gen);
-        console().log("Digit:   "+digit);
-        console().log("Algo:  " +algo.getFriendlyName());
-        console().log("period :  "+timePeriod);
+        console().log("Name:  " + name);
+        console().log("Secret :  " + gen);
+        console().log("Digit:   " + digit);
+        console().log("Algo:  " + algo.getFriendlyName());
+        console().log("period :  " + timePeriod);
         console().log(String.format("https://totp.danhersam.com/?digits=%d&period=%d&algorithm=%s&key=%s%n", digit, timePeriod, algo.getFriendlyName(), gen));
 
         console().log("\n\n==============\n Generated QRCode.png");
         ZxingPngQrGenerator qrGenerator = new ZxingPngQrGenerator();
-        try(FileOutputStream fos = new FileOutputStream("qr.png")) {
+        try (FileOutputStream fos = new FileOutputStream("qr.png")) {
             fos.write(qrGenerator.generate(data));
         }
         return 0;

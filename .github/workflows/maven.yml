@@ -20,20 +20,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    - name: gen version
-      run: python get_version.py > src/main/resources/version.txt
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: gen version
+        run: python get_version.py > src/main/resources/version.txt
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     # - name: Update dependency graph

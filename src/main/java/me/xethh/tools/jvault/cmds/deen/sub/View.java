@@ -19,7 +19,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
         description = "view the vault content"
 )
 public class View implements ConsoleOwner, Callable<Integer> {
-    @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
@@ -54,11 +54,11 @@ public class View implements ConsoleOwner, Callable<Integer> {
                 String line;
                 while ((line = isr.readLine()) != null) {
                     final var kv = Common.KVExtractor.extract(URLDecoder.decode(line, StandardCharsets.UTF_8));
-                    if(outBash){
+                    if (outBash) {
                         console().log(String.format("export %s=\"%s\"%n", kv.getKey().replace("-", "_"), kv.getValue()));
-                    } else if(outCmd){
+                    } else if (outCmd) {
                         console().log(String.format("set %s=%s%n", kv.getKey(), kv.getValue()));
-                    } else if(outRaw){
+                    } else if (outRaw) {
                         console().log(line);
                     } else {
                         console().log(String.format("%s=%s%n", kv.getKey(), kv.getValue()));

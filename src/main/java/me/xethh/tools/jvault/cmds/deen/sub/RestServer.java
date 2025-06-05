@@ -28,14 +28,12 @@ import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
         description = "the restful access to the j-vault"
 )
 public class RestServer implements ConsoleOwner, Callable<Integer> {
+    final static String DefaultPort = "7910";
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
-
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
-
-    final static String DefaultPort = "7910";
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = DefaultPort, description = "the port to be used for setup restful server, default as `"+DefaultPort+"`", required = true)
+    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = DefaultPort, description = "the port to be used for setup restful server, default as `" + DefaultPort + "`", required = true)
     private String port;
 
     @CommandLine.Option(names = {"--harden"}, description = "If defined, a secure token will be generate.")
@@ -100,7 +98,7 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
             final var portInt = Integer.parseInt(port);
             final var om = new ObjectMapper();
 
-            var tokenGen = genToken ? UUID.randomUUID().toString():null;
+            var tokenGen = genToken ? UUID.randomUUID().toString() : null;
             if (tokenGen == null && lessSecure) {
                 tokenGen = DigestUtils.md5Hex(String.format("http://0.0.0.0:%s", port));
                 genToken = true;
@@ -110,26 +108,26 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
 
             console().log("Token: \n" + tokenGen + "\n---\n\n");
 
-            final var tokenProvider = (Function<HttpExchange,Optional<String>>)(exchange)->Arrays.stream(exchange.getRequestURI().getRawQuery().split("&"))
-                    .filter(x->x.split("=").length>=2)
-                    .map(x->x.split("="))
+            final var tokenProvider = (Function<HttpExchange, Optional<String>>) (exchange) -> Arrays.stream(exchange.getRequestURI().getRawQuery().split("&"))
+                    .filter(x -> x.split("=").length >= 2)
+                    .map(x -> x.split("="))
                     .filter(x -> x[0].equalsIgnoreCase("token"))
-                    .map(x->x[1])
+                    .map(x -> x[1])
                     .findFirst();
 
             String finalTokenGen = tokenGen;
             assert finalTokenGen != null; // officially guaranteed in the coding level
 
             server.createContext("/keys", exchange -> {
-                if(exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                    if(genToken){
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    if (genToken) {
                         var param = tokenProvider.apply(exchange);
-                        if(param.isEmpty()){
+                        if (param.isEmpty()) {
                             exchange.sendResponseHeaders(403, 0);
                             var os = exchange.getResponseBody();
                             os.close();
                         } else {
-                            if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                            if (!finalTokenGen.equalsIgnoreCase(param.get())) {
                                 exchange.sendResponseHeaders(403, 0);
                                 var os = exchange.getResponseBody();
                                 os.close();
@@ -149,14 +147,14 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                 }
             });
             server.createContext("/kv", exchange -> {
-                if(exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                    if(genToken){
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    if (genToken) {
                         var param = tokenProvider.apply(exchange);
-                        if(param.isEmpty()){
+                        if (param.isEmpty()) {
                             exchange.sendResponseHeaders(403, 0);
                             var os = exchange.getResponseBody();
                             os.close();
-                        } else if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                        } else if (!finalTokenGen.equalsIgnoreCase(param.get())) {
                             exchange.sendResponseHeaders(403, 0);
                             var os = exchange.getResponseBody();
                             os.close();
@@ -165,9 +163,9 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                     final var p = exchange.getRequestURI().getPath();
                     final var pattern = Pattern.compile("/kv/([\\w+][\\w+-_0-9]*)");
                     final var matcher = pattern.matcher(p);
-                    if(matcher.matches()) {
-                        final var k=matcher.group(1);
-                        if(map.containsKey(k)){
+                    if (matcher.matches()) {
+                        final var k = matcher.group(1);
+                        if (map.containsKey(k)) {
                             exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                             final var v = map.get(k);
                             final var body = exchange.getResponseBody();
@@ -191,14 +189,14 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                 }
             });
             server.createContext("/kvs", exchange -> {
-                if(exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                    if(genToken){
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    if (genToken) {
                         var param = tokenProvider.apply(exchange);
-                        if(param.isEmpty()){
+                        if (param.isEmpty()) {
                             exchange.sendResponseHeaders(403, 0);
                             var os = exchange.getResponseBody();
                             os.close();
-                        } else if(!finalTokenGen.equalsIgnoreCase(param.get())){
+                        } else if (!finalTokenGen.equalsIgnoreCase(param.get())) {
                             exchange.sendResponseHeaders(403, 0);
                             var os = exchange.getResponseBody();
                             os.close();
@@ -217,7 +215,7 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                 }
             });
             server.start();
-            Log.msg(()->"Restful server started on port " + portInt);
+            Log.msg(() -> "Restful server started on port " + portInt);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

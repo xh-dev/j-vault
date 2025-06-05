@@ -22,10 +22,10 @@ public class ZipUnSetPassword implements ConsoleOwner, Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         final var zipFile = zipManaging.getZipFile();
-        final var newZipFileName = Path.of(zipManaging.getFile().toString()+".tmp");
+        final var newZipFileName = Path.of(zipManaging.getFile().toString() + ".tmp");
         final var newZipFile = new ZipFile(newZipFileName.toFile());
 
-        final var getZipParameter = (Supplier<ZipParameters>) ()->{
+        final var getZipParameter = (Supplier<ZipParameters>) () -> {
             ZipParameters newZipParameters = new ZipParameters();
             newZipParameters.setEncryptFiles(false);
             newZipParameters.setEncryptionMethod(EncryptionMethod.AES);
@@ -33,7 +33,7 @@ public class ZipUnSetPassword implements ConsoleOwner, Callable<Integer> {
             return newZipParameters;
         };
 
-        for(var zippedFile : zipFile.getFileHeaders()){
+        for (var zippedFile : zipFile.getFileHeaders()) {
             final var is = zipFile.getInputStream(zippedFile);
             final var parameters = getZipParameter.get();
             parameters.setFileNameInZip(zippedFile.getFileName());
@@ -42,10 +42,10 @@ public class ZipUnSetPassword implements ConsoleOwner, Callable<Integer> {
             newZipFile.addStream(is, parameters);
         }
         zipFile.close();
-        if(!zipManaging.getFile().delete()){
+        if (!zipManaging.getFile().delete()) {
             console().log("Failed to delete zip file");
         }
-        if(!newZipFileName.toFile().renameTo(zipManaging.getFile())){
+        if (!newZipFileName.toFile().renameTo(zipManaging.getFile())) {
             console().log("Failed to rename zip file");
         }
         console().log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));

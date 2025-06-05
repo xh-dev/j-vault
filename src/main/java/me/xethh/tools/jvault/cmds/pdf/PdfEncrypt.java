@@ -21,23 +21,23 @@ public class PdfEncrypt implements Callable<Integer> {
     //@CommandLine.Option(names = {"--existing-password" }, defaultValue = "", description = "if present, will also test if the password correct")
     //private String oldPassword;
 
-    @CommandLine.Option(names = { "-p", "--password" },required = true,  defaultValue = "", description = "if present, will also test if the password correct")
+    @CommandLine.Option(names = {"-p", "--password"}, required = true, defaultValue = "", description = "if present, will also test if the password correct")
     private String password;
 
-    @CommandLine.Option(names = { "-u", "--user-password" }, required = true, defaultValue = "", description = "if present, will also test if the password correct")
+    @CommandLine.Option(names = {"-u", "--user-password"}, required = true, defaultValue = "", description = "if present, will also test if the password correct")
     private String userPassword;
 
     @Override
     public Integer call() throws Exception {
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             System.err.println("password is empty");
         } else {
-            if(pdfManaging.getPassword().isEmpty()){
+            if (pdfManaging.getPassword().isEmpty()) {
                 final var unlockedFile = loadFile(pdfManaging.getFile(), Optional.empty());
-                if(unlockedFile.isPresent()){
+                if (unlockedFile.isPresent()) {
                     final var doc = unlockedFile.get();
-                    PdfModification.modify(pdfManaging.getFile(), doc, docTemp->{
-                        try{
+                    PdfModification.modify(pdfManaging.getFile(), doc, docTemp -> {
+                        try {
                             final var curPerm = docTemp.getCurrentAccessPermission();
                             final var spp = new StandardProtectionPolicy(password, userPassword, curPerm);
                             spp.setPreferAES(true);
@@ -53,10 +53,10 @@ public class PdfEncrypt implements Callable<Integer> {
                 }
             } else {
                 final var unlockedFile = loadFile(pdfManaging.getFile(), pdfManaging.getPassword());
-                if(unlockedFile.isPresent()){
+                if (unlockedFile.isPresent()) {
                     final var doc = unlockedFile.get();
-                    PdfModification.modify(pdfManaging.getFile(), doc, docTemp->{
-                        try{
+                    PdfModification.modify(pdfManaging.getFile(), doc, docTemp -> {
+                        try {
                             final var curPerm = docTemp.getCurrentAccessPermission();
                             final var spp = new StandardProtectionPolicy(password, userPassword, curPerm);
                             spp.setPreferAES(true);
