@@ -1,22 +1,21 @@
 package me.xethh.tools.jvault.cmds.token;
 
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
-
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         name = "token",
         subcommands = {GenToken.class},
         description = "manage token"
 )
-public class Token implements Callable<Integer> {
+public class Token implements ConsoleOwner, Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, Out.get());
+        CommandLine.usage(this, console().getDisplay());
         return 0;
     }
 

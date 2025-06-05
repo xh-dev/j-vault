@@ -1,8 +1,10 @@
 package me.xethh.tools.jvault.cmds.zip;
 
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import net.lingala.zip4j.ZipFile;
 import picocli.CommandLine;
 
+import java.awt.datatransfer.ClipboardOwner;
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -12,7 +14,7 @@ import java.util.concurrent.Callable;
         subcommands = {ZipSetPassword.class, ZipUnSetPassword.class},
         description = "handle zip file"
 )
-public class ZipManaging implements Callable<Integer> {
+public class ZipManaging implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 

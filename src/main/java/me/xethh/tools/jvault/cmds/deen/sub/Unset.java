@@ -1,19 +1,19 @@
 package me.xethh.tools.jvault.cmds.deen.sub;
 
 import me.xethh.tools.jvault.cmds.deen.Vault;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.*;
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "unset",
         description = "unset a key value entry by key"
 )
-public class Unset implements Callable<Integer> {
+public class Unset implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
@@ -70,10 +70,5 @@ public class Unset implements Callable<Integer> {
         deen.switchTempFile(path, tmpPath);
         return 0;
 
-    }
-
-    public static void main(String[] args) {
-        var cmd = new CommandLine(new Unset());
-        Out.get().println(cmd.execute(args));
     }
 }

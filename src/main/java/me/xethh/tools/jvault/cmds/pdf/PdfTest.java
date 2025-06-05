@@ -1,6 +1,6 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
-import me.xethh.tools.jvault.DevScope;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.util.Optional;
@@ -12,7 +12,7 @@ import static me.xethh.tools.jvault.cmds.pdf.PdfModification.loadFile;
         name = "test",
         description = "decrypt pdf with password"
 )
-public class PdfTest implements Callable<Integer> {
+public class PdfTest implements ConsoleOwner, Callable<Integer> {
 
     @CommandLine.ParentCommand
     private PdfManaging pdfManaging;
@@ -42,7 +42,7 @@ public class PdfTest implements Callable<Integer> {
                 }
             }
         } catch (Exception e){
-            DevScope.printStackTrace(e);
+            console().printStackTrace(e);
         }
         return 0;
     }

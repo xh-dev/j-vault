@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault.cmds.deen.sub;
 
 import me.xethh.tools.jvault.cmds.deen.Vault;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.*;
@@ -9,14 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "set",
         description = "set a key value entry"
 )
-public class Set implements Callable<Integer> {
+public class Set implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
@@ -60,10 +60,10 @@ public class Set implements Callable<Integer> {
                         if (found.get()) {
                             Log.debug(() -> "Duplicate line found");
                             // Already found refers to duplicate key existing, should be ignored
-                            Out.get().printf("Key[%s] already exist, skipped%n", key);
+                            console().log(String.format("Key[%s] already exist, skipped%n", key));
                         } else {
                             Log.debug(() -> "First value encounter");
-                            Out.get().printf("Found key[%s] and replace%n", key);
+                            console().log(String.format("Found key[%s] and replace%n", key));
                             found.set(true);
                             cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
                             Log.debug(() -> "Complete write value");

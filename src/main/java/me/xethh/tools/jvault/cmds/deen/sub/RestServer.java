@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import me.xethh.tools.jvault.cmds.deen.Vault;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import org.apache.commons.codec.digest.DigestUtils;
 import picocli.CommandLine;
 
@@ -19,7 +20,6 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
 import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
 
@@ -27,7 +27,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
         name = "over-http",
         description = "the restful access to the j-vault"
 )
-public class RestServer implements Callable<Integer> {
+public class RestServer implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 
@@ -108,7 +108,7 @@ public class RestServer implements Callable<Integer> {
 
             HttpServer server = HttpServer.create(new InetSocketAddress(portInt), 0);
 
-            System.out.println("Token: \n" + tokenGen +"\n---\n\n");
+            console().log("Token: \n" + tokenGen + "\n---\n\n");
 
             final var tokenProvider = (Function<HttpExchange,Optional<String>>)(exchange)->Arrays.stream(exchange.getRequestURI().getRawQuery().split("&"))
                     .filter(x->x.split("=").length>=2)
@@ -224,8 +224,4 @@ public class RestServer implements Callable<Integer> {
         return 0;
     }
 
-    public static void main(String[] args) {
-        var cmd = new CommandLine(new RestServer());
-        Out.get().println(cmd.execute(args));
-    }
 }

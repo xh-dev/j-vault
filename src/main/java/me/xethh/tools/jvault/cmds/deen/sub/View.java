@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault.cmds.deen.sub;
 
 import me.xethh.tools.jvault.cmds.deen.Vault;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -11,14 +12,13 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "view",
         description = "view the vault content"
 )
-public class View implements Callable<Integer> {
+public class View implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
@@ -55,13 +55,13 @@ public class View implements Callable<Integer> {
                 while ((line = isr.readLine()) != null) {
                     final var kv = Common.KVExtractor.extract(URLDecoder.decode(line, StandardCharsets.UTF_8));
                     if(outBash){
-                        Out.get().printf("export %s=\"%s\"%n", kv.getKey().replace("-","_"), kv.getValue());
+                        console().log(String.format("export %s=\"%s\"%n", kv.getKey().replace("-", "_"), kv.getValue()));
                     } else if(outCmd){
-                        Out.get().printf("set %s=%s%n", kv.getKey(), kv.getValue());
+                        console().log(String.format("set %s=%s%n", kv.getKey(), kv.getValue()));
                     } else if(outRaw){
-                        Out.get().println(line);
+                        console().log(line);
                     } else {
-                        Out.get().printf("%s=%s%n", kv.getKey(), kv.getValue());
+                        console().log(String.format("%s=%s%n", kv.getKey(), kv.getValue()));
                     }
                 }
             }

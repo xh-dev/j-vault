@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault.cmds.deen.sub;
 
 import me.xethh.tools.jvault.cmds.deen.Vault;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -13,14 +14,13 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
 
 @CommandLine.Command(
         name = "find",
         description = "find the vault content by key"
 )
-public class Find implements Callable<Integer> {
+public class Find implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
@@ -70,11 +70,11 @@ public class Find implements Callable<Integer> {
             foundValue.get().ifPresent(it->{
                 final var v=URLDecoder.decode(it, StandardCharsets.UTF_8);
                 if(outBash){
-                    Out.get().println(String.format("export %s=%s", key.replace("-","_"), v));
+                    console().log(String.format("export %s=%s", key.replace("-", "_"), v));
                 } else if(outCmd){
-                    Out.get().println(String.format("set %s=%s", key, v));
+                    console().log(String.format("set %s=%s", key, v));
                 } else{
-                    Out.get().println(v);
+                    console().log(v);
                 }
             });
         }

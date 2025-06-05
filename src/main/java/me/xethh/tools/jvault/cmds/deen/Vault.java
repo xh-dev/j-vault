@@ -2,6 +2,7 @@ package me.xethh.tools.jvault.cmds.deen;
 
 import me.xethh.tools.jvault.authserv.AuthServerClient;
 import me.xethh.tools.jvault.cmds.deen.sub.*;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -11,8 +12,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         name = "vault",
@@ -25,7 +24,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
         },
         description = "allow user modify and read vault information"
 )
-public class Vault implements Callable<Integer>, CredentialOwner {
+public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
 
     public interface Consumer2{
         void handle(String line, Common.KVExtractor.KV kv, AtomicBoolean byPass) throws Exception;
@@ -66,7 +65,7 @@ public class Vault implements Callable<Integer>, CredentialOwner {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, Out.get());
+        CommandLine.usage(this, console().getDisplay());
         return 0;
     }
 

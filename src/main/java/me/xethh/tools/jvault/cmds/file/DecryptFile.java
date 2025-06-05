@@ -2,6 +2,7 @@ package me.xethh.tools.jvault.cmds.file;
 
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
 import me.xethh.tools.jvault.cmds.deen.sub.Log;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.*;
@@ -10,13 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
-
 @CommandLine.Command(
         name = "decrypt",
         description = "Decrypt a specified file with j-vault encryption format"
 )
-public class DecryptFile implements Callable<Integer> {
+public class DecryptFile implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.ParentCommand
@@ -68,7 +67,7 @@ public class DecryptFile implements Callable<Integer> {
                 String line;
                 try (var br = new BufferedReader(new InputStreamReader(deObj.decryptInputStream(is)))) {
                     while ((line = br.readLine()) != null) {
-                        Out.get().println(line);
+                        console().log(line);
                     }
                 }
             } else {

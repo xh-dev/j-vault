@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault;
 
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
+import me.xethh.tools.jvault.display.Console;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -41,6 +42,7 @@ public class PasswordGenTest {
     public static ByteArrayOutputStream borrowStdOut(Consumer<ByteArrayOutputStream> r) {
         var o = System.out;
         var os = new ByteArrayOutputStream();
+        Console.restConsole();
         System.setOut(new java.io.PrintStream(os, true, StandardCharsets.UTF_8));
         r.accept(os);
         System.setOut(o);

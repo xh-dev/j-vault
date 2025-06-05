@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.util.Optional;
@@ -11,7 +12,7 @@ import static me.xethh.tools.jvault.cmds.pdf.PdfModification.loadFile;
         name = "unset-password",
         description = "decrypt pdf with password"
 )
-public class PdfDecrypt implements Callable<Integer> {
+public class PdfDecrypt implements ConsoleOwner, Callable<Integer> {
     @CommandLine.ParentCommand
     private PdfManaging pdfManaging;
 
@@ -22,11 +23,11 @@ public class PdfDecrypt implements Callable<Integer> {
     public Integer call() throws Exception {
         var ifNoPassPdfModification = loadFile(pdfManaging.getFile(), Optional.empty());
         if (ifNoPassPdfModification.isPresent()) {
-            System.out.println("The file is not encrypted");
+            console().log("The file is not encrypted");
         } else {
             ifNoPassPdfModification = loadFile(pdfManaging.getFile(), Optional.of(password));
             if (ifNoPassPdfModification.isEmpty()) {
-                System.out.println("The password is not correct");
+                console().log("The password is not correct");
             } else {
                 PdfModification.modify(pdfManaging.getFile(), ifNoPassPdfModification.get(), pdDocument -> {
                     pdDocument.setAllSecurityToBeRemoved(true);

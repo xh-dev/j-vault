@@ -1,13 +1,14 @@
 package me.xethh.tools.jvault.authserv;
 
+import com.beust.jcommander.internal.Console;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
-import me.xethh.tools.jvault.DevScope;
 import me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 
 import java.io.FileInputStream;
@@ -29,7 +30,7 @@ import java.util.Scanner;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public interface AuthServerClient {
+public interface AuthServerClient extends ConsoleOwner {
     String authServer();
     default String getCode(String user){
         final boolean debugging = Optional.ofNullable(System.getenv().get("DEV")).isPresent();
@@ -66,7 +67,7 @@ public interface AuthServerClient {
                 } catch (URISyntaxException | IOException  e) {
                     throw new RuntimeException(e);
                 } catch (InterruptedException e){
-                    DevScope.printStackTrace(e);
+                    console().printStackTrace(e);
                     Thread.currentThread().interrupt();
                 }
                 return Optional.empty();
@@ -172,7 +173,7 @@ public interface AuthServerClient {
                 } catch (URISyntaxException | IOException e) {
                     throw new RuntimeException(e);
                 } catch (InterruptedException e){
-                    DevScope.printStackTrace(e);
+                    console().printStackTrace(e);
                     Thread.currentThread().interrupt();
                 }
                 return Optional.empty();

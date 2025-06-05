@@ -5,6 +5,7 @@ import dev.samstevens.totp.qr.QrData;
 import dev.samstevens.totp.qr.ZxingPngQrGenerator;
 import dev.samstevens.totp.secret.DefaultSecretGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.FileOutputStream;
@@ -14,7 +15,7 @@ import java.util.concurrent.Callable;
         name = "code-gen",
         description = "authentication server secret gen"
 )
-public class AuthServerSecretGen implements Callable<Integer> {
+public class AuthServerSecretGen implements ConsoleOwner,Callable<Integer> {
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 
@@ -40,15 +41,15 @@ public class AuthServerSecretGen implements Callable<Integer> {
                 .period(timePeriod)
                 .build();
 
-        System.out.println("App: "+issueTo);
-        System.out.println("Name: "+name);
-        System.out.println("Secret: "+gen);
-        System.out.println("Digit: "+digit);
-        System.out.println("Algo: "+algo.getFriendlyName());
-        System.out.println("period: "+timePeriod);
-        System.out.printf("https://totp.danhersam.com/?digits=%d&period=%d&algorithm=%s&key=%s%n", digit, timePeriod, algo.getFriendlyName(), gen);
+        console().log("App: " + issueTo);
+        console().log("Name:  " +name);
+        console().log("Secret :  "+gen);
+        console().log("Digit:   "+digit);
+        console().log("Algo:  " +algo.getFriendlyName());
+        console().log("period :  "+timePeriod);
+        console().log(String.format("https://totp.danhersam.com/?digits=%d&period=%d&algorithm=%s&key=%s%n", digit, timePeriod, algo.getFriendlyName(), gen));
 
-        System.out.println("\n\n==============\n Generated QRCode.png");
+        console().log("\n\n==============\n Generated QRCode.png");
         ZxingPngQrGenerator qrGenerator = new ZxingPngQrGenerator();
         try(FileOutputStream fos = new FileOutputStream("qr.png")) {
             fos.write(qrGenerator.generate(data));

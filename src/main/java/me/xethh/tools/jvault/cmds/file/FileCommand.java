@@ -2,19 +2,18 @@ package me.xethh.tools.jvault.cmds.file;
 
 import me.xethh.tools.jvault.authserv.AuthServerClient;
 import me.xethh.tools.jvault.cmds.deen.CredentialOwner;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.util.Optional;
 import java.util.concurrent.Callable;
-
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         name = "file",
         subcommands = {EncryptFile.class, DecryptFile.class},
         description = "file encrypt and decrypt with j-vault"
 )
-public class FileCommand implements Callable<Integer>, CredentialOwner {
+public class FileCommand implements ConsoleOwner, Callable<Integer>, CredentialOwner {
     @CommandLine.Option(names = {"-c","--credential"}, defaultValue = "", description = "The credential to use, if missing, would try find env variable `x-credential` or `x_credential`")
     private String credential;
 
@@ -26,7 +25,7 @@ public class FileCommand implements Callable<Integer>, CredentialOwner {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, Out.get());
+        CommandLine.usage(this, console().getDisplay());
         return 0;
     }
 

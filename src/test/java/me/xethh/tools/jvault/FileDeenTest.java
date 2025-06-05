@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault;
 
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -11,7 +12,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("File decrypt and encrypt test")
-public class FileDeenTest {
+public class FileDeenTest implements ConsoleOwner {
 
 
     @Test
@@ -21,14 +22,14 @@ public class FileDeenTest {
         final var MESSAGE = "helloworld";
         var parent = new File("target/test-case/");
         if(!parent.mkdirs()){
-            DevScope.log("Folder creation failed");
+            console().log("Folder creation failed");
         }
 
         assertTrue(parent.exists(), "parent folder should exists");
         for (var x : Objects.requireNonNull(parent.listFiles())) {
             final var res = x.delete();
             if(!res){
-                DevScope.log(String.format("File[%s] deleted fail", x.toString()));
+                console().log(String.format("File[%s] deleted fail", x.toString()));
             }
 
         }
@@ -39,7 +40,7 @@ public class FileDeenTest {
         if (f.exists()) {
             var res = f.delete();
             if(!res){
-                DevScope.log(String.format("File[%s] deleted fail", f.toString()));
+                console().log(String.format("File[%s] deleted fail", f.toString()));
             }
         }
 
@@ -76,13 +77,13 @@ public class FileDeenTest {
             final var MESSAGE = "helloworld";
             var parent = new File("target/test-case/");
             if(parent.mkdirs()){
-                DevScope.log("Folder creation failed");
+                console().log("Folder creation failed");
             }
 
             assertTrue(parent.exists(), "parent folder should exists");
             for (var x : Objects.requireNonNull(parent.listFiles())) {
                 if(!x.delete()){
-                    DevScope.log(String.format("File[%s] deleted fail", x.toString()));
+                    console().log(String.format("File[%s] deleted fail", x.toString()));
                 }
             }
             assertEquals(0, Objects.requireNonNull(parent.listFiles()).length, "parent folder should be empty");
@@ -92,7 +93,7 @@ public class FileDeenTest {
             if (f.exists()) {
                 var res = f.delete();
                 if(!res){
-                    DevScope.log(String.format("File[%s] deleted fail", f.toString()));
+                    console().log(String.format("File[%s] deleted fail", f.toString()));
                 }
             }
 

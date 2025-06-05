@@ -1,10 +1,11 @@
 package me.xethh.tools.jvault.cmds.debug;
 
+import me.xethh.tools.jvault.display.Console;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         name="debug-tools",
@@ -13,7 +14,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
                 DebugTools.PrintProps.class,
         }
 )
-public class DebugTools implements Callable<Integer> {
+public class DebugTools implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Command(
             name="print-props",
             description = "Print java properties in the running jvm",
@@ -24,9 +25,9 @@ public class DebugTools implements Callable<Integer> {
 
         @Override
         public Integer call() throws Exception {
-            Out.get().println("==================== Debug tools - Print all properties");
-            System.getProperties().forEach((key, value) -> Out.get().printf("'%s'=`%s`%n", key, value));
-            Out.get().println("==================== Debug tools - Print all properties [Done]");
+            Console.getConsole().log("==================== Debug tools - Print all properties");
+            System.getProperties().forEach((key, value) -> Console.getConsole().log(String.format("'%s'=`%s`%n", key, value)));
+            Console.getConsole().log("==================== Debug tools - Print all properties [Done]");
             return 0;
         }
     }
@@ -40,15 +41,15 @@ public class DebugTools implements Callable<Integer> {
 
         @Override
         public Integer call() throws Exception {
-            Out.get().println("==================== Debug tools - Print all env");
-            System.getenv().forEach((key, value) -> Out.get().printf("'%s'=`%s`%n", key, value));
-            Out.get().println("==================== Debug tools - Print all env [Done]");
+            Console.getConsole().log("==================== Debug tools - Print all env");
+            System.getenv().forEach((key, value) -> Console.getConsole().log(String.format("'%s'=`%s`%n", key, value)));
+            Console.getConsole().log("==================== Debug tools - Print all env [Done]");
             return 0;
         }
     }
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, Out.get());
+        CommandLine.usage(this, Console.getConsole().getDisplay());
         return 0;
     }
 }

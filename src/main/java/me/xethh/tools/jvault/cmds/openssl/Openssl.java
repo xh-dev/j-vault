@@ -1,11 +1,10 @@
 package me.xethh.tools.jvault.cmds.openssl;
 
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.util.concurrent.Callable;
-
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         name = "openssl",
@@ -15,14 +14,14 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
                 Openssl.Decrypt.class
         }
 )
-public class Openssl implements Callable<Integer> {
+public class Openssl implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Command(
             name="encrypt",
             description = "encryption script of using openssl to generate a file called token file(default kv-pass.enc)"
     )
-    public static class Encrypt implements Callable<Integer> {
+    public static class Encrypt implements ConsoleOwner, Callable<Integer> {
         @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
         private boolean helpRequested;
 
@@ -35,7 +34,7 @@ public class Openssl implements Callable<Integer> {
         @Override
         public Integer call() throws Exception {
             String cmd = String.format("openssl aes-256-cbc -a -salt -pbkdf2 -in %s -out %s", kvFile, kvPass);
-            Out.get().println(cmd);
+            console().log(cmd);
             return 0;
         }
     }
@@ -43,7 +42,7 @@ public class Openssl implements Callable<Integer> {
             name="decrypt",
             description = "decrypt script of using openssl to generate a file called token file (default kv-pass.enc)"
     )
-    public static class Decrypt implements Callable<Integer> {
+    public static class Decrypt implements ConsoleOwner, Callable<Integer> {
         @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
         private boolean helpRequested;
         @CommandLine.Option(names = {"--encoded-token-file"}, required = false, description = "file name of encoded token file", defaultValue = "kv-pass.enc")
@@ -60,14 +59,14 @@ public class Openssl implements Callable<Integer> {
             } else {
                 cmd = String.format("openssl aes-256-cbc -d -a -salt -pbkdf2 -in %s", kvPass);
             }
-            Out.get().println(cmd);
+            console().log(cmd);
             return 0;
         }
     }
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, Out.get());
+        CommandLine.usage(this, console().getDisplay());
         return 0;
     }
 }

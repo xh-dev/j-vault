@@ -1,6 +1,6 @@
 package me.xethh.tools.jvault.cmds.zip;
 
-import me.xethh.tools.jvault.DevScope;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
         name = "set-password",
         description = "set password to existing zip file"
 )
-public class ZipSetPassword implements Callable<Integer> {
+public class ZipSetPassword implements ConsoleOwner, Callable<Integer> {
 
     @CommandLine.ParentCommand
     private ZipManaging zipManaging;
@@ -26,7 +26,7 @@ public class ZipSetPassword implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         if(password.isEmpty()){
-            System.err.println("password is empty");
+            console().debug("password is empty");
         } else {
             final var zipFile = zipManaging.getZipFile();
             final var newZipFileName = Path.of(zipManaging.getFile().toString()+".tmp");
@@ -51,13 +51,13 @@ public class ZipSetPassword implements Callable<Integer> {
             zipFile.close();
             var res = zipManaging.getFile().delete();
             if (!res) {
-                DevScope.log("Failed to delete zip file");
+                console().log("Failed to delete zip file");
             }
             res =newZipFileName.toFile().renameTo(zipManaging.getFile());
             if(!res){
-                DevScope.log("Failed to rename zip file");
+                console().log("Failed to rename zip file");
             }
-            DevScope.log(String.format("file [%s] is now zip with password.", zipManaging.getFile().getName()));
+            console().log(String.format("file [%s] is now zip with password.", zipManaging.getFile().getName()));
         }
         return 0;
     }

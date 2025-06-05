@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault.cmds.zip;
 
-import me.xethh.tools.jvault.DevScope;
+import me.xethh.tools.jvault.display.Console;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
@@ -15,8 +16,7 @@ import java.util.function.Supplier;
         name = "unset-password",
         description = "unset password to existing zip file"
 )
-public class ZipUnSetPassword implements Callable<Integer> {
-
+public class ZipUnSetPassword implements ConsoleOwner, Callable<Integer> {
     @CommandLine.ParentCommand
     private ZipManaging zipManaging;
 
@@ -44,12 +44,12 @@ public class ZipUnSetPassword implements Callable<Integer> {
         }
         zipFile.close();
         if(!zipManaging.getFile().delete()){
-            DevScope.log("Failed to delete zip file");
+            console().log("Failed to delete zip file");
         }
         if(!newZipFileName.toFile().renameTo(zipManaging.getFile())){
-            DevScope.log("Failed to rename zip file");
+            console().log("Failed to rename zip file");
         }
-        DevScope.log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));
+        console().log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));
         return 0;
     }
 }

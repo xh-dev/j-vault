@@ -1,7 +1,7 @@
 package me.xethh.tools.jvault.cmds.token;
 
-import me.xethh.tools.jvault.DevScope;
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -10,14 +10,12 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
-
 @CommandLine.Command(
         name = "gen",
         description = "generate token"
 
 )
-public class GenToken implements Callable<Integer> {
+public class GenToken implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = { "-h", "--help" }, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
 
@@ -46,9 +44,9 @@ public class GenToken implements Callable<Integer> {
         }
         String fPass = DeenObj.getFullPassword(password);
         if(outBash) {
-            Out.get().printf("export x_credential=%s%n", fPass);
+            console().log(String.format("export x_credential=%s%n", fPass));
         } else if (outCmd) {
-            Out.get().printf("set x-credential=%s%n", fPass);
+            console().log(String.format("set x-credential=%s%n", fPass));
         } else {
             if(asKvPass){
                 try(
@@ -56,10 +54,10 @@ public class GenToken implements Callable<Integer> {
                         ) {
                     os.write(fPass.getBytes());
                 } catch (Throwable throwable){
-                    DevScope.printStackTrace(throwable);
+                    console().printStackTrace(throwable);
                 }
             }
-            Out.get().println(fPass);
+            console().log(fPass);
         }
         return 0;
     }

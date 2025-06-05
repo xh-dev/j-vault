@@ -11,7 +11,7 @@ import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptorImpl;
-import me.xethh.tools.jvault.DevScope;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 import picocli.CommandLine;
 
@@ -39,7 +39,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.TEXT_PL
         name = "auth-server",
         description = "auth-server"
 )
-public class SimpleAuthServer implements Callable<Integer> {
+public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
     public static class Const {
         private Const() {
@@ -337,7 +337,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     }
                 }
                 catch(Exception e){
-                    DevScope.printStackTrace(e);
+                    console().printStackTrace(e);
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                 }
@@ -422,7 +422,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     }
                 }
                 catch(Exception e){
-                    DevScope.printStackTrace(e);
+                    console().printStackTrace(e);
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                 }

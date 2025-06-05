@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
-import me.xethh.tools.jvault.DevScope;
+import me.xethh.tools.jvault.display.Console;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
         subcommands = {PdfEncrypt.class, PdfDecrypt.class, PdfTest.class},
         description = "handle pdf encrypt and decryption"
 )
-public class PdfManaging implements Callable<Integer> {
+public class PdfManaging implements ConsoleOwner, Callable<Integer> {
     final static boolean debugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
     final static boolean deleteOnExit = Optional.ofNullable(System.getenv("DELETE_ON_EXIT")).isPresent();
     final static boolean testLibExists = Optional.ofNullable(System.getenv("TEST_LIB_EXISTS")).isPresent();
@@ -85,7 +86,7 @@ public class PdfManaging implements Callable<Integer> {
                 final var tmpDir = System.getProperty("java.io.tmpdir");
                 final var tmpJVaultFolder  = System.getProperty("os.name").toLowerCase().contains("windows")?Path.of(".").toAbsolutePath():Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
                 if (!tmpJVaultFolder.toFile().mkdirs()) {
-                    DevScope.log("failed to create tmp dir");
+                    Console.getConsole().log("failed to create tmp dir");
                 }
 
                 log("Native library listing file: ");

@@ -13,11 +13,10 @@ import me.xethh.tools.jvault.cmds.openssl.Openssl;
 import me.xethh.tools.jvault.cmds.pdf.PdfManaging;
 import me.xethh.tools.jvault.cmds.token.Token;
 import me.xethh.tools.jvault.cmds.zip.ZipManaging;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
-
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
 
 @CommandLine.Command(
         mixinStandardHelpOptions = true,
@@ -28,7 +27,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.Common.Out;
         },
         description = "j-vault is a very simple key value based password vault cli program. "
 )
-public class Main implements Callable<Integer> {
+public class Main implements ConsoleOwner, Callable<Integer> {
 
     public static void main(String[] args) {
         CommandLine cmd = new CommandLine(new Main());
@@ -37,7 +36,7 @@ public class Main implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        CommandLine.usage(this, Out.get());
+        CommandLine.usage(this, console().getDisplay());
         return 0;
     }
 }

@@ -15,8 +15,6 @@ public class Common {
         throw new IllegalStateException("Not expected to be instantiated");
     }
 
-    public static Supplier<PrintStream> Out = () -> System.out;
-
     public static DeenObj getDeenObj(Path path, String credsEnv) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         if (!path.toFile().exists()) {
             var saltWithIV = DeenObj.genSaltWithIV();
