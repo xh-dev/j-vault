@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xh-dev_j-vault&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=xh-dev_j-vault)
+
 j-vault is a very simple key value based password vault cli program.
 
 User can store secret information in a vault file (generally named as `value.kv``) and retrieve the information with
@@ -246,3 +248,4 @@ sudo rm -f out/j-vault \
       /out/j-vault
 ```
 
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=xh-dev_j-vault)
