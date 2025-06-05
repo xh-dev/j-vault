@@ -6,6 +6,7 @@ import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
+import me.xethh.tools.jvault.DevScope;
 import me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 
@@ -62,8 +63,11 @@ public interface AuthServerClient {
                     }
                     var bs = Base64.getDecoder().decode(response.body());
                     return RsaEncryption.getPublicKey(bs);
-                } catch (URISyntaxException | IOException | InterruptedException e) {
+                } catch (URISyntaxException | IOException  e) {
                     throw new RuntimeException(e);
+                } catch (InterruptedException e){
+                    DevScope.printStackTrace(e);
+                    Thread.currentThread().interrupt();
                 }
 
             };
@@ -165,10 +169,13 @@ public interface AuthServerClient {
                         final var data = deClient.decryptJsonContainer(key, responseText).get();
                         return Optional.of(data);
                     }
-                } catch (URISyntaxException | IOException | InterruptedException e) {
+                } catch (URISyntaxException | IOException e) {
                     throw new RuntimeException(e);
+                } catch (InterruptedException e){
+                    DevScope.printStackTrace(e);
+                    Thread.currentThread().interrupt();
                 }
-
+                return Optional.empty();
             };
 
             // Logic starting
