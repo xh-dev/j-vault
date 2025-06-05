@@ -53,8 +53,8 @@ public class GenToken implements ConsoleOwner, Callable<Integer> {
                         FileOutputStream os = new FileOutputStream(kvFile);
                 ) {
                     os.write(fPass.getBytes());
-                } catch (Throwable throwable) {
-                    console().printStackTrace(throwable);
+                } catch (Exception exception) {
+                    console().printStackTrace(exception);
                 }
             }
             console().log(fPass);

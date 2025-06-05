@@ -9,8 +9,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class PdfModification {
+    private PdfModification(){
+        throw new IllegalStateException("Not expected to be instantiated");
+    }
     public static Optional<PDDocument> loadFile(File file, Optional<String> withPassword) {
         if (withPassword.isPresent()) {
             try {
@@ -31,7 +35,7 @@ public class PdfModification {
         }
     }
 
-    public static void modify(File file, PDDocument doc, Function<PDDocument, PDDocument> docOp) {
+    public static void modify(File file, PDDocument doc, UnaryOperator<PDDocument> docOp) {
         final var fn = file.getName();
         final var fnTemp = fn + ".tmp";
         final var path = file.getAbsoluteFile().getParentFile().toPath();

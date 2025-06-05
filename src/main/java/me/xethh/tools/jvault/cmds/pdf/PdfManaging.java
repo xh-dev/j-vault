@@ -21,12 +21,11 @@ import java.util.stream.Stream;
         description = "handle pdf encrypt and decryption"
 )
 public class PdfManaging implements ConsoleOwner, Callable<Integer> {
-    final static boolean debugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
-    final static boolean deleteOnExit = Optional.ofNullable(System.getenv("DELETE_ON_EXIT")).isPresent();
-    final static boolean testLibExists = Optional.ofNullable(System.getenv("TEST_LIB_EXISTS")).isPresent();
+    private static final String OS_NAME="os.name";
+    private static final String OS_WINDOWS="windows";
 
     static {
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if (System.getProperty(OS_NAME).toLowerCase().contains(OS_WINDOWS)) {
             log("running on windows");
         } else {
             log("not running on Windows");
@@ -88,7 +87,7 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
                 }
                 final var nativeTxt = new String(res.readAllBytes(), StandardCharsets.UTF_8);
                 final var tmpDir = System.getProperty("java.io.tmpdir");
-                final var tmpJVaultFolder = System.getProperty("os.name").toLowerCase().contains("windows") ? Path.of(".").toAbsolutePath() : Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
+                final var tmpJVaultFolder = System.getProperty(OS_NAME).toLowerCase().contains(OS_WINDOWS) ? Path.of(".").toAbsolutePath() : Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
                 if (!tmpJVaultFolder.toFile().mkdirs()) {
                     Console.getConsole().log("failed to create tmp dir");
                 }
@@ -115,7 +114,7 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
                                         } catch (IOException e) {
                                             throw new RuntimeException(e);
                                         }
-                                        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                                        if (System.getProperty(OS_NAME).toLowerCase().contains(OS_WINDOWS)) {
                                             setFileHidden(tmpJVaultFolder.resolve(libFileName));
                                         }
                                     } else {

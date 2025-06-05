@@ -144,7 +144,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
             }
         };
 
-        BiFunction<HttpExchange, PublicKey, Optional<String>> decryptBody = (exchange, key) -> {
+        BiFunction<HttpExchange, PublicKey, Optional<String>> decryptBody = (exchange, pubkey) -> {
             try {
                 byte[] d = exchange.getRequestBody().readAllBytes();
                 console().debug("[getSender] decrypted body: " + new String(d, StandardCharsets.UTF_8));
@@ -153,7 +153,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                     console().debug("[decryptBody] decrypted body is empty");
                     return Optional.empty();
                 }
-                return deenServer.decryptJsonContainer(key, dd);
+                return deenServer.decryptJsonContainer(pubkey, dd);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -310,7 +310,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         server.setExecutor(executor);
         server.start();
-        System.out.printf("[Auth Server Started - %d] \nenter to exit: \n", port);
+        console().log(String.format("[Auth Server Started - %d] %nenter to exit: %n", port));
         var s = true;
         while (s) {
             Thread.sleep(Duration.ofMinutes(60).toMillis());

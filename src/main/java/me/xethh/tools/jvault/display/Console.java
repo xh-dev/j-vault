@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class Console {
-    public final static boolean DEBUGGING = Optional.ofNullable(System.getenv("DEV")).isPresent();
+    public static final boolean DEBUGGING = Optional.ofNullable(System.getenv("DEV")).isPresent();
     private static Console instance;
     private final PrintStream display;
     private final PrintStream error;
