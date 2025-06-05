@@ -179,7 +179,7 @@ public interface AuthServerClient {
             };
 
             // Logic starting
-            Optional<PublicKey> pubKey=null;
+            Optional<PublicKey> pubKey=Optional.empty();
             if(!path.toFile().exists()){
                 if(debugging){
                     System.out.println("Creating new key: "+path);
@@ -199,7 +199,7 @@ public interface AuthServerClient {
                 os.write(tempCert.getBytes());
                 os.close();
             }
-            if(pubKey == null){
+            if(pubKey.isEmpty()){
                 if(debugging){
                     System.out.println("Public key is not set yet ");
                 }
