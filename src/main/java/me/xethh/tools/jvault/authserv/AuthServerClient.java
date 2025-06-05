@@ -34,7 +34,6 @@ import java.util.function.Function;
 public interface AuthServerClient extends ConsoleOwner {
     String authServer();
     default String getCode(String user){
-        //final boolean debugging = Optional.ofNullable(System.getenv().get("DEV")).isPresent();
         try{
             var client = HttpClient.newHttpClient();
             var om = new ObjectMapper();
@@ -73,21 +72,21 @@ public interface AuthServerClient extends ConsoleOwner {
             };
             BiFunction<HttpClient, PublicKey, Optional<String>> getCert = (httpClient, key) -> {
                 try{
-                    if(debugging){
+                    if(console().isDebugging()){
                         final var timePeriod=30;
                         final var timeProvider = new SystemTimeProvider();
                         final var algo = HashingAlgorithm.SHA512;
                         final var codeDigit = 8;
                         final var debugging_sc = "S3XARBLC62OBDS4MWZVLIJREKFP3554P";
-                        System.out.println("Debugging with testing secret: "+debugging_sc);
+                        console().debug("Debugging with testing secret: "+debugging_sc);
                         final var codeGen=new DefaultCodeGenerator(algo, codeDigit);
                         final var codeNow=codeGen.generate(debugging_sc, Math.floorDiv(timeProvider.getTime(),timePeriod));
-                        System.out.println("Debugging totp: "+codeNow);
+                        console().debug("Debugging totp: "+codeNow);
                     }
                     Scanner scanner = new Scanner(System.in);
-                    System.out.println("Please enter the totp: ");
+                    console().log("Please enter the totp: ");
                     var codeInput = scanner.nextLine();
-                    System.out.println("Input code: "+codeInput);
+                    console().log("Input code: "+codeInput);
                     var req = new SimpleAuthServer.Request();
                     req.setExpiresInM(30);
                     req.setCode(codeInput);
@@ -111,9 +110,9 @@ public interface AuthServerClient extends ConsoleOwner {
                             HttpResponse.BodyHandlers.ofString());
                     ;
                     if(console().isDebugging()){
-                        System.out.println("response code: "+response.statusCode());
+                        console().debug("response code: "+response.statusCode());
                         final var respBody=response.body();
-                        System.out.println("response body: "+respBody);
+                        console().debug("response body: "+respBody);
                         return Optional.ofNullable(respBody);
                     } else {
                         return Optional.ofNullable(response.body());
@@ -171,7 +170,7 @@ public interface AuthServerClient extends ConsoleOwner {
                 console().debug("Creating new key: "+path);
                 pubKey=  getPubKey.apply(client);
                 if(pubKey.isEmpty()){
-                    System.out.println("Fail to obtain public key: "+path);
+                    console().log("Fail to obtain public key: "+path);
                 }
                 console().debug("Public key obtained");
                 var tempCert= getCert.apply(client, pubKey.orElseThrow());

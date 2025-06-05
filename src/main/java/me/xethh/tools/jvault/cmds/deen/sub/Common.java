@@ -74,8 +74,6 @@ public class Common {
 
     }
 
-    //final public static Pattern PATTERN = Pattern.compile("(^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\._-]*)=(.*)$");
-
     public static void SkipFirstLine(InputStream is) throws IOException {
         var first = Stream.generate(()->{
             try {

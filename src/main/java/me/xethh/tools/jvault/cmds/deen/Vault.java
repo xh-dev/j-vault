@@ -92,7 +92,6 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
             String finalLine = line;
             Log.debug(() -> "KV line: " + finalLine);
             final var kv = Common.KVExtractor.extract(line);
-            //final var matcher = PATTERN.matcher(line);
             Log.debug(() -> "Match result: " + kv.isMatch());
             var byPass = new AtomicBoolean(false);
             if (kv.isMatch()) {

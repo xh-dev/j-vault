@@ -26,9 +26,7 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
     final static boolean testLibExists = Optional.ofNullable(System.getenv("TEST_LIB_EXISTS")).isPresent();
 
     static void log(String msg) {
-        if(debugging){
-            System.out.println(msg);
-        }
+        Console.getConsole().debug(msg);
     }
 
     static {

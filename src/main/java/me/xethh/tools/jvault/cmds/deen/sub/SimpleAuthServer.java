@@ -139,11 +139,8 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        final var debugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
-        System.out.println("Launching server with port: " + port);
-        if(debugging){
-            System.out.println("Debugging enabled");
-        }
+        console().log("Launching server with port: " + port);
+        console().debug("Debugging enabled");
 
         if(useEnv) {
             secrete = Optional.ofNullable(System.getenv("J_VAULT_SECRET"))
@@ -156,11 +153,8 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                     .map(Integer::parseInt)
                     .orElseThrow(()->new RuntimeException("PORT not set"));
 
-            if(debugging){
-                System.out.println("KEY: " + key);
-                //System.out.println("VAULT: " + value);
-                System.out.println("PORT: " + port);
-            }
+            console().debug("KEY: " + key);
+            console().debug("PORT: " + port);
         }
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -180,7 +174,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         server.createContext("/a", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                System.out.println("received request: "+exchange.getRequestURI());
+                console().log("received request: "+exchange.getRequestURI());
                 var response = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
                 exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                 exchange.sendResponseHeaders(200, response.length());
@@ -191,34 +185,24 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         });
 
         Function<HttpExchange, Optional<PublicKey>> getSender = exchange->{
-            if(debugging){
-                System.out.println("getSender: "+exchange.getRequestURI());
-            }
+            console().debug("getSender: "+exchange.getRequestURI());
             if(!exchange.getRequestMethod().equalsIgnoreCase("post")){
-                if(debugging){
-                    System.out.println("[getSender] rejected due to not post request");
-                }
+                console().debug("[getSender] rejected due to not post request");
                 return Optional.empty();
             }
             var sender = exchange.getRequestHeaders().get("sender");
             if(sender == null) {
-                if(debugging){
-                    System.out.println("[getSender] rejected due to sender is null");
-                }
+                console().debug("[getSender] rejected due to sender is null");
                 return Optional.empty();
             }
             if(sender.isEmpty()){
-                if(debugging){
-                    System.out.println("[getSender] rejected due to sender is empty");
-                }
+                console().debug("[getSender] rejected due to sender is empty");
                 return Optional.empty();
             }
 
             try{
                 final var senderText = sender.get(0);
-                if(debugging){
-                    System.out.println("[getSender] sender: "+senderText);
-                }
+                console().debug("[getSender] sender: "+senderText);
                 return Optional.of(RsaEncryption.getPublicKey(Base64.getDecoder().decode(senderText.getBytes())));
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -228,14 +212,10 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         BiFunction<HttpExchange, PublicKey, Optional<String>> decryptBody = (exchange,key) -> {
             try{
                 byte[] d = exchange.getRequestBody().readAllBytes();
-                if(debugging){
-                    System.out.println("[getSender] decrypted body: "+new String(d, StandardCharsets.UTF_8));
-                }
+                console().debug("[getSender] decrypted body: "+new String(d, StandardCharsets.UTF_8));
                 String dd = new String(Base64.getDecoder().decode(d), StandardCharsets.UTF_8);
                 if(dd.isEmpty()){
-                    if(debugging){
-                        System.out.println("[decryptBody] decrypted body is empty");
-                    }
+                    console().debug("[decryptBody] decrypted body is empty");
                     return Optional.empty();
                 }
                 return deenServer.decryptJsonContainer(key,dd);
@@ -246,13 +226,11 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         server.createContext("/b", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                System.out.println("received request: "+exchange.getRequestURI());
+                console().log("received request: "+exchange.getRequestURI());
                 try{
                     var pubKeyOpt = getSender.apply(exchange);
                     if(pubKeyOpt.isEmpty()){
-                        if(debugging){
-                            System.out.println("Cannot sender available");
-                        }
+                        console().debug("Cannot sender available");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
@@ -262,18 +240,14 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
                     var dddOpt=decryptBody.apply(exchange,publicKey);
                     if(dddOpt.isEmpty()){
-                        if(debugging){
-                            System.out.println("Cannot decrypt available");
-                        }
+                        console().log("Cannot decrypt available");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
                     }
 
                     var ddd = dddOpt.get();
-                    if(debugging){
-                        System.out.println("decrypted body: "+ddd);
-                    }
+                    console().debug("decrypted body: "+ddd);
                     var os = exchange.getResponseBody();
 
                     var req = new ObjectMapper().readValue(ddd, Request.class);
@@ -283,30 +257,24 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                     var lower = now.plus(-1, ChronoUnit.MINUTES);
                     var dateSent=Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(req.getDate()));
                     if(dateSent.isBefore(lower) || dateSent.isAfter(upper)){
-                        if(debugging){
-                            System.out.println("rejected due to invalid datetime");
-                        }
+                        console().debug("rejected due to invalid datetime");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
                     }
 
                     if(!verifier.isValidCode(secrete, req.getCode())){
-                        if(debugging){
-                            System.out.println("secret: "+secrete);
-                            System.out.println("code: "+req.getCode());
-                            System.out.println("expect code: "+codeGen.generate(secrete, Math.floorDiv(timeProvider.getTime(), timePeriod)));
-                            System.out.println("rejected due to invalid code");
-                        }
+                        console().debug("secret: "+secrete);
+                        console().debug("code: "+req.getCode());
+                        console().debug("expect code: "+codeGen.generate(secrete, Math.floorDiv(timeProvider.getTime(), timePeriod)));
+                        console().debug("rejected due to invalid code");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
                     }
 
                     if(req.getExpiresInM()<=0 || req.getExpiresInM() > 43200){
-                        if(debugging){
-                            System.out.println("rejected due to invalid expires period");
-                        }
+                        console().debug("rejected due to invalid expires period");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
@@ -318,23 +286,17 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                     tempCert.setTo(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
 
                     final var ff = new ObjectMapper().writeValueAsString(tempCert);
-                    if(debugging){
-                        System.out.println("Temp cert to be issue: "+ff);
-                    }
+                    console().debug("Temp cert to be issue: "+ff);
                     var fff = deenServer.encryptToJsonContainer(kp.getPublic(), ff);
                     var ffff = Base64.getEncoder().encodeToString(fff.getBytes(StandardCharsets.UTF_8));
 
-                    if(debugging){
-                        System.out.println("encrypted json: "+fff);
-                    }
+                    console().debug("encrypted json: "+fff);
 
                     exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                     exchange.sendResponseHeaders(200, ffff.length());
                     os.write(ffff.getBytes());
                     os.close();
-                    if(debugging){
-                        System.out.printf("[%s] process completed%n", exchange.getRequestURI());
-                    }
+                    console().debug(String.format("[%s] process completed%n", exchange.getRequestURI()));
                 }
                 catch(Exception e){
                     console().printStackTrace(e);
@@ -348,12 +310,10 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                System.out.println("received request: "+exchange.getRequestURI());
+                console().log("received request: "+exchange.getRequestURI());
                 var pubKeyOpt = getSender.apply(exchange);
                 if(pubKeyOpt.isEmpty()){
-                    if(debugging){
-                        System.out.println("Cannot sender available");
-                    }
+                    console().debug("Cannot sender available");
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                     return;
@@ -362,9 +322,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
                 var dddOpt=decryptBody.apply(exchange,publicKey);
                 if(dddOpt.isEmpty()){
-                    if(debugging){
-                        System.out.println("Cannot decrypt available");
-                    }
+                    console().debug("Cannot decrypt available");
                     exchange.sendResponseHeaders(400, 0);
                     exchange.getResponseBody().close();
                     return;
@@ -375,31 +333,23 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                 try{
                     var certStrOpt = deenServer.decryptJsonContainer(kp.getPublic(),new String(Base64.getDecoder().decode(ddd), StandardCharsets.UTF_8));
                     if(certStrOpt.isEmpty()){
-                        if(debugging){
-                            System.out.println("rejected due to fail decrypt or verify certificate");
-                        }
+                        console().debug("rejected due to fail decrypt or verify certificate");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
                     }
 
-                    if(debugging){
-                        System.out.println("received cert: "+certStrOpt);
-                    }
+                    console().debug("received cert: "+certStrOpt);
                     var cert = new ObjectMapper().readValue(certStrOpt.get(), TempCert.class);
 
                     // Test timing
                     var now=Instant.now();
                     var dateCert=Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(cert.getDate())).atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId());
                     var timeLimit = dateCert.plusMinutes(cert.getExpiresInM());
-                    if(debugging){
-                        System.out.println("time now: "+now);
-                        System.out.println("time expire: "+timeLimit);
-                    }
+                    console().debug("time now: "+now);
+                    console().debug("time expire: "+timeLimit);
                     if(!now.isBefore(timeLimit.toInstant())){
-                        if(debugging){
-                            System.out.println("Cert expired");
-                        }
+                        console().debug("Cert expired");
                         exchange.sendResponseHeaders(400, 0);
                         exchange.getResponseBody().close();
                         return;
@@ -407,9 +357,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
                     var os = exchange.getResponseBody();
 
-                    if(debugging){
-                        System.out.println("All validation passed, releasing secret value");
-                    }
+                    console().debug("All validation passed, releasing secret value");
                     var fff = deenServer.encryptToJsonContainer(publicKey, value);
                     var ffff = Base64.getEncoder().encodeToString(fff.getBytes(StandardCharsets.UTF_8));
 
@@ -417,9 +365,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                     exchange.sendResponseHeaders(200, ffff.length());
                     os.write(ffff.getBytes());
                     os.close();
-                    if(debugging){
-                        System.out.printf("[%s] process completed%n", exchange.getRequestURI());
-                    }
+                    console().debug(String.format("[%s] process completed%n", exchange.getRequestURI()));
                 }
                 catch(Exception e){
                     console().printStackTrace(e);
@@ -439,12 +385,6 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
                 break;
             }
         }
-        //Scanner scanner = new Scanner(System.in);
-        //scanner.nextLine();
-        //System.out.println("\n[Auth Server Stopping...]");
-        //server.stop(1);
-        //System.out.println("[Auth Server Stopped]");
-        //System.exit(0);
         return 0;
     }
 }
