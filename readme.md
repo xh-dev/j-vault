@@ -1,4 +1,8 @@
+![GitHub Release](https://img.shields.io/github/v/release/xh-dev/j-vault)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/xh-dev/j-vault/maven.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xh-dev_j-vault&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=xh-dev_j-vault)
+
+
 
 j-vault is a very simple key value based password vault cli program.
 
