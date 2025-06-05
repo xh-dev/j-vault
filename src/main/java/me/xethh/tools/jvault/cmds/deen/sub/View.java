@@ -55,13 +55,13 @@ public class View implements Callable<Integer> {
                 while ((line = isr.readLine()) != null) {
                     final var kv = Common.KVExtractor.extract(URLDecoder.decode(line, StandardCharsets.UTF_8));
                     if(outBash){
-                        Out.get().println(String.format("export %s=\"%s\"", kv.getKey().replace("-","_"), kv.getValue()));
+                        Out.get().printf("export %s=\"%s\"%n", kv.getKey().replace("-","_"), kv.getValue());
                     } else if(outCmd){
-                        Out.get().println(String.format("set %s=%s", kv.getKey(), kv.getValue()));
+                        Out.get().printf("set %s=%s%n", kv.getKey(), kv.getValue());
                     } else if(outRaw){
                         Out.get().println(line);
                     } else {
-                        Out.get().println(String.format("%s=%s", kv.getKey(), kv.getValue()));
+                        Out.get().printf("%s=%s%n", kv.getKey(), kv.getValue());
                     }
                 }
             }

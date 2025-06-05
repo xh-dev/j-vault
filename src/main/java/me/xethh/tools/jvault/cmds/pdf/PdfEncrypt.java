@@ -49,7 +49,7 @@ public class PdfEncrypt implements Callable<Integer> {
                         }
                     });
                 } else {
-                    System.err.printf("Fail to open pdf file[%s], the file maybe locked by password or the file is corrupted %n");
+                    System.err.printf("Fail to open pdf file[%s], the file maybe locked by password or the file is corrupted %n", unlockedFile);
                 }
             } else {
                 final var unlockedFile = loadFile(pdfManaging.getFile(), pdfManaging.getPassword());
@@ -68,7 +68,7 @@ public class PdfEncrypt implements Callable<Integer> {
                         }
                     });
                 } else {
-                    System.err.printf("Fail to open pdf file[%s], the file maybe locked by password or the file is corrupted %n");
+                    System.err.printf("Fail to open pdf file[%s], the file maybe locked by password or the file is corrupted %n", unlockedFile);
                 }
             }
         }

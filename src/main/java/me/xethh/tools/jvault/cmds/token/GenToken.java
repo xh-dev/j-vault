@@ -46,9 +46,9 @@ public class GenToken implements Callable<Integer> {
         }
         String fPass = DeenObj.getFullPassword(password);
         if(outBash) {
-            Out.get().println(String.format("export x_credential=%s", fPass));
+            Out.get().printf("export x_credential=%s%n", fPass);
         } else if (outCmd) {
-            Out.get().println(String.format("set x-credential=%s", fPass));
+            Out.get().printf("set x-credential=%s%n", fPass);
         } else {
             if(asKvPass){
                 try(

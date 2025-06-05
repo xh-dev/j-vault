@@ -46,13 +46,13 @@ public class AuthServerSecretGen implements Callable<Integer> {
         System.out.println("Digit: "+digit);
         System.out.println("Algo: "+algo.getFriendlyName());
         System.out.println("period: "+timePeriod);
-        System.out.println(String.format("https://totp.danhersam.com/?digits=%d&period=%d&algorithm=%s&key=%s", digit, timePeriod, algo.getFriendlyName(), gen));
+        System.out.printf("https://totp.danhersam.com/?digits=%d&period=%d&algorithm=%s&key=%s%n", digit, timePeriod, algo.getFriendlyName(), gen);
 
         System.out.println("\n\n==============\n Generated QRCode.png");
         ZxingPngQrGenerator qrGenerator = new ZxingPngQrGenerator();
-        new FileOutputStream("QRCode.png").write(
-                qrGenerator.generate(data)
-        );
+        try(FileOutputStream fos = new FileOutputStream("qr.png")) {
+            fos.write(qrGenerator.generate(data));
+        }
         return 0;
     }
 }

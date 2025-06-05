@@ -43,8 +43,12 @@ public class ZipUnSetPassword implements Callable<Integer> {
             newZipFile.addStream(is, parameters);
         }
         zipFile.close();
-        zipManaging.getFile().delete();
-        newZipFileName.toFile().renameTo(zipManaging.getFile());
+        if(!zipManaging.getFile().delete()){
+            DevScope.log("Failed to delete zip file");
+        }
+        if(!newZipFileName.toFile().renameTo(zipManaging.getFile())){
+            DevScope.log("Failed to rename zip file");
+        }
         DevScope.log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));
         return 0;
     }

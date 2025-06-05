@@ -20,17 +20,19 @@ public class FileDeenTest {
         final var TOKEN = "abcd:sss";
         final var MESSAGE = "helloworld";
         var parent = new File("target/test-case/");
-        parent.mkdirs();
+        if(!parent.mkdirs()){
+            DevScope.log("Folder creation failed");
+        }
 
         assertTrue(parent.exists(), "parent folder should exists");
-        for (var x : parent.listFiles()) {
+        for (var x : Objects.requireNonNull(parent.listFiles())) {
             final var res = x.delete();
             if(!res){
                 DevScope.log(String.format("File[%s] deleted fail", x.toString()));
             }
 
         }
-        assertTrue(Objects.requireNonNull(parent.listFiles()).length == 0, "parent folder should be empty");
+        assertEquals(0, Objects.requireNonNull(parent.listFiles()).length, "parent folder should be empty");
 
         var f = new File(parent, "a.txt");
         var fo = new File(parent, "a.txt.crypt");
@@ -46,25 +48,21 @@ public class FileDeenTest {
         try (var os = new FileOutputStream(f)) {
             os.write(MESSAGE.getBytes(StandardCharsets.UTF_8));
             os.flush();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         assertTrue(f.exists(), "original file should exists before execute command");
 
         new CommandLine(new Main()).execute("file", "-c", TOKEN, "encrypt", "-f", f.getAbsolutePath());
-        assertTrue(!f.exists(), "original file should be deleted after execute command");
+        assertFalse(f.exists(), "original file should be deleted after execute command");
         assertTrue(fo.exists(), "encrypted file should exists after execute command");
 
         new CommandLine(new Main()).execute("file", "-c", TOKEN, "decrypt", "-f", fo.getAbsolutePath());
         assertTrue(f.exists(), "original file should exists after execute second command");
-        assertTrue(!fo.exists(), "encrypted file should be deleted after execute second command");
+        assertFalse(fo.exists(), "encrypted file should be deleted after execute second command");
 
         try (var fi = new FileInputStream(f);) {
             assertEquals(MESSAGE, new String(fi.readAllBytes(), StandardCharsets.UTF_8));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,16 +75,17 @@ public class FileDeenTest {
             final var TOKEN = "abcd:sss";
             final var MESSAGE = "helloworld";
             var parent = new File("target/test-case/");
-            parent.mkdirs();
+            if(parent.mkdirs()){
+                DevScope.log("Folder creation failed");
+            }
 
             assertTrue(parent.exists(), "parent folder should exists");
-            for (var x : parent.listFiles()) {
-                var res =  x.delete();
-                if(!res){
+            for (var x : Objects.requireNonNull(parent.listFiles())) {
+                if(!x.delete()){
                     DevScope.log(String.format("File[%s] deleted fail", x.toString()));
                 }
             }
-            assertTrue(Objects.requireNonNull(parent.listFiles()).length == 0, "parent folder should be empty");
+            assertEquals(0, Objects.requireNonNull(parent.listFiles()).length, "parent folder should be empty");
 
             var f = new File(parent, "a.txt");
             var fo = new File(parent, "a.txt.crypt");
@@ -97,24 +96,22 @@ public class FileDeenTest {
                 }
             }
 
-            assertTrue(!f.exists(), "original file should not exists when init");
-            assertTrue(!fo.exists(), "encrypted file should not exists when init");
+            assertFalse(f.exists(), "original file should not exists when init");
+            assertFalse(fo.exists(), "encrypted file should not exists when init");
             try (var os = new FileOutputStream(f)) {
                 os.write(MESSAGE.getBytes(StandardCharsets.UTF_8));
                 os.flush();
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             assertTrue(f.exists(), "original file should exists before execute command");
 
             new CommandLine(new Main()).execute("file", "-c", TOKEN, "encrypt", "-f", f.getAbsolutePath());
-            assertTrue(!f.exists(), "original file should be deleted after execute command");
+            assertFalse(f.exists(), "original file should be deleted after execute command");
             assertTrue(fo.exists(), "encrypted file should exists after execute command");
 
             new CommandLine(new Main()).execute("file", "-c", TOKEN, "decrypt", "-f", fo.getAbsolutePath(), "--stdout");
-            assertTrue(!f.exists(), "original file should exists after execute second command");
+            assertFalse(f.exists(), "original file should exists after execute second command");
             assertTrue(fo.exists(), "encrypted file should be deleted after execute second command");
 
             assertEquals(MESSAGE + "\n", bos.toString());

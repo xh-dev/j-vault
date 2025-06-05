@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
+import me.xethh.tools.jvault.DevScope;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -74,16 +75,18 @@ public class PdfManaging implements Callable<Integer> {
     static void loadNativeLib(){
         log("Running under graalvm");
         if(System.getProperty("org.graalvm.nativeimage.imagecode") != null) {
-            try {
-
-                final var res = PdfManaging.class.getClassLoader().getResourceAsStream("native.txt");
+            try (
+                    var res = PdfManaging.class.getClassLoader().getResourceAsStream("native.txt");
+            ) {
                 if(res == null){
                     throw new RuntimeException("native.txt not found");
                 }
                 final var nativeTxt = new String(res.readAllBytes(), StandardCharsets.UTF_8);
                 final var tmpDir = System.getProperty("java.io.tmpdir");
                 final var tmpJVaultFolder  = System.getProperty("os.name").toLowerCase().contains("windows")?Path.of(".").toAbsolutePath():Path.of(tmpDir).toAbsolutePath().resolve("tmp-j-vault");
-                tmpJVaultFolder.toFile().mkdirs();
+                if (!tmpJVaultFolder.toFile().mkdirs()) {
+                    DevScope.log("failed to create tmp dir");
+                }
 
                 log("Native library listing file: ");
                 log(nativeTxt);
@@ -92,28 +95,36 @@ public class PdfManaging implements Callable<Integer> {
                 Stream.of(nativeTxt.replace("\r\n", "\n").split("\n")).filter(s -> !s.isEmpty())
                         .filter(libFileName -> !libExists(libFileName.substring(0, libFileName.length() - 4)))
                         .forEach(libFileName -> {
-                    final var s = PdfManaging.class.getClassLoader().getResourceAsStream(libFileName);
-                    if (s != null) {
-                        log(String.format("%s exists in executable %n", libFileName));
-                        if(!tmpJVaultFolder.resolve(libFileName).toFile().exists()) {
-                            log("tmp jvault file does not exist: "+libFileName);
-                            try {
-                                new FileOutputStream(tmpJVaultFolder.resolve(libFileName).toFile()).write(s.readAllBytes());
+                            try (
+                                    var s = PdfManaging.class.getClassLoader().getResourceAsStream(libFileName);
+                            ) {
+                                if (s != null) {
+                                    log(String.format("%s exists in executable %n", libFileName));
+                                    if (!tmpJVaultFolder.resolve(libFileName).toFile().exists()) {
+                                        log("tmp jvault file does not exist: " + libFileName);
+                                        try (
+
+                                                var fos = new FileOutputStream(tmpJVaultFolder.resolve(libFileName).toFile());
+                                        ) {
+                                            fos.write(s.readAllBytes());
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                                            setFileHidden(tmpJVaultFolder.resolve(libFileName));
+                                        }
+                                    } else {
+                                        log("tmp jvault file already exist: " + libFileName);
+                                    }
+                                } else {
+                                    log(String.format("%s not exists%n", libFileName));
+                                    throw new RuntimeException(String.format("%s not exists%n", libFileName));
+                                }
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-                            if(System.getProperty("os.name").toLowerCase().contains("windows")) {
-                                setFileHidden(tmpJVaultFolder.resolve(libFileName));
-                            }
-                        } else {
-                            log("tmp jvault file already exist: "+libFileName);
-                        }
-                    } else {
-                        log(String.format("%s not exists%n", libFileName));
-                        throw new RuntimeException(String.format("%s not exists%n", libFileName));
-                    }
 
-                });
+                        });
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

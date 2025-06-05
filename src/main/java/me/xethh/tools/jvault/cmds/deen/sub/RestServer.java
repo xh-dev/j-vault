@@ -97,7 +97,7 @@ public class RestServer implements Callable<Integer> {
 
 
         try {
-            final var portInt = Integer.valueOf(port);
+            final var portInt = Integer.parseInt(port);
             final var om = new ObjectMapper();
 
             var tokenGen = genToken ? UUID.randomUUID().toString():null;
@@ -191,7 +191,7 @@ public class RestServer implements Callable<Integer> {
                 }
             });
             server.createContext("/kvs", exchange -> {
-                if(exchange.getRequestMethod().toLowerCase().equals("get")) {
+                if(exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     if(genToken){
                         var param = tokenProvider.apply(exchange);
                         if(param.isEmpty()){

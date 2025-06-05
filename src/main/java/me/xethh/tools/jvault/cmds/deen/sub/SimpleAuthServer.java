@@ -133,7 +133,7 @@ public class SimpleAuthServer implements Callable<Integer> {
     private int port;
 
     @CommandLine.Option(names = {"--use-env"}, required = false, arity = "1", description = "Enable to get config from ENV")
-    private boolean useEnv = false;
+    private boolean useEnv;
 
 
 
@@ -238,8 +238,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     }
                     return Optional.empty();
                 }
-                var ddd=deenServer.decryptJsonContainer(key,dd);
-                return ddd;
+                return deenServer.decryptJsonContainer(key,dd);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -334,7 +333,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     os.write(ffff.getBytes());
                     os.close();
                     if(debugging){
-                        System.out.println(String.format("[%s] process completed", exchange.getRequestURI()));
+                        System.out.printf("[%s] process completed%n", exchange.getRequestURI());
                     }
                 }
                 catch(Exception e){
@@ -392,7 +391,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     // Test timing
                     var now=Instant.now();
                     var dateCert=Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(cert.getDate())).atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId());
-                    var timeLimit = dateCert.plus(cert.getExpiresInM(), ChronoUnit.MINUTES);
+                    var timeLimit = dateCert.plusMinutes(cert.getExpiresInM());
                     if(debugging){
                         System.out.println("time now: "+now);
                         System.out.println("time expire: "+timeLimit);
@@ -419,7 +418,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     os.write(ffff.getBytes());
                     os.close();
                     if(debugging){
-                        System.out.println(String.format("[%s] process completed", exchange.getRequestURI()));
+                        System.out.printf("[%s] process completed%n", exchange.getRequestURI());
                     }
                 }
                 catch(Exception e){
