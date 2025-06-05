@@ -46,7 +46,7 @@ public interface AuthServerClient {
                 System.out.println("Path of j-vault credential: "+ path);
             }
 
-            Function<HttpClient, PublicKey> getPubKey = (httpClient)->{
+            Function<HttpClient, Optional<PublicKey>> getPubKey = (httpClient)->{
                 HttpRequest req = null;
                 try {
                     final var url=authServer()+"/a";
@@ -62,14 +62,14 @@ public interface AuthServerClient {
                         System.out.println("response body: "+response.body());
                     }
                     var bs = Base64.getDecoder().decode(response.body());
-                    return RsaEncryption.getPublicKey(bs);
+                    return Optional.ofNullable(RsaEncryption.getPublicKey(bs));
                 } catch (URISyntaxException | IOException  e) {
                     throw new RuntimeException(e);
                 } catch (InterruptedException e){
                     DevScope.printStackTrace(e);
                     Thread.currentThread().interrupt();
                 }
-
+                return Optional.empty();
             };
             BiFunction<HttpClient, PublicKey, String> getCert = (httpClient, key) -> {
                 try{
@@ -179,16 +179,19 @@ public interface AuthServerClient {
             };
 
             // Logic starting
-            PublicKey pubKey=null;
+            Optional<PublicKey> pubKey=null;
             if(!path.toFile().exists()){
                 if(debugging){
                     System.out.println("Creating new key: "+path);
                 }
                 pubKey=  getPubKey.apply(client);
+                if(pubKey.isEmpty()){
+                    System.out.println("Fail to obtain public key: "+path);
+                }
                 if(debugging){
                     System.out.println("Public key obtained");
                 }
-                var tempCert= getCert.apply(client, pubKey);
+                var tempCert= getCert.apply(client, pubKey.orElseThrow());
                 if(debugging){
                     System.out.println("Cert generated: "+tempCert);
                 }
@@ -203,7 +206,7 @@ public interface AuthServerClient {
                 pubKey=  getPubKey.apply(client);
             }
 
-            var code = getCode.apply(client, pubKey);
+            var code = getCode.apply(client, pubKey.orElseThrow());
             if(code.isEmpty()){
                 if(debugging){
                     System.out.println("Code not ready, retry code obtaining process... ");
@@ -221,7 +224,7 @@ public interface AuthServerClient {
                 if(debugging){
                     System.out.println("Request for temp cert again");
                 }
-                var tempCert= getCert.apply(client, pubKey);
+                var tempCert= getCert.apply(client, pubKey.orElseThrow());
                 if(debugging){
                     System.out.println("Temp cert requested");
                 }
@@ -231,7 +234,7 @@ public interface AuthServerClient {
                 if(debugging){
                     System.out.println("Temp cert stored");
                 }
-                var c = getCode.apply(client, pubKey);
+                var c = getCode.apply(client, pubKey.orElseThrow());
                 if(c.isEmpty()){
                     throw new RuntimeException("Code obtaining failed");
                 } else {
