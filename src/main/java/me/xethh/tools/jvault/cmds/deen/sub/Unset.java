@@ -54,12 +54,12 @@ public class Unset implements ConsoleOwner, Callable<Integer> {
                     },
                     (line, kv, byPass) -> {
                         var name = kv.getKey();
-                        Log.debug(() -> "Match name: " + name);
+                        console().debug("Match name: " + name);
                         if (!name.equals(key)) {
-                            Log.debug(() -> "In-match key, write to new file");
+                            console().debug("In-match key, write to new file");
                             cos.write(String.format("%s\n", line).getBytes());
                         } else {
-                            Log.debug(() -> "Match key, skipped");
+                            console().debug("Match key, skipped");
                         }
                     },
                     (line, byPass) -> {

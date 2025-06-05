@@ -215,7 +215,7 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                 }
             });
             server.start();
-            Log.msg(() -> "Restful server started on port " + portInt);
+            console().log("Restful server started on port " + portInt);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

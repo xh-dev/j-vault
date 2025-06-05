@@ -67,9 +67,9 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
 
     public void switchTempFile(Path path, Path tmpPath) {
         var delRs = path.toFile().delete();
-        Log.debug(() -> "delete file result: " + delRs);
+        console().debug("delete file result: " + delRs);
         var renameRs = tmpPath.toFile().renameTo(path.toFile());
-        Log.debug(() -> "rename file result: " + renameRs);
+        console().debug("rename file result: " + renameRs);
     }
 
     public void loopAndFindKey(
@@ -82,13 +82,13 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
         String line;
         while ((line = isr.readLine()) != null) {
             String finalLine = line;
-            Log.debug(() -> "KV line: " + finalLine);
+            console().debug("KV line: " + finalLine);
             final var kv = Common.KVExtractor.extract(line);
-            Log.debug(() -> "Match result: " + kv.isMatch());
+            console().debug("Match result: " + kv.isMatch());
             var byPass = new AtomicBoolean(false);
             if (kv.isMatch()) {
                 var name = kv.getKey();
-                Log.debug(() -> "Match name: " + name);
+                console().debug("Match name: " + name);
                 if (name.equals(key)) {
                     matchKeyLogic.handle(line, kv, byPass);
                     if (byPass.get())

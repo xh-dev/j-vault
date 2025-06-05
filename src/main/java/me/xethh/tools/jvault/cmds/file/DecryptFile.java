@@ -1,7 +1,6 @@
 package me.xethh.tools.jvault.cmds.file;
 
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
-import me.xethh.tools.jvault.cmds.deen.sub.Log;
 import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
@@ -88,7 +87,7 @@ public class DecryptFile implements ConsoleOwner, Callable<Integer> {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                     boolean rs = inFile.delete();
-                    Log.debug(() -> "delete file result: " + rs);
+                    console().debug("delete file result: " + rs);
                 }
             }
         }

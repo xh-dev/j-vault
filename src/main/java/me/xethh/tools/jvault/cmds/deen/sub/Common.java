@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault.cmds.deen.sub;
 
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
+import me.xethh.tools.jvault.display.Console;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -43,7 +44,7 @@ public class Common {
                 throw new RuntimeException(e);
             }
         }).dropWhile(it -> !it.equals((int) '\n')).findFirst();
-        Log.debug(() -> "Skipped the first line: " + first.isPresent());
+        Console.getConsole().debug("Skipped the first line: " + first.isPresent());
     }
 
     public static class KVExtractor {

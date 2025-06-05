@@ -56,21 +56,21 @@ public class Set implements ConsoleOwner, Callable<Integer> {
                     isr,
                     key,
                     (line, matcher, byPass) -> {
-                        Log.debug(() -> "Matching key: ");
+                        console().debug("Matching key: ");
                         if (found.get()) {
-                            Log.debug(() -> "Duplicate line found");
+                            console().debug("Duplicate line found");
                             // Already found refers to duplicate key existing, should be ignored
                             console().log(String.format("Key[%s] already exist, skipped%n", key));
                         } else {
-                            Log.debug(() -> "First value encounter");
+                            console().debug("First value encounter");
                             console().log(String.format("Found key[%s] and replace%n", key));
                             found.set(true);
                             cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
-                            Log.debug(() -> "Complete write value");
+                            console().debug("Complete write value");
                         }
                     },
                     (line, matcher, byPass) -> {
-                        Log.debug(() -> "In-matching key: ");
+                        console().debug("In-matching key: ");
                         cos.write(String.format("%s\n", line).getBytes());
                     },
                     (line, byPass) -> {
@@ -78,7 +78,7 @@ public class Set implements ConsoleOwner, Callable<Integer> {
             );
 
             if (!found.get()) { // The key not found in the whole vault, add to the end
-                Log.debug(() -> "Append KV to the end of vault");
+                console().debug("Append KV to the end of vault");
                 cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
             }
             cos.flush();

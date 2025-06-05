@@ -1,7 +1,7 @@
 package me.xethh.tools.jvault.cmds.file;
 
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
-import me.xethh.tools.jvault.cmds.deen.sub.Log;
+import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
         name = "encrypt",
         description = "Encrypt a specified file with j-vault encryption format"
 )
-public class EncryptFile implements Callable<Integer> {
+public class EncryptFile implements ConsoleOwner,Callable<Integer> {
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.ParentCommand
@@ -58,7 +58,7 @@ public class EncryptFile implements Callable<Integer> {
 
         if (!keep) {
             boolean rs = infile.delete();
-            Log.debug(() -> "delete file result: " + rs);
+            console().debug("delete file result: " + rs);
         }
         return 0;
     }
