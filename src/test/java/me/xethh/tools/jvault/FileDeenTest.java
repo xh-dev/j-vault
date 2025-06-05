@@ -79,8 +79,9 @@ public class FileDeenTest implements ConsoleOwner {
             final var TOKEN = "abcd:sss";
             final var MESSAGE = "helloworld";
             var parent = new File("target/test-case/");
-            if (parent.mkdirs()) {
-                console().log("Folder creation failed");
+
+            if (!parent.exists()) {
+                console().log(String.valueOf(parent.mkdirs()));
             }
 
             assertTrue(parent.exists(), "parent folder should exists");
