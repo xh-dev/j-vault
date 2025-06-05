@@ -18,9 +18,6 @@ public class PdfEncrypt implements Callable<Integer> {
     @CommandLine.ParentCommand
     private PdfManaging pdfManaging;
 
-    //@CommandLine.Option(names = {"--existing-password" }, defaultValue = "", description = "if present, will also test if the password correct")
-    //private String oldPassword;
-
     @CommandLine.Option(names = {"-p", "--password"}, required = true, defaultValue = "", description = "if present, will also test if the password correct")
     private String password;
 

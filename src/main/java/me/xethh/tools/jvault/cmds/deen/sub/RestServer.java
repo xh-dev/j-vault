@@ -28,7 +28,7 @@ import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
         description = "the restful access to the j-vault"
 )
 public class RestServer implements ConsoleOwner, Callable<Integer> {
-    private final static String DEFAULT_PORT = "7910";
+    private static final String DEFAULT_PORT = "7910";
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")

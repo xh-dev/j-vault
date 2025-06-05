@@ -19,7 +19,6 @@ import java.util.Base64;
 public class DeenObj {
     public static final int DEFAULT_SALT1_LENGTH = 4;
     public static final String ALGO = "AES/CBC/PKCS5Padding";
-    //private static final boolean DEBUG = false;
     public final SecretKey key;
     public final IvParameterSpec iv;
     public final String fileHeader;

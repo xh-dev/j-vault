@@ -30,6 +30,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.CONTENT_TYPE;
@@ -53,6 +54,22 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
     private int port;
     @CommandLine.Option(names = {"--use-env"}, required = false, arity = "1", description = "Enable to get config from ENV")
     private boolean useEnv;
+
+    public static interface CustomHandler extends ConsoleOwner, HttpHandler {
+
+        @Override
+        default void handle(HttpExchange exchange) throws IOException {
+            try {
+                console().log("received request: " + exchange.getRequestURI());
+                doProcessing(exchange);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+            public void doProcessing (HttpExchange exchange);
+        }
 
     @Override
     public Integer call() throws Exception {
@@ -88,10 +105,11 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
         DeEnCryptorImpl deenServer = DeEnCryptor.instance(kp.getPublic(), kp.getPrivate());
 
+        Consumer<HttpExchange> logRequest = (exchange) -> console().log("received request: " + exchange.getRequestURI());
         server.createContext("/a", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                console().log("received request: " + exchange.getRequestURI());
+                logRequest.accept(exchange);
                 var response = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
                 exchange.getResponseHeaders().set(CONTENT_TYPE, TEXT_PLAIN);
                 exchange.sendResponseHeaders(200, response.length());
@@ -143,7 +161,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         server.createContext("/b", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                console().log("received request: " + exchange.getRequestURI());
+                logRequest.accept(exchange);
                 try {
                     var pubKeyOpt = getSender.apply(exchange);
                     if (pubKeyOpt.isEmpty()) {
@@ -226,7 +244,7 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                console().log("received request: " + exchange.getRequestURI());
+                logRequest.accept(exchange);
                 var pubKeyOpt = getSender.apply(exchange);
                 if (pubKeyOpt.isEmpty()) {
                     console().debug("Cannot sender available");
