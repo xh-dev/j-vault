@@ -1,7 +1,5 @@
 package me.xethh.tools.jvault.authserv;
 
-import com.beust.jcommander.internal.Console;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.HashingAlgorithm;

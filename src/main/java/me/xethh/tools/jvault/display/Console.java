@@ -1,7 +1,5 @@
 package me.xethh.tools.jvault.display;
 
-import me.xethh.libs.encryptDecryptLib.jwtVer.Sys;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;

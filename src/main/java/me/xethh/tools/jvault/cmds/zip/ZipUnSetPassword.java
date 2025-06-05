@@ -1,6 +1,5 @@
 package me.xethh.tools.jvault.cmds.zip;
 
-import me.xethh.tools.jvault.display.Console;
 import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;

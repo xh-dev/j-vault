@@ -1,7 +1,6 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
 import me.xethh.tools.jvault.display.Console;
-import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;

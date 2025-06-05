@@ -4,7 +4,6 @@ import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import net.lingala.zip4j.ZipFile;
 import picocli.CommandLine;
 
-import java.awt.datatransfer.ClipboardOwner;
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.Callable;
