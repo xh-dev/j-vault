@@ -51,7 +51,7 @@ public class EncryptFile implements ConsoleOwner,Callable<Integer> {
                 var is = deObj.encryptInputStream(new FileInputStream(infile));
                 var os = new FileOutputStream(outFile)
         ) {
-            os.write(String.format("%s\n", deObj.fileHeader).getBytes());
+            os.write(String.format("%s%n", deObj.fileHeader).getBytes());
             os.flush();
             is.transferTo(os);
         }

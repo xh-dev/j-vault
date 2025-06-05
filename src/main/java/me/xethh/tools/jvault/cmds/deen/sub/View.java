@@ -12,7 +12,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
+import static me.xethh.tools.jvault.cmds.deen.sub.Common.skipFirstLine;
 
 @CommandLine.Command(
         name = "view",
@@ -47,7 +47,7 @@ public class View implements ConsoleOwner, Callable<Integer> {
         try (
                 var is = new FileInputStream(path.toFile());
         ) {
-            SkipFirstLine(is);
+            skipFirstLine(is);
             try (
                     var isr = new BufferedReader(new InputStreamReader(deObj.decryptInputStream(is)));
             ) {

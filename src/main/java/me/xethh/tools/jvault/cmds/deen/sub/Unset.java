@@ -7,7 +7,7 @@ import picocli.CommandLine;
 import java.io.*;
 import java.util.concurrent.Callable;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
+import static me.xethh.tools.jvault.cmds.deen.sub.Common.skipFirstLine;
 
 @CommandLine.Command(
         name = "unset",
@@ -43,7 +43,7 @@ public class Unset implements ConsoleOwner, Callable<Integer> {
                 var os = new FileOutputStream(tmpPath.toFile());
                 var cos = deObj.encryptOutputStream(os);
         ) {
-            SkipFirstLine(is);
+            skipFirstLine(is);
             deen.writeHeader(os, deObj);
 
             deen.loopAndFindKey(
@@ -57,7 +57,7 @@ public class Unset implements ConsoleOwner, Callable<Integer> {
                         console().debug("Match name: " + name);
                         if (!name.equals(key)) {
                             console().debug("In-match key, write to new file");
-                            cos.write(String.format("%s\n", line).getBytes());
+                            cos.write(String.format("%s%n", line).getBytes());
                         } else {
                             console().debug("Match key, skipped");
                         }

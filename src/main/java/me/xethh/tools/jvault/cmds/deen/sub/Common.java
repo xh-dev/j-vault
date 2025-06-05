@@ -21,7 +21,7 @@ public class Common {
             var deObj = DeenObj.fromLine(credsEnv, saltWithIV);
             try (var os = new FileOutputStream(path.toString());
                  var cis = deObj.encryptInputStream(new ByteArrayInputStream("".getBytes()))) {
-                os.write(String.format("%s\n", saltWithIV).getBytes());
+                os.write(String.format("%s%n", saltWithIV).getBytes());
                 cis.transferTo(os);
                 os.flush();
             } catch (Exception ex) {
@@ -36,7 +36,7 @@ public class Common {
         }
     }
 
-    public static void SkipFirstLine(InputStream is) throws IOException {
+    public static void skipFirstLine(InputStream is) {
         var first = Stream.generate(() -> {
             try {
                 return is.read();
@@ -48,7 +48,10 @@ public class Common {
     }
 
     public static class KVExtractor {
-        final private static Pattern PATTERN = Pattern.compile("(^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\._-]*)=(.*)$");
+        private KVExtractor() {
+            throw new IllegalStateException("Not expected to be instantiated");
+        }
+        private static final Pattern PATTERN = Pattern.compile("(^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\._-]*)=(.*)$");
 
         public static KV extract(String line) {
             final var matcher = PATTERN.matcher(line);

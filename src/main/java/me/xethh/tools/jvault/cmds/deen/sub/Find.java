@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
+import static me.xethh.tools.jvault.cmds.deen.sub.Common.skipFirstLine;
 
 @CommandLine.Command(
         name = "find",
@@ -51,7 +51,7 @@ public class Find implements ConsoleOwner, Callable<Integer> {
                      )
              )
         ) {
-            SkipFirstLine(is);
+            skipFirstLine(is);
 
             var foundValue = new AtomicReference<Optional<String>>(Optional.empty());
 

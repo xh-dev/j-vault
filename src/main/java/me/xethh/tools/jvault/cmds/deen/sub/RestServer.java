@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
+import static me.xethh.tools.jvault.cmds.deen.sub.Common.skipFirstLine;
 import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
 
 @CommandLine.Command(
@@ -28,12 +28,12 @@ import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
         description = "the restful access to the j-vault"
 )
 public class RestServer implements ConsoleOwner, Callable<Integer> {
-    final static String DefaultPort = "7910";
+    private final static String DEFAULT_PORT = "7910";
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
     private boolean helpRequested;
     @CommandLine.Option(names = {"-f", "--file"}, defaultValue = "vault.kv", description = "The file to encrypt")
     private File file;
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = DefaultPort, description = "the port to be used for setup restful server, default as `" + DefaultPort + "`", required = true)
+    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = DEFAULT_PORT, description = "the port to be used for setup restful server, default as `" + DEFAULT_PORT + "`", required = true)
     private String port;
 
     @CommandLine.Option(names = {"--harden"}, description = "If defined, a secure token will be generate.")
@@ -44,30 +44,6 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
 
     @CommandLine.ParentCommand
     private Vault deen;
-
-
-    private static Map<String, String> parseQueryParams(String queryString) {
-        Map<String, String> queryParams = new HashMap<>();
-        if (queryString == null || queryString.isEmpty()) {
-            return queryParams;
-        }
-
-        // Split the query string by '&' to get individual key=value pairs
-        String[] pairs = queryString.split("&");
-        for (String pair : pairs) {
-            // Split each pair by '='
-            int idx = pair.indexOf("=");
-            if (idx > 0) { // Ensure there's a key and a value
-                String key = URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8);
-                String value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8);
-                queryParams.put(key, value);
-            } else if (idx == -1 && !pair.isEmpty()) { // Handle parameters without a value (e.g., "?flag")
-                String key = URLDecoder.decode(pair, StandardCharsets.UTF_8);
-                queryParams.put(key, ""); // Assign an empty string value
-            }
-        }
-        return queryParams;
-    }
 
     @Override
     public Integer call() throws Exception {
@@ -81,7 +57,7 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
         try (
                 var is = new FileInputStream(path.toFile());
         ) {
-            SkipFirstLine(is);
+            skipFirstLine(is);
             try (
                     var isr = new BufferedReader(new InputStreamReader(deObj.decryptInputStream(is)));
             ) {

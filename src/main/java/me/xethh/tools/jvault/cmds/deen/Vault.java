@@ -61,7 +61,7 @@ public class Vault implements ConsoleOwner, Callable<Integer>, CredentialOwner {
     }
 
     public void writeHeader(OutputStream os, DeenObj deObj) throws IOException {
-        os.write(String.format("%s\n", deObj.fileHeader).getBytes());
+        os.write(String.format("%s%n", deObj.fileHeader).getBytes());
         os.flush();
     }
 

@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static me.xethh.tools.jvault.cmds.deen.sub.Common.SkipFirstLine;
+import static me.xethh.tools.jvault.cmds.deen.sub.Common.skipFirstLine;
 
 @CommandLine.Command(
         name = "set",
@@ -47,7 +47,7 @@ public class Set implements ConsoleOwner, Callable<Integer> {
              );
              var cos = deObj.encryptOutputStream(os);
         ) {
-            SkipFirstLine(is);
+            skipFirstLine(is);
             deen.writeHeader(os, deObj);
 
             final var found = new AtomicBoolean(false);
@@ -65,13 +65,13 @@ public class Set implements ConsoleOwner, Callable<Integer> {
                             console().debug("First value encounter");
                             console().log(String.format("Found key[%s] and replace%n", key));
                             found.set(true);
-                            cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
+                            cos.write(String.format("%s=%s%n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
                             console().debug("Complete write value");
                         }
                     },
                     (line, matcher, byPass) -> {
                         console().debug("In-matching key: ");
-                        cos.write(String.format("%s\n", line).getBytes());
+                        cos.write(String.format("%s%n", line).getBytes());
                     },
                     (line, byPass) -> {
                     }
@@ -79,7 +79,7 @@ public class Set implements ConsoleOwner, Callable<Integer> {
 
             if (!found.get()) { // The key not found in the whole vault, add to the end
                 console().debug("Append KV to the end of vault");
-                cos.write(String.format("%s=%s\n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
+                cos.write(String.format("%s=%s%n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
             }
             cos.flush();
         }
