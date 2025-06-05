@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault.cmds.pdf;
 
+import me.xethh.tools.jvault.DevScope;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -39,10 +40,16 @@ public class PdfModification {
             doc2.save(path.resolve(fnTemp).toFile());
             doc2.close();
             final var delRes = path.resolve(fn).toFile().delete();
+            if(!delRes) {
+                DevScope.log("Failed to delete " + fnTemp);
+            }
             if (path.resolve(fn).toFile().exists()) {
                 throw new RuntimeException("File not deleted!");
             }
             final var rnRes = path.resolve(fnTemp).toFile().renameTo(path.resolve(fn).toFile());
+            if(!rnRes) {
+                DevScope.log("Failed to rename " + fnTemp);
+            }
             if (path.resolve(fnTemp).toFile().exists()) {
                 throw new RuntimeException("File not renamed!");
             }

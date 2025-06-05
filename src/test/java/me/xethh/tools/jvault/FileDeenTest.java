@@ -8,8 +8,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("File decrypt and encrypt test")
 public class FileDeenTest {
@@ -25,17 +24,25 @@ public class FileDeenTest {
 
         assertTrue(parent.exists(), "parent folder should exists");
         for (var x : parent.listFiles()) {
-            x.delete();
+            final var res = x.delete();
+            if(!res){
+                DevScope.log(String.format("File[%s] deleted fail", x.toString()));
+            }
+
         }
         assertTrue(Objects.requireNonNull(parent.listFiles()).length == 0, "parent folder should be empty");
 
         var f = new File(parent, "a.txt");
         var fo = new File(parent, "a.txt.crypt");
-        if (f.exists())
-            f.delete();
+        if (f.exists()) {
+            var res = f.delete();
+            if(!res){
+                DevScope.log(String.format("File[%s] deleted fail", f.toString()));
+            }
+        }
 
-        assertTrue(!f.exists(), "original file should not exists when init");
-        assertTrue(!fo.exists(), "encrypted file should not exists when init");
+        assertFalse(f.exists(), "original file should not exists when init");
+        assertFalse(fo.exists(), "encrypted file should not exists when init");
         try (var os = new FileOutputStream(f)) {
             os.write(MESSAGE.getBytes(StandardCharsets.UTF_8));
             os.flush();
@@ -74,14 +81,21 @@ public class FileDeenTest {
 
             assertTrue(parent.exists(), "parent folder should exists");
             for (var x : parent.listFiles()) {
-                x.delete();
+                var res =  x.delete();
+                if(!res){
+                    DevScope.log(String.format("File[%s] deleted fail", x.toString()));
+                }
             }
             assertTrue(Objects.requireNonNull(parent.listFiles()).length == 0, "parent folder should be empty");
 
             var f = new File(parent, "a.txt");
             var fo = new File(parent, "a.txt.crypt");
-            if (f.exists())
-                f.delete();
+            if (f.exists()) {
+                var res = f.delete();
+                if(!res){
+                    DevScope.log(String.format("File[%s] deleted fail", f.toString()));
+                }
+            }
 
             assertTrue(!f.exists(), "original file should not exists when init");
             assertTrue(!fo.exists(), "encrypted file should not exists when init");

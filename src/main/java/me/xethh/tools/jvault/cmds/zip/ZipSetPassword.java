@@ -49,8 +49,14 @@ public class ZipSetPassword implements Callable<Integer> {
                 newZipFile.addStream(is, parameters);
             }
             zipFile.close();
-            zipManaging.getFile().delete();
-            newZipFileName.toFile().renameTo(zipManaging.getFile());
+            var res = zipManaging.getFile().delete();
+            if (!res) {
+                DevScope.log("Failed to delete zip file");
+            }
+            res =newZipFileName.toFile().renameTo(zipManaging.getFile());
+            if(!res){
+                DevScope.log("Failed to rename zip file");
+            }
             DevScope.log(String.format("file [%s] is now zip with password.", zipManaging.getFile().getName()));
         }
         return 0;
