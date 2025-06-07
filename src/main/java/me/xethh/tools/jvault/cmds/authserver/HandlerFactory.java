@@ -125,7 +125,9 @@ public class HandlerFactory implements ConsoleOwner {
                 final var processedResult = Try.of(()->handlingEncryptedData.process(
                         publicKey,
                         kp,
-                        clazz.isAssignableFrom(String.class)?(T)ddd:new ObjectMapper().readValue(ddd, clazz)));
+                        clazz.isAssignableFrom(String.class) ?
+                                (T) ddd :
+                                new ObjectMapper().readValue(ddd, clazz)));
 
 
                 if(processedResult.isFailure()){

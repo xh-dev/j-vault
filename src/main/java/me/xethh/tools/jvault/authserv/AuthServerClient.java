@@ -5,6 +5,7 @@ import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.exceptions.CodeGenerationException;
 import dev.samstevens.totp.time.SystemTimeProvider;
+import io.vavr.control.Try;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
 import me.xethh.tools.jvault.cmds.authserver.SimpleAuthServer;
@@ -28,10 +29,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public interface AuthServerClient extends ConsoleOwner {
+    public static class TestConst{
+        public static final String TEST_SECRET="S3XARBLC62OBDS4MWZVLIJREKFP3554P";
+        public static final int TIME_PERIOD = 30;
+        public static final HashingAlgorithm ALGO = HashingAlgorithm.SHA512;
+        public static final int CODE_DIGIT = 8;
+
+    }
     String authServer();
 
     default Optional<String> protocolAbcA(HttpClient httpClient){
@@ -62,23 +68,22 @@ public interface AuthServerClient extends ConsoleOwner {
         return Optional.empty();
     }
 
-    default Optional<String> protocolAbcB(HttpClient client, ObjectMapper om, PublicKey key, KeyPair kp, String user){
+    default Optional<String> protocolAbcB(HttpClient client, ObjectMapper om, PublicKey key, KeyPair kp, String user, String codeInput){
         var deClient = (DeEnCryptor)DeEnCryptor.instance(kp.getPublic(), kp.getPrivate());
         try {
-            if (console().isDebugging()) {
-                final var timePeriod = 30;
-                final var timeProvider = new SystemTimeProvider();
-                final var algo = HashingAlgorithm.SHA512;
-                final var codeDigit = 8;
-                final var debugging_sc = "S3XARBLC62OBDS4MWZVLIJREKFP3554P";
-                console().debug("Debugging with testing secret: " + debugging_sc);
-                final var codeGen = new DefaultCodeGenerator(algo, codeDigit);
-                final var codeNow = codeGen.generate(debugging_sc, Math.floorDiv(timeProvider.getTime(), timePeriod));
-                console().debug("Debugging totp: " + codeNow);
-            }
-            Scanner scanner = new Scanner(System.in);
-            console().log("Please enter the totp: ");
-            var codeInput = scanner.nextLine();
+            //if (console().isDebugging()) { final var timePeriod = TestConst.TIME_PERIOD;
+            //    final var timeProvider = new SystemTimeProvider();
+            //    final var algo = TestConst.ALGO;
+            //    final var codeDigit = TestConst.CODE_DIGIT;
+            //    final var debugging_sc = TestConst.TEST_SECRET;
+            //    console().debug("Debugging with testing secret: " + debugging_sc);
+            //    final var codeGen = new DefaultCodeGenerator(algo, codeDigit);
+            //    final var codeNow = codeGen.generate(debugging_sc, Math.floorDiv(timeProvider.getTime(), timePeriod));
+            //    console().debug("Debugging totp: " + codeNow);
+            //}
+            //Scanner scanner = new Scanner(System.in);
+            //console().log("Please enter the totp: ");
+            //var codeInput = scanner.nextLine();
             console().log("Input code: " + codeInput);
             var req = new SimpleAuthServer.Request();
             req.setExpiresInM(30);
@@ -113,7 +118,7 @@ public interface AuthServerClient extends ConsoleOwner {
         } catch (InterruptedException e) {
             console().printStackTrace(e);
             Thread.currentThread().interrupt();
-        } catch (IOException | URISyntaxException | CodeGenerationException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
         return Optional.empty();
@@ -157,6 +162,28 @@ public interface AuthServerClient extends ConsoleOwner {
             Thread.currentThread().interrupt();
         }
         return Optional.empty();
+    }
+
+    default String nextCode(HashingAlgorithm algo, int digit, String secret, int timePeriod) throws CodeGenerationException {
+        final var timeProvider = new SystemTimeProvider();
+        final var codeGen = new DefaultCodeGenerator(algo, digit);
+        return codeGen.generate(secret, Math.floorDiv(timeProvider.getTime(), timePeriod));
+    }
+
+    default Try<String> getCodeInput(){
+        return Try.of(()->{
+            if (console().isDebugging()) { final var timePeriod = TestConst.TIME_PERIOD;
+                final var algo = TestConst.ALGO;
+                final var codeDigit = TestConst.CODE_DIGIT;
+                final var debugging_sc = TestConst.TEST_SECRET;
+                console().debug("Debugging with testing secret: " + debugging_sc);
+                final var codeNow = nextCode(algo, codeDigit, debugging_sc, timePeriod);
+                console().debug("Debugging totp: " + codeNow);
+            }
+            Scanner scanner = new Scanner(System.in);
+            console().log("Please enter the totp: ");
+            return scanner.nextLine();
+        });
     }
 
     default String getCode(String user) {
@@ -304,7 +331,7 @@ public interface AuthServerClient extends ConsoleOwner {
                     console().log("Fail to obtain public key: " + path);
                 }
                 console().debug("Public key obtained");
-                var tempCert = protocolAbcB(client, om, pubKey.orElseThrow(), kp, user);
+                var tempCert = protocolAbcB(client, om, pubKey.orElseThrow(), kp, user, getCodeInput().get());
                 console().debug("Cert generated: " + tempCert);
                 var os = new FileOutputStream(path.toFile());
                 os.write(tempCert.orElseThrow().getBytes());
@@ -330,7 +357,7 @@ public interface AuthServerClient extends ConsoleOwner {
                 }
 
                 console().debug("Request for temp cert again");
-                var tempCert = protocolAbcB(client, om, pubKey.orElseThrow(), kp, user);
+                var tempCert = protocolAbcB(client, om, pubKey.orElseThrow(), kp, user, getCodeInput().get());
                 console().debug("Temp cert requested");
                 var os = new FileOutputStream(path.toFile());
                 os.write(tempCert.orElseThrow().getBytes());

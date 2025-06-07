@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class Console {
-    public static final boolean DEBUGGING = Optional.ofNullable(System.getenv("DEV")).isPresent();
+    public boolean isDebugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
     private static Console instance;
     private final PrintStream display;
     private final PrintStream error;
@@ -44,7 +44,7 @@ public class Console {
 
     public void debug(String msg) {
         try {
-            if (DEBUGGING) {
+            if (isDebugging) {
                 error.write((msg + "\n").getBytes(StandardCharsets.UTF_8));
             }
         } catch (IOException e) {
@@ -53,11 +53,11 @@ public class Console {
     }
 
     public boolean isDebugging() {
-        return DEBUGGING;
+        return isDebugging;
     }
 
     public void doIfDebug(Runnable runnable) {
-        if (DEBUGGING) {
+        if (isDebugging) {
             runnable.run();
         }
     }
@@ -71,9 +71,17 @@ public class Console {
     }
 
     public void printStackTrace(Throwable throwable) {
-        if (DEBUGGING) {
+        if (isDebugging) {
             throwable.printStackTrace(error);
         }
+    }
+
+    public void setDebugging() {
+        this.isDebugging = true;
+    }
+
+    public void disableDebugging() {
+        this.isDebugging = false;
     }
 
 
