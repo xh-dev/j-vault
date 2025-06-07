@@ -1,13 +1,13 @@
 package me.xethh.tools.jvault;
 
+import io.vavr.CheckedRunnable;
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
 import me.xethh.tools.jvault.display.Console;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -48,6 +48,21 @@ public class PasswordGenTest {
         System.setOut(o);
         return os;
     }
+
+    public static void borrowStdOutV2(InputStream is, OutputStream os, OutputStream es, CheckedRunnable r) {
+        var i = System.in;
+        var o = System.out;
+        var e = System.err;
+        System.setIn(is);
+        System.setOut(new PrintStream(os, true, StandardCharsets.UTF_8));
+        System.setErr(new PrintStream(es, true, StandardCharsets.UTF_8));
+        Console.restConsole();
+        r.unchecked().run();
+        System.setIn(i);
+        System.setOut(o);
+        System.setErr(e);
+    }
+
 
     @Test
     @DisplayName("When run j-vault token gen")

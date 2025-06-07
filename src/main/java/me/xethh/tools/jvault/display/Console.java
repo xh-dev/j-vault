@@ -1,6 +1,9 @@
 package me.xethh.tools.jvault.display;
 
+import io.vavr.CheckedRunnable;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -8,18 +11,20 @@ import java.util.Optional;
 public class Console {
     public boolean isDebugging = Optional.ofNullable(System.getenv("DEV")).isPresent();
     private static Console instance;
+    private final InputStream inputStream;
     private final PrintStream display;
     private final PrintStream error;
-    private Console(PrintStream display, PrintStream error) {
+    private Console(InputStream is, PrintStream display, PrintStream error) {
+        this.inputStream = is;
         this.display = display;
         this.error = error;
     }
 
     public static Console getConsole() {
         if (instance == null) {
-            instance = new Console(System.out, System.err);
+            instance = new Console(System.in, System.out, System.err);
         }
-        return new Console(System.out, System.err);
+        return instance;
     }
 
     public static void restConsole() {
@@ -56,9 +61,9 @@ public class Console {
         return isDebugging;
     }
 
-    public void doIfDebug(Runnable runnable) {
+    public void doIfDebug(CheckedRunnable runnable) {
         if (isDebugging) {
-            runnable.run();
+            runnable.unchecked().run();
         }
     }
 
