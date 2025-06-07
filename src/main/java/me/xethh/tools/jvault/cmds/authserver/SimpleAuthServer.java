@@ -2,7 +2,6 @@ package me.xethh.tools.jvault.cmds.authserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeVerifier;
@@ -56,21 +55,6 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
     @CommandLine.Option(names = {"--use-env"}, required = false, arity = "1", description = "Enable to get config from ENV")
     private boolean useEnv;
 
-    public static interface CustomHandler extends ConsoleOwner, HttpHandler {
-
-        @Override
-        default void handle(HttpExchange exchange) throws IOException {
-            try {
-                console().log("received request: " + exchange.getRequestURI());
-                doProcessing(exchange);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-
-            public void doProcessing (HttpExchange exchange);
-        }
 
     @Override
     public Integer call() throws Exception {
