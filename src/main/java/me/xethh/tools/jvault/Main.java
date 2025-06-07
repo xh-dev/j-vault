@@ -7,7 +7,7 @@ package me.xethh.tools.jvault;
 import me.xethh.tools.jvault.cmds.autocomplete.GenAutoCompleteCmd;
 import me.xethh.tools.jvault.cmds.debug.DebugTools;
 import me.xethh.tools.jvault.cmds.deen.Vault;
-import me.xethh.tools.jvault.cmds.deen.sub.AuthServer;
+import me.xethh.tools.jvault.cmds.authserver.AuthServer;
 import me.xethh.tools.jvault.cmds.file.FileCommand;
 import me.xethh.tools.jvault.cmds.openssl.Openssl;
 import me.xethh.tools.jvault.cmds.pdf.PdfManaging;

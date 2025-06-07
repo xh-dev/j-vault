@@ -7,7 +7,7 @@ import dev.samstevens.totp.exceptions.CodeGenerationException;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
-import me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer;
+import me.xethh.tools.jvault.cmds.authserver.SimpleAuthServer;
 import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 

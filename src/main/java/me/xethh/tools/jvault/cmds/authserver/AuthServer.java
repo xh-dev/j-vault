@@ -1,5 +1,6 @@
-package me.xethh.tools.jvault.cmds.deen.sub;
+package me.xethh.tools.jvault.cmds.authserver;
 
+import me.xethh.tools.jvault.cmds.deen.sub.AuthServerSecretGen;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;

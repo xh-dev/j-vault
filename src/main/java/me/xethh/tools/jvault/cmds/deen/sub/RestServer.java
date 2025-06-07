@@ -20,8 +20,8 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import static me.xethh.tools.jvault.cmds.authserver.HandlerFactory.Const.*;
 import static me.xethh.tools.jvault.cmds.deen.sub.Common.skipFirstLine;
-import static me.xethh.tools.jvault.cmds.deen.sub.SimpleAuthServer.Const.*;
 
 @CommandLine.Command(
         name = "over-http",

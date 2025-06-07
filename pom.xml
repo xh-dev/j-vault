@@ -58,7 +58,11 @@
             <artifactId>picocli-codegen</artifactId>
             <version>4.7.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.6</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

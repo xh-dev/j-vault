@@ -3,6 +3,11 @@ package me.xethh.tools.jvault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SimpleAuthServerTest {
     @Test
     @DisplayName("When run j-vault auth-server code-gen -i some-app -n some-user")
-    void testOpensslEncryptCommand() {
+    void testAuthServerCodeGen() {
         PasswordGenTest.borrowStdOut(os->{
             String filename = "qr.png";
             Path path = Path.of(filename);
