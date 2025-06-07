@@ -55,13 +55,13 @@ public class View implements ConsoleOwner, Callable<Integer> {
                 while ((line = isr.readLine()) != null) {
                     final var kv = Common.KVExtractor.extract(URLDecoder.decode(line, StandardCharsets.UTF_8));
                     if (outBash) {
-                        console().log(String.format("export %s=\"%s\"%n", kv.getKey().replace("-", "_"), kv.getValue()));
+                        console().log(String.format("export %s=\"%s\"", kv.getKey().replace("-", "_"), kv.getValue()));
                     } else if (outCmd) {
-                        console().log(String.format("set %s=%s%n", kv.getKey(), kv.getValue()));
+                        console().log(String.format("set %s=%s", kv.getKey(), kv.getValue()));
                     } else if (outRaw) {
                         console().log(line);
                     } else {
-                        console().log(String.format("%s=%s%n", kv.getKey(), kv.getValue()));
+                        console().log(String.format("%s=%s", kv.getKey(), kv.getValue()));
                     }
                 }
             }

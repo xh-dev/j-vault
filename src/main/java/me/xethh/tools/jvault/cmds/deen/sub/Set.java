@@ -63,7 +63,7 @@ public class Set implements ConsoleOwner, Callable<Integer> {
                             console().log(String.format("Key[%s] already exist, skipped%n", key));
                         } else {
                             console().debug("First value encounter");
-                            console().log(String.format("Found key[%s] and replace%n", key));
+                            console().log(String.format("Found key[%s] and replace", key));
                             found.set(true);
                             cos.write(String.format("%s=%s%n", key, URLEncoder.encode(value, StandardCharsets.UTF_8)).getBytes());
                             console().debug("Complete write value");
