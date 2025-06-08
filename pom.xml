@@ -38,6 +38,9 @@
                                     <formats>
                                         <format>XML</format>
                                     </formats>
+                                    <excludes>
+                                        <exclude>src/test/**</exclude>
+                                    </excludes>
                                 </configuration>
                             </execution>
                         </executions>
