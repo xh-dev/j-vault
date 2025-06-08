@@ -39,7 +39,7 @@
                                         <format>XML</format>
                                     </formats>
                                     <excludes>
-                                        <exclude>**/test/**</exclude>
+                                        <exclude>**/src/test/**</exclude>
                                         <exclude>get-so.py</exclude>
                                         <exclude>get_version.py</exclude>
                                     </excludes>
