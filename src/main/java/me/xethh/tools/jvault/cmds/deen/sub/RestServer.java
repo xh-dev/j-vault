@@ -92,7 +92,9 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                     .findFirst();
 
             String finalTokenGen = tokenGen;
-            assert finalTokenGen != null; // officially guaranteed in the coding level
+            if( genToken){
+                assert finalTokenGen != null; // officially guaranteed in the coding level
+            }
 
             server.createContext("/keys", exchange -> {
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
@@ -192,6 +194,8 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
             });
             server.start();
             console().log("Restful server started on port " + portInt);
+            console().log("Plean enter shutdown the server");
+            new Scanner(System.in).nextLine();
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

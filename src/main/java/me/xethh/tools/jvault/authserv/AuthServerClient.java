@@ -36,6 +36,7 @@ public interface AuthServerClient extends ConsoleOwner {
         public static final int TIME_PERIOD = 30;
         public static final HashingAlgorithm ALGO = HashingAlgorithm.SHA512;
         public static final int CODE_DIGIT = 8;
+        public static final String TEST_TOKEN="7pYAsBKS2BNLgIEHDwvCAw==:+QZ58g==";
 
     }
     String authServer();

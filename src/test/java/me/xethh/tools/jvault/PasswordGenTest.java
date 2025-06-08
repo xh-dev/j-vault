@@ -2,6 +2,7 @@ package me.xethh.tools.jvault;
 
 import io.vavr.CheckedRunnable;
 import io.vavr.Tuple3;
+import io.vavr.control.Try;
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
 import me.xethh.tools.jvault.display.Console;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,11 @@ public class PasswordGenTest {
     //    return os;
     //}
 
+    public static Tuple3<PipedOutputStream, ByteArrayOutputStream, ByteArrayOutputStream> streamsWithPipe() {
+        return Try.of(()->{
+            return new Tuple3<>(new PipedOutputStream(), new ByteArrayOutputStream(), new ByteArrayOutputStream());
+        }).getOrElseThrow(x->new RuntimeException(x));
+    }
     public static Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> streams() {
         return streams(new byte[]{});
     }
@@ -58,6 +64,25 @@ public class PasswordGenTest {
         return new Tuple3<>(new ByteArrayInputStream(data), new ByteArrayOutputStream(), new ByteArrayOutputStream() );
     }
 
+    public static void borrowStdOutV3(PipedOutputStream ios, OutputStream os, OutputStream es, CheckedRunnable r) {
+        var i = System.in;
+        var o = System.out;
+        var e = System.err;
+        try(
+                var iis = new PipedInputStream(ios);
+                ){
+            System.setIn(iis);
+            System.setOut(new PrintStream(os, true, StandardCharsets.UTF_8));
+            System.setErr(new PrintStream(es, true, StandardCharsets.UTF_8));
+            Console.restConsole();
+            r.unchecked().run();
+            System.setIn(i);
+            System.setOut(o);
+            System.setErr(e);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     public static void borrowStdOutV2(InputStream is, OutputStream os, OutputStream es, CheckedRunnable r) {
         var i = System.in;
         var o = System.out;
