@@ -196,6 +196,7 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
             console().log("Restful server started on port " + portInt);
             console().log("Plean enter shutdown the server");
             new Scanner(System.in).nextLine();
+            server.stop(1);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
