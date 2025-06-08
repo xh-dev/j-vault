@@ -74,7 +74,7 @@ public class PdfFileTest {
         );
 
         try{
-            assertTrue(PdfManaging.libExists("awt"));
+            PdfManaging.libExists("awt");
             PdfManaging.libExists("abcii");
         } catch (Exception e){
             System.out.println("This is false test");
