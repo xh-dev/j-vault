@@ -75,7 +75,8 @@ class FileDeenTest implements ConsoleOwner {
     @Test
     @DisplayName("When run j-vault file encrypt -f target/test-case/a.txt --stdout")
     void testFileEncryptDecryptAsStdout() {
-        PasswordGenTest.borrowStdOut(bos -> {
+        var streams = PasswordGenTest.streams();
+        PasswordGenTest.borrowStdOutV2(streams._1(),streams._2(),streams._3(),() -> {
             final var TOKEN = "abcd:sss";
             final var MESSAGE = "helloworld";
             var parent = new File("target/test-case/");
@@ -119,7 +120,7 @@ class FileDeenTest implements ConsoleOwner {
             assertFalse(f.exists(), "original file should exists after execute second command");
             assertTrue(fo.exists(), "encrypted file should be deleted after execute second command");
 
-            assertEquals(MESSAGE + "\n", bos.toString());
+            assertEquals(MESSAGE + "\n", streams._2().toString());
 
         });
     }

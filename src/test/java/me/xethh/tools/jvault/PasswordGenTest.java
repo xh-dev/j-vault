@@ -1,6 +1,7 @@
 package me.xethh.tools.jvault;
 
 import io.vavr.CheckedRunnable;
+import io.vavr.Tuple3;
 import me.xethh.tools.jvault.cmds.deen.DeenObj;
 import me.xethh.tools.jvault.display.Console;
 import org.junit.jupiter.api.DisplayName;
@@ -39,14 +40,22 @@ public class PasswordGenTest {
         r.accept(file.toPath().toAbsolutePath());
     }
 
-    public static ByteArrayOutputStream borrowStdOut(Consumer<ByteArrayOutputStream> r) {
-        var o = System.out;
-        var os = new ByteArrayOutputStream();
-        Console.restConsole();
-        System.setOut(new java.io.PrintStream(os, true, StandardCharsets.UTF_8));
-        r.accept(os);
-        System.setOut(o);
-        return os;
+    //public static ByteArrayOutputStream borrowStdOut(Consumer<ByteArrayOutputStream> r) {
+    //    var o = System.out;
+    //    var os = new ByteArrayOutputStream();
+    //    Console.restConsole();
+    //    System.setOut(new java.io.PrintStream(os, true, StandardCharsets.UTF_8));
+    //    r.accept(os);
+    //    System.setOut(o);
+    //    return os;
+    //}
+
+    public static Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> streams() {
+        return streams(new byte[]{});
+    }
+
+    public static Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> streams(byte[] data) {
+        return new Tuple3<>(new ByteArrayInputStream(data), new ByteArrayOutputStream(), new ByteArrayOutputStream() );
     }
 
     public static void borrowStdOutV2(InputStream is, OutputStream os, OutputStream es, CheckedRunnable r) {
@@ -67,10 +76,11 @@ public class PasswordGenTest {
     @Test
     @DisplayName("When run j-vault token gen")
     void testGenDefault() {
-        borrowStdOut((os) -> {
+        var streams = streams();
+        borrowStdOutV2(streams._1(), streams._2(), streams._3(),() -> {
             CommandLine cmd = new CommandLine(new Main());
             cmd.execute("token", "gen");
-            var line = os.toString();
+            var line = streams._2().toString();
             assertTrue(line.endsWith("\n"));
             line = line.substring(0, line.length() - 1);
             var part1 = line.split(":")[0];
@@ -84,10 +94,11 @@ public class PasswordGenTest {
     @Test
     @DisplayName("When run j-vault token gen with default password")
     void testGen() {
-        borrowStdOut((os) -> {
+        var streams = streams();
+        borrowStdOutV2(streams._1(),streams._2(),streams._3(), () -> {
             CommandLine cmd = new CommandLine(new Main());
             cmd.execute("token", "gen", "-p", "abcd");
-            var line = os.toString();
+            var line = streams._2().toString();
             assertTrue(line.endsWith("\n"));
             line = line.substring(0, line.length() - 1);
             var part1 = line.split(":")[0];

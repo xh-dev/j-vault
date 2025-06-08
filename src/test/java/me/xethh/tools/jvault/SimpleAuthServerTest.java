@@ -17,7 +17,8 @@ class SimpleAuthServerTest {
     @Test
     @DisplayName("When run j-vault auth-server code-gen -i some-app -n some-user")
     void testAuthServerCodeGen() {
-        PasswordGenTest.borrowStdOut(os->{
+        var streams = PasswordGenTest.streams();
+        PasswordGenTest.borrowStdOutV2(streams._1(),streams._2(),streams._3(),()->{
             String filename = "qr.png";
             Path path = Path.of(filename);
             if(path.toFile().exists()){
@@ -27,7 +28,7 @@ class SimpleAuthServerTest {
                 fail();
             }
             Main.main("auth-server code-gen -i some-app -n some-user".split(" "));
-            final var res = os.toString().split("\n");
+            final var res = streams._2().toString().split("\n");
             assertTrue(res[0].contains("some-app"));
             assertTrue(res[1].contains("some-user"));
             assertTrue(res[res.length-1].contains("Generated QRCode.png"));

@@ -10,9 +10,10 @@ class AutoCompleteTest {
     @Test
     @DisplayName("When run j-vault autocomplete")
     void testOpensslEncryptCommand() {
-        PasswordGenTest.borrowStdOut(os->{
+        var streams = PasswordGenTest.streams();
+        PasswordGenTest.borrowStdOutV2(streams._1(),streams._2(),streams._3(),()->{
             Main.main("autocomplete".split(" "));
-            final var res = os.toString().split("\n");
+            final var res = streams._2().toString().split("\n");
             final var head = res[0];
             final var last = res[res.length - 1];
             assertEquals("#!/usr/bin/env bash", head,"Console output should be the same");

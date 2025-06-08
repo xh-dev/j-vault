@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("Test zip file features")
 public class ZipFileTest {
     @Test
-    @DisplayName("When ")
+    @DisplayName("When encrypt and decrypt zip file")
     public void testVaultSetOverride() {
         var is = new ByteArrayInputStream(new byte[]{});
         var os = new ByteArrayOutputStream();

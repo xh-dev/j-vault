@@ -52,11 +52,12 @@ public class VaultTest {
         void testVaultView() {
             prepareEmptyDirectoryAsHome(homeSupplier.get().toFile(), (home) -> {
                 var vaultKv = home.resolve("vault.kv");
-                borrowStdOut(os -> {
+                var streams = PasswordGenTest.streams();
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     assertFalse(vaultKv.toFile().exists());
                     new CommandLine(new Main()).execute("vault", "-c", password.get(), "view", "-f", vaultKv.toString());
                     viewVault(password.get(), vaultKv);
-                    assertEquals("", os.toString());
+                    assertEquals("", streams._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
             });
@@ -127,34 +128,46 @@ public class VaultTest {
         public void testVaultSet() {
             prepareEmptyDirectoryAsHome(homeSupplier.get().toFile(), (home) -> {
                 var vaultKv = home.resolve("vault.kv");
-                borrowStdOut(os -> {
+                var streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     assertFalse(vaultKv.toFile().exists());
                     setValue(password.get(), vaultKv, "key1", "value1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams1 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     findValue(password.get(), vaultKv, "key1");
-                    assertEquals("value1\n", os.toString());
+                    assertEquals("value1\n", finalStreams1._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams5 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     viewVault(password.get(), vaultKv);
-                    assertEquals("key1=value1\n", os.toString());
+                    assertEquals("key1=value1\n", finalStreams5._2().toString());
                 });
 
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams2 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     unsetValue(password.get(), vaultKv, "key1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams2._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
 
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams3 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     findValue(password.get(), vaultKv, "key1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams3._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams4 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     viewVault(password.get(), vaultKv);
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams4._2().toString());
                 });
             });
         }
@@ -164,33 +177,45 @@ public class VaultTest {
         public void testVaultUnsetInExistsValue() {
             prepareEmptyDirectoryAsHome(homeSupplier.get().toFile(), (home) -> {
                 var vaultKv = home.resolve("vault.kv");
-                borrowStdOut(os -> {
+                var streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     assertFalse(vaultKv.toFile().exists());
                     setValue(password.get(), vaultKv, "key1", "value1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams1 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     setValue(password.get(), vaultKv, "key2", "value2");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams1._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams2 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     setValue(password.get(), vaultKv, "key3", "value3");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams2._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams5 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     viewVault(password.get(), vaultKv);
-                    assertEquals("key1=value1\nkey2=value2\nkey3=value3\n", os.toString());
+                    assertEquals("key1=value1\nkey2=value2\nkey3=value3\n", finalStreams5._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams3 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     unsetValue(password.get(), vaultKv, "key4");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams3._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams4 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     viewVault(password.get(), vaultKv);
-                    assertEquals("key1=value1\nkey2=value2\nkey3=value3\n", os.toString());
+                    assertEquals("key1=value1\nkey2=value2\nkey3=value3\n", finalStreams4._2().toString());
                 });
 
             });
@@ -201,42 +226,58 @@ public class VaultTest {
         public void testVaultUnsetMultipleValue() {
             prepareEmptyDirectoryAsHome(homeSupplier.get().toFile(), (home) -> {
                 var vaultKv = home.resolve("vault.kv");
-                borrowStdOut(os -> {
+                var streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     assertFalse(vaultKv.toFile().exists());
                     setValue(password.get(), vaultKv, "key1", "value1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams1 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     setValue(password.get(), vaultKv, "key2", "value2");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams1._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams2 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     setValue(password.get(), vaultKv, "key3", "value3");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams2._2().toString());
                     assertTrue(vaultKv.toFile().exists());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams3 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     viewVault(password.get(), vaultKv);
-                    assertEquals("key1=value1\nkey2=value2\nkey3=value3\n", os.toString());
+                    assertEquals("key1=value1\nkey2=value2\nkey3=value3\n", finalStreams3._2().toString());
                 });
 
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams4 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     unsetValue(password.get(), vaultKv, "key1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams4._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams5 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     findValue(password.get(), vaultKv, "key1");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams5._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams6 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     unsetValue(password.get(), vaultKv, "key3");
-                    assertEquals("", os.toString());
+                    assertEquals("", finalStreams6._2().toString());
                 });
-                borrowStdOut(os -> {
+                streams = PasswordGenTest.streams();
+                io.vavr.Tuple3<InputStream, ByteArrayOutputStream, ByteArrayOutputStream> finalStreams7 = streams;
+                borrowStdOutV2(streams._1(),streams._2(), streams._3(),() -> {
                     viewVault(password.get(), vaultKv);
-                    assertEquals("key2=value2\n", os.toString());
+                    assertEquals("key2=value2\n", finalStreams7._2().toString());
                 });
             });
         }
