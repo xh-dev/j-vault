@@ -16,16 +16,16 @@
     <profiles>
         <profile>
             <id>coverage</id>
-            <properties>
-                <sonar.sources>src/main/java</sonar.sources>
-                <sonar.tests>src/test/java</sonar.tests>
-                <sonar.coverage.exclusions>
-                    **/src/test/**/*.java
-                </sonar.coverage.exclusions>
-                <sonar.exclusions>
-                    **/src/generated/**
-                </sonar.exclusions>
-            </properties>
+<!--            <properties>-->
+<!--                <sonar.sources>src/main/java</sonar.sources>-->
+<!--                <sonar.tests>src/test/java</sonar.tests>-->
+<!--                <sonar.coverage.exclusions>-->
+<!--                    **/src/test/**/*.java-->
+<!--                </sonar.coverage.exclusions>-->
+<!--                <sonar.exclusions>-->
+<!--                    **/src/generated/**-->
+<!--                </sonar.exclusions>-->
+<!--            </properties>-->
             <build>
                 <plugins>
                     <plugin>
@@ -48,12 +48,12 @@
                                     <formats>
                                         <format>XML</format>
                                     </formats>
-                                    <excludes>
-                                        <exclude>**/Test*.class</exclude>
-                                        <exclude>**/*Test.class</exclude>
-                                        <exclude>get-so.py</exclude>
-                                        <exclude>get_version.py</exclude>
-                                    </excludes>
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/Test*.class</exclude>-->
+<!--                                        <exclude>**/*Test.class</exclude>-->
+<!--                                        <exclude>get-so.py</exclude>-->
+<!--                                        <exclude>get_version.py</exclude>-->
+<!--                                    </excludes>-->
                                 </configuration>
                             </execution>
                         </executions>
