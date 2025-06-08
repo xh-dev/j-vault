@@ -1,11 +1,9 @@
 ![GitHub Release](https://img.shields.io/github/v/release/xh-dev/j-vault)
-
-[//]: # (![GitHub Actions Workflow Status]&#40;https://img.shields.io/github/actions/workflow/status/xh-dev/j-vault/maven.yml&#41;)
-
-[//]: # ([![Quality Gate Status]&#40;https://sonarcloud.io/api/project_badges/measure?project=xh-dev_j-vault&metric=alert_status&#41;]&#40;https://sonarcloud.io/summary/new_code?id=xh-dev_j-vault&#41;)
 ![Sonar Coverage](https://img.shields.io/sonar/coverage/xh-dev_j-vault?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Tech Debt](https://img.shields.io/sonar/tech_debt/xh-dev_j-vault?server=https%3A%2F%2Fsonarcloud.io)
 
+[//]: # (![GitHub Actions Workflow Status]&#40;https://img.shields.io/github/actions/workflow/status/xh-dev/j-vault/maven.yml&#41;)
+[//]: # ([![Quality Gate Status]&#40;https://sonarcloud.io/api/project_badges/measure?project=xh-dev_j-vault&metric=alert_status&#41;]&#40;https://sonarcloud.io/summary/new_code?id=xh-dev_j-vault&#41;)
 
 
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=xh-dev_j-vault)
