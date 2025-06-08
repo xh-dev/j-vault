@@ -39,7 +39,8 @@
                                         <format>XML</format>
                                     </formats>
                                     <excludes>
-                                        <exclude>**/src/test/**</exclude>
+                                        <exclude>**/Test*.class</exclude>
+                                        <exclude>**/*Test.class</exclude>
                                         <exclude>get-so.py</exclude>
                                         <exclude>get_version.py</exclude>
                                     </excludes>
