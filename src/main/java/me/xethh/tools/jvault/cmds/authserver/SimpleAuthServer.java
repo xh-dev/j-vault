@@ -1,7 +1,6 @@
 package me.xethh.tools.jvault.cmds.authserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeVerifier;
@@ -15,25 +14,18 @@ import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import me.xethh.utils.dateManipulation.BaseTimeZone;
 import picocli.CommandLine;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.security.KeyPair;
-import java.security.PublicKey;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 @CommandLine.Command(
         name = "simple",
@@ -91,48 +83,9 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
         HandlerFactory handlerFactory = new HandlerFactory(kp);
 
-        Consumer<HttpExchange> logRequest = (exchange) -> console().log("received request: " + exchange.getRequestURI());
         server.createContext("/a", handlerFactory.replyWithPubKey());
 
-        Function<HttpExchange, Optional<PublicKey>> getSender = exchange -> {
-            console().debug("getSender: " + exchange.getRequestURI());
-            if (!exchange.getRequestMethod().equalsIgnoreCase("post")) {
-                console().debug("[getSender] rejected due to not post request");
-                return Optional.empty();
-            }
-            var sender = exchange.getRequestHeaders().get("sender");
-            if (sender == null) {
-                console().debug("[getSender] rejected due to sender is null");
-                return Optional.empty();
-            }
-            if (sender.isEmpty()) {
-                console().debug("[getSender] rejected due to sender is empty");
-                return Optional.empty();
-            }
 
-            try {
-                final var senderText = sender.get(0);
-                console().debug("[getSender] sender: " + senderText);
-                return Optional.of(RsaEncryption.getPublicKey(Base64.getDecoder().decode(senderText.getBytes())));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-
-        BiFunction<HttpExchange, PublicKey, Optional<String>> decryptBody = (exchange, pubkey) -> {
-            try {
-                byte[] d = exchange.getRequestBody().readAllBytes();
-                console().debug("[getSender] decrypted body: " + new String(d, StandardCharsets.UTF_8));
-                String dd = new String(Base64.getDecoder().decode(d), StandardCharsets.UTF_8);
-                if (dd.isEmpty()) {
-                    console().debug("[decryptBody] decrypted body is empty");
-                    return Optional.empty();
-                }
-                return deenServer.decryptJsonContainer(pubkey, dd);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
         server.createContext("/b", handlerFactory.handleEncryptedData(Request.class, (sender, myKeypair, req) -> {
 
             var now = Instant.now();
@@ -189,23 +142,10 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
         server.setExecutor(executor);
         server.start();
         console().log(String.format("[Auth Server Started - %d] %nenter to exit: %n", port));
-        final var authServerPath = Path.of(".shutdown-auth-server");
-        if (!authServerPath.toFile().exists()) {
-            try (
-                    final var fos = new FileOutputStream(authServerPath.toFile());
-            ) {
-                fos.write("hello world".getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                console().printStackTrace(e);
-                System.exit(1);
-            }
-        }
-        while (authServerPath.toFile().exists()) {
-            if (!authServerPath.toFile().exists()) {
-                break;
-            }
-            Thread.sleep(Duration.ofMinutes(60).toMillis());
-        }
+
+        console().log("Enter to exit:");
+        var res = new Scanner(System.in).nextLine();
+        server.stop(1);
         return 0;
     }
 

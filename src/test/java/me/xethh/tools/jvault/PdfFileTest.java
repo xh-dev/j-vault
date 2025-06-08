@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault;
 
+import me.xethh.tools.jvault.cmds.pdf.PdfManaging;
 import me.xethh.tools.jvault.cmds.pdf.PdfModification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,9 +48,42 @@ public class PdfFileTest {
                     assertFalse(PdfModification.loadFile(f2.toFile(), Optional.empty()).get().isEncrypted());
                     Main.main("pdf -f target/test-case/test.pdf set-password -p 12345678 -u 1234".split(" "));
                     assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("12345678")).get().isEncrypted());
-                    Main.main("pdf -f target/test-case/test.pdf unset-password -p 12345678".split(" "));
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("12")).isEmpty());
+
+                    Main.main("pdf -f target/test-case/test.pdf unset-password -p 178".split(" "));
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("12345678")).get().isEncrypted());
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("12")).isEmpty());
+
+                    Main.main("pdf -f target/test-case/test.pdf -p 123 set-password -p 8888".split(" "));
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("12345678")).get().isEncrypted());
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("12")).isEmpty());
+
+                    Main.main("pdf -f target/test-case/test.pdf -p 12345678 set-password -p 8888 -u 7777".split(" "));
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("8888")).get().isEncrypted());
+                    assertTrue(PdfModification.loadFile(f2.toFile(), Optional.of("7777")).isPresent());
+
+
+                    Main.main("pdf -f target/test-case/test.pdf unset-password -p 8888".split(" "));
                     assertFalse(PdfModification.loadFile(f2.toFile(), Optional.empty()).get().isEncrypted());
+
+                    Main.main("pdf -f target/test-case/test.pdf test".split(" "));
+                    Main.main("pdf -f target/test-case/test.pdf -p 8888 test".split(" "));
+                    Main.main("pdf -f target/test-case/test.pdf -p 0000 test".split(" "));
+
                 }
         );
+
+        assertTrue(PdfManaging.libExists("awt"));
+        try{
+            PdfManaging.libExists("abcii");
+        } catch (Exception e){
+            System.out.println("This is false test");
+        }
+
+        try {
+            assertFalse(PdfManaging.setFileHidden(f2));
+        } catch (Exception e) {
+            System.out.println("This maybe false in linux");
+        }
     }
 }

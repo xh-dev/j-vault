@@ -76,7 +76,7 @@ public class PdfManaging implements ConsoleOwner, Callable<Integer> {
         }
     }
 
-    static void loadNativeLib() {
+    public static void loadNativeLib() {
         log("Running under graalvm");
         if (System.getProperty("org.graalvm.nativeimage.imagecode") != null) {
             try (
