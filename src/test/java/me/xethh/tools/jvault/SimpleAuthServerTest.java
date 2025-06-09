@@ -1,5 +1,9 @@
 package me.xethh.tools.jvault;
 
+import dev.samstevens.totp.exceptions.CodeGenerationException;
+import me.xethh.tools.jvault.authserv.AuthServerClient;
+import me.xethh.tools.jvault.display.Console;
+import org.bouncycastle.crypto.prng.drbg.DualECPoints;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +13,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +41,55 @@ class SimpleAuthServerTest {
             if(!path.toFile().exists()){
                 fail();
             }
+        });
+    }
+
+    @Test
+    @DisplayName("Test simple auth server start up and receive code")
+    void testAuthServer(){
+        var streams = PasswordGenTest.streamsWithPipe();
+        PasswordGenTest.borrowStdOutV3(streams._1(),streams._2(),streams._3(),()->{
+            Console.getConsole().setDebugging();
+            new Thread(()->{
+                var cmdForStartUpServer = String.format("auth-server simple -v %s -s %s -k %s", AuthServerClient.TestConst.TEST_TOKEN, AuthServerClient.TestConst.TEST_SECRET, AuthServerClient.TestConst.TEST_USER);
+                Main.main(cmdForStartUpServer.split(" "));
+            }).start();
+
+            final int MAX=10;
+            int i=0;
+            boolean done = false;
+            while (i < MAX) {
+                var resp = HttpClient.newHttpClient()
+                        .send(HttpRequest.newBuilder(URI.create("http://localhost:8001/a")).GET().build(), HttpResponse.BodyHandlers.ofString());
+                if (resp.statusCode() == 200) {
+                    done = true;
+                    break;
+                }
+                Thread.sleep(1000);
+                i++;
+            }
+            assertTrue(done);
+
+            //var as = new AuthServerClient() {
+            //    @Override
+            //    public Optional<String> testingModeCode() {
+            //        try {
+            //            String code = nextCode(TestConst.ALGO, TestConst.CODE_DIGIT, TestConst.TEST_SECRET, TestConst.TIME_PERIOD);
+            //            return Optional.of(code);
+            //        } catch (CodeGenerationException e) {
+            //            throw new RuntimeException(e);
+            //        }
+            //    }
+            //
+            //    @Override
+            //    public String authServer() {
+            //        return "http://localhost:8001";
+            //    }
+            //};
+            //
+            //var returnedCode = as.getCode(AuthServerClient.TestConst.TEST_USER);
+
+            streams._1().write("Done".getBytes());
         });
     }
 

@@ -76,11 +76,14 @@ public class PasswordGenTest {
             System.setErr(new PrintStream(es, true, StandardCharsets.UTF_8));
             Console.restConsole();
             r.unchecked().run();
+        } catch (Exception ex) {
+            o.println(streams()._2().toString());
+            e.println(streams()._3().toString());
+            throw new RuntimeException(ex);
+        } finally {
             System.setIn(i);
             System.setOut(o);
             System.setErr(e);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
         }
     }
     public static void borrowStdOutV2(InputStream is, OutputStream os, OutputStream es, CheckedRunnable r) {
@@ -108,6 +111,7 @@ public class PasswordGenTest {
             var line = streams._2().toString();
             assertTrue(line.endsWith("\n"));
             line = line.substring(0, line.length() - 1);
+            Console.getConsole().log(line);
             var part1 = line.split(":")[0];
             var part2 = line.split(":")[1];
 

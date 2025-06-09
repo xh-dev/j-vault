@@ -145,6 +145,8 @@ public class SimpleAuthServer implements ConsoleOwner, Callable<Integer> {
 
         console().log("Enter to exit:");
         var res = new Scanner(System.in).nextLine();
+        console().log("Received message: " + res);
+        console().log("Shutting down server: ");
         server.stop(1);
         return 0;
     }

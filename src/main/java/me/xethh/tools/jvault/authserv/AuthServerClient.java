@@ -5,6 +5,7 @@ import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.exceptions.CodeGenerationException;
 import dev.samstevens.totp.time.SystemTimeProvider;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import me.xethh.libs.encryptDecryptLib.encryption.RsaEncryption;
 import me.xethh.libs.encryptDecryptLib.op.deen.DeEnCryptor;
@@ -33,6 +34,7 @@ import java.util.Scanner;
 public interface AuthServerClient extends ConsoleOwner {
     public static class TestConst{
         public static final String TEST_SECRET="S3XARBLC62OBDS4MWZVLIJREKFP3554P";
+        public static final String TEST_USER="Admin";
         public static final int TIME_PERIOD = 30;
         public static final HashingAlgorithm ALGO = HashingAlgorithm.SHA512;
         public static final int CODE_DIGIT = 8;
@@ -40,6 +42,10 @@ public interface AuthServerClient extends ConsoleOwner {
 
     }
     String authServer();
+
+    default Optional<String>testingModeCode(){
+        return Optional.empty();
+    }
 
     default Optional<String> protocolAbcA(HttpClient httpClient){
 
@@ -72,19 +78,6 @@ public interface AuthServerClient extends ConsoleOwner {
     default Optional<String> protocolAbcB(HttpClient client, ObjectMapper om, PublicKey key, KeyPair kp, String user, String codeInput){
         var deClient = (DeEnCryptor)DeEnCryptor.instance(kp.getPublic(), kp.getPrivate());
         try {
-            //if (console().isDebugging()) { final var timePeriod = TestConst.TIME_PERIOD;
-            //    final var timeProvider = new SystemTimeProvider();
-            //    final var algo = TestConst.ALGO;
-            //    final var codeDigit = TestConst.CODE_DIGIT;
-            //    final var debugging_sc = TestConst.TEST_SECRET;
-            //    console().debug("Debugging with testing secret: " + debugging_sc);
-            //    final var codeGen = new DefaultCodeGenerator(algo, codeDigit);
-            //    final var codeNow = codeGen.generate(debugging_sc, Math.floorDiv(timeProvider.getTime(), timePeriod));
-            //    console().debug("Debugging totp: " + codeNow);
-            //}
-            //Scanner scanner = new Scanner(System.in);
-            //console().log("Please enter the totp: ");
-            //var codeInput = scanner.nextLine();
             console().log("Input code: " + codeInput);
             var req = new SimpleAuthServer.Request();
             req.setExpiresInM(30);
@@ -180,10 +173,16 @@ public interface AuthServerClient extends ConsoleOwner {
                 console().debug("Debugging with testing secret: " + debugging_sc);
                 final var codeNow = nextCode(algo, codeDigit, debugging_sc, timePeriod);
                 console().debug("Debugging totp: " + codeNow);
+
             }
-            Scanner scanner = new Scanner(System.in);
-            console().log("Please enter the totp: ");
-            return scanner.nextLine();
+
+            if(console().isDebugging() && testingModeCode().isPresent()){
+                return testingModeCode().get();
+            } else {
+                Scanner scanner = new Scanner(System.in);
+                console().log("Please enter the totp: ");
+                return scanner.nextLine();
+            }
         });
     }
 
@@ -198,125 +197,6 @@ public interface AuthServerClient extends ConsoleOwner {
 
             console().debug("User home: " + path);
             console().debug("Path of j-vault credential: " + path);
-
-            //Function<HttpClient, Optional<PublicKey>> getPubKey = (httpClient) -> {
-            //    HttpRequest req = null;
-            //    try {
-            //        final var url = authServer() + "/a";
-            //
-            //        console().debug("requesting for public key: " + url);
-            //
-            //        req = HttpRequest.newBuilder(new URI(url))
-            //                .GET()
-            //                .build();
-            //        var response = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
-            //
-            //        console().debug("response code: " + response.statusCode());
-            //        console().debug("response body: " + response.body());
-            //
-            //        var bs = Base64.getDecoder().decode(response.body());
-            //        return Optional.ofNullable(RsaEncryption.getPublicKey(bs));
-            //    } catch (URISyntaxException | IOException e) {
-            //        throw new RuntimeException(e);
-            //    } catch (InterruptedException e) {
-            //        console().printStackTrace(e);
-            //        Thread.currentThread().interrupt();
-            //    }
-            //    return Optional.empty();
-            //};
-            //BiFunction<HttpClient, PublicKey, Optional<String>> getCert = (httpClient, key) -> {
-            //    try {
-            //        if (console().isDebugging()) {
-            //            final var timePeriod = 30;
-            //            final var timeProvider = new SystemTimeProvider();
-            //            final var algo = HashingAlgorithm.SHA512;
-            //            final var codeDigit = 8;
-            //            final var debugging_sc = "S3XARBLC62OBDS4MWZVLIJREKFP3554P";
-            //            console().debug("Debugging with testing secret: " + debugging_sc);
-            //            final var codeGen = new DefaultCodeGenerator(algo, codeDigit);
-            //            final var codeNow = codeGen.generate(debugging_sc, Math.floorDiv(timeProvider.getTime(), timePeriod));
-            //            console().debug("Debugging totp: " + codeNow);
-            //        }
-            //        Scanner scanner = new Scanner(System.in);
-            //        console().log("Please enter the totp: ");
-            //        var codeInput = scanner.nextLine();
-            //        console().log("Input code: " + codeInput);
-            //        var req = new SimpleAuthServer.Request();
-            //        req.setExpiresInM(30);
-            //        req.setCode(codeInput);
-            //        req.setKey(user);
-            //        req.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.now().atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
-            //
-            //        final var bodyToPush = om.writeValueAsString(req);
-            //        console().debug("body to push: " + bodyToPush);
-            //        final var body = Base64.getEncoder().encodeToString(deClient.encryptToJsonContainer(key, bodyToPush).getBytes(StandardCharsets.UTF_8));
-            //        console().debug("body: " + body);
-            //        final var sender = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
-            //        console().debug("sender: " + sender);
-            //
-            //        final var url = authServer() + "/b";
-            //        console().debug("requesting for temp cert: " + url);
-            //
-            //        var response = client.send(HttpRequest.newBuilder(new URI(url))
-            //                        .POST(HttpRequest.BodyPublishers.ofString(body))
-            //                        .header("sender", sender)
-            //                        .build(),
-            //                HttpResponse.BodyHandlers.ofString());
-            //
-            //        if (console().isDebugging()) {
-            //            console().debug("response code: " + response.statusCode());
-            //            final var respBody = response.body();
-            //            console().debug("response body: " + respBody);
-            //            return Optional.ofNullable(respBody);
-            //        } else {
-            //            return Optional.ofNullable(response.body());
-            //        }
-            //    } catch (InterruptedException e) {
-            //        console().printStackTrace(e);
-            //        Thread.currentThread().interrupt();
-            //    } catch (IOException | URISyntaxException | CodeGenerationException e) {
-            //        throw new RuntimeException(e);
-            //    }
-            //    return Optional.empty();
-            //
-            //};
-            //BiFunction<HttpClient, PublicKey, Optional<String>> getCode = (httpClient, key) -> {
-            //    try {
-            //        if (!path.toFile().exists()) {
-            //            console().debug("j-vault credential not exists ");
-            //            return Optional.empty();
-            //        }
-            //
-            //        var tempCert = new String(new FileInputStream(path.toFile()).readAllBytes(), StandardCharsets.UTF_8);
-            //
-            //        console().debug("temp cert: " + tempCert);
-            //
-            //        var sender = Base64.getEncoder().encodeToString(deClient.getPublicKey().getEncoded());
-            //        console().debug("sender: " + sender);
-            //        var body = Base64.getEncoder().encodeToString(deClient.encryptToJsonContainer(key, tempCert).getBytes(StandardCharsets.UTF_8));
-            //        console().debug("body: " + body);
-            //        var req = HttpRequest.newBuilder(new URI(authServer() + "/c"))
-            //                .POST(HttpRequest.BodyPublishers.ofString(body))
-            //                .header("sender", sender)
-            //                .build();
-            //        final var response = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
-            //        console().debug("response status: " + response.statusCode());
-            //        console().debug("response body: " + response.body());
-            //        if (response.statusCode() != 200) {
-            //            return Optional.empty();
-            //        } else {
-            //            final var responseText = new String(Base64.getDecoder().decode(response.body()), StandardCharsets.UTF_8);
-            //            final var data = deClient.decryptJsonContainer(key, responseText).get();
-            //            return Optional.of(data);
-            //        }
-            //    } catch (URISyntaxException | IOException e) {
-            //        throw new RuntimeException(e);
-            //    } catch (InterruptedException e) {
-            //        console().printStackTrace(e);
-            //        Thread.currentThread().interrupt();
-            //    }
-            //    return Optional.empty();
-            //};
 
             // Logic starting
             Optional<PublicKey> pubKey = Optional.empty();
