@@ -70,6 +70,9 @@ class SimpleAuthServerTest {
             }
             assertTrue(done);
 
+            var dir = System.getProperty("user.home");
+            var path = Path.of(dir).resolve(".j-vault-c");
+            path.toFile().delete();
             var as = new AuthServerClient() {
                 @Override
                 public Optional<String> testingModeCode() {
@@ -88,6 +91,7 @@ class SimpleAuthServerTest {
             };
 
             var returnedCode = as.getCode(AuthServerClient.TestConst.TEST_USER);
+            assertEquals(AuthServerClient.TestConst.TEST_TOKEN, returnedCode);
 
             streams._1().write("Done".getBytes());
         });
