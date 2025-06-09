@@ -131,7 +131,8 @@ public interface AuthServerClient extends ConsoleOwner {
 
             console().debug("temp cert: " + tempCert);
 
-            var sender = Base64.getEncoder().encodeToString(key.getEncoded());
+            //var sender = Base64.getEncoder().encodeToString(key.getEncoded());
+            var sender = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
             console().debug("sender: " + sender);
             var body = Base64.getEncoder().encodeToString(deClient.encryptToJsonContainer(key, tempCert).getBytes(StandardCharsets.UTF_8));
             console().debug("body: " + body);

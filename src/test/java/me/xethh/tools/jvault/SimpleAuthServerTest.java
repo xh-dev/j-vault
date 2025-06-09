@@ -70,24 +70,24 @@ class SimpleAuthServerTest {
             }
             assertTrue(done);
 
-            //var as = new AuthServerClient() {
-            //    @Override
-            //    public Optional<String> testingModeCode() {
-            //        try {
-            //            String code = nextCode(TestConst.ALGO, TestConst.CODE_DIGIT, TestConst.TEST_SECRET, TestConst.TIME_PERIOD);
-            //            return Optional.of(code);
-            //        } catch (CodeGenerationException e) {
-            //            throw new RuntimeException(e);
-            //        }
-            //    }
-            //
-            //    @Override
-            //    public String authServer() {
-            //        return "http://localhost:8001";
-            //    }
-            //};
-            //
-            //var returnedCode = as.getCode(AuthServerClient.TestConst.TEST_USER);
+            var as = new AuthServerClient() {
+                @Override
+                public Optional<String> testingModeCode() {
+                    try {
+                        String code = nextCode(TestConst.ALGO, TestConst.CODE_DIGIT, TestConst.TEST_SECRET, TestConst.TIME_PERIOD);
+                        return Optional.of(code);
+                    } catch (CodeGenerationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public String authServer() {
+                    return "http://localhost:8001";
+                }
+            };
+
+            var returnedCode = as.getCode(AuthServerClient.TestConst.TEST_USER);
 
             streams._1().write("Done".getBytes());
         });
