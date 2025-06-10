@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import static me.xethh.tools.jvault.cmds.pdf.NativeHandling.libExists;
+import static me.xethh.tools.jvault.cmds.pdf.NativeHandling.setFileHidden;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -74,14 +76,14 @@ public class PdfFileTest {
         );
 
         try{
-            PdfManaging.libExists("awt");
-            PdfManaging.libExists("abcii");
+            libExists("awt");
+            libExists("abcii");
         } catch (Exception e){
             System.out.println("This is false test");
         }
 
         try {
-            assertFalse(PdfManaging.setFileHidden(f2));
+            assertFalse(setFileHidden(f2));
         } catch (Exception e) {
             System.out.println("This maybe false in linux");
         }
