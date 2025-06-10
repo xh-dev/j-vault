@@ -1,5 +1,6 @@
 package me.xethh.tools.jvault.cmds.token;
 
+import me.xethh.tools.jvault.exceptionhandling.CommonHandle;
 import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import picocli.CommandLine;
 
@@ -14,13 +15,12 @@ import java.util.concurrent.Callable;
 public class Token implements ConsoleOwner, Callable<Integer> {
 
     public static boolean validate(String line) {
+        CommonHandle.throwExceptionIfNotExpected(Objects.isNull(line) || line.isEmpty(), "credential is empty");
         if (Objects.isNull(line) || line.isEmpty()) {
-            throw new RuntimeException("credential is empty");
+            throw new RuntimeException();
         }
         var creds = line.split(":");
-        if (creds.length != 2) {
-            throw new RuntimeException("credential not corrected formatted");
-        }
+        CommonHandle.throwExceptionIfNotExpected(creds.length != 2, "credential not corrected formatted");
         return true;
     }
 

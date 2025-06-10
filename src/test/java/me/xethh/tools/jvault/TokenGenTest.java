@@ -7,11 +7,19 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Test gen token")
 public class TokenGenTest {
+    @Test
+    @DisplayName("When call token")
+    public void testTokenCall(){
+        assertDoesNotThrow(()->{
+            Main.main("token".split(" "));
+        });
+
+    }
+
     @Test
     @DisplayName("When gen token")
     public void testVaultSetOverride() {

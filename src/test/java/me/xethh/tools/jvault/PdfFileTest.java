@@ -1,6 +1,5 @@
 package me.xethh.tools.jvault;
 
-import me.xethh.tools.jvault.cmds.pdf.PdfManaging;
 import me.xethh.tools.jvault.cmds.pdf.PdfModification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,19 +13,11 @@ import java.util.Optional;
 
 import static me.xethh.tools.jvault.cmds.pdf.NativeHandling.libExists;
 import static me.xethh.tools.jvault.cmds.pdf.NativeHandling.setFileHidden;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Test pdf file features")
 public class PdfFileTest {
-    @Test
-    @DisplayName("When encrypt and decrypt pdf")
-    public void testPdfFileEncrypt() {
-        var streams = PasswordGenTest.streams();
-        var is = streams._1();
-        var os = streams._2();
-        var es = streams._3();
-
+    private Path prepare(){
         final var f1 = Path.of("stuff/test.pdf");
         final var f2 = Path.of("target/test-case/test.pdf");
         f2.getParent().toFile().mkdirs();
@@ -45,6 +36,52 @@ public class PdfFileTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return f2;
+    }
+
+    @Test
+    @DisplayName("When encrypt and decrypt pdf")
+    public void testPdfTest() {
+        var f2 = prepare();
+        var cmd = String.format("pdf -f %s test", f2);
+        var streams = PasswordGenTest.streamsWithPipe();
+        String finalCmd = cmd;
+        io.vavr.Tuple3<java.io.PipedOutputStream, java.io.ByteArrayOutputStream, java.io.ByteArrayOutputStream> finalStreams = streams;
+        PasswordGenTest.borrowStdOutV3(streams._1(), streams._2(), streams._3(), ()->{
+            Main.main(finalCmd.split(" "));
+            var res = finalStreams._2().toString();
+            assertEquals("The file is not protected by password\n", res);
+        });
+
+        streams = PasswordGenTest.streamsWithPipe();
+        io.vavr.Tuple3<java.io.PipedOutputStream, java.io.ByteArrayOutputStream, java.io.ByteArrayOutputStream> finalStreams1 = streams;
+        PasswordGenTest.borrowStdOutV3(streams._1(), streams._2(), streams._3(), ()->{
+            Main.main(String.format("pdf -f %s set-password -p 12345 -u 2345", f2).split(" "));
+            Main.main(String.format("pdf -f %s test", f2).split(" "));
+            var res = finalStreams1._2().toString();
+            assertEquals("The file maybe protected by password\n", res);
+
+            Main.main(String.format("pdf -f %s -p 3333 test", f2).split(" "));
+            res = finalStreams1._2().toString();
+            assertEquals("The provided password is not correct", res.split("\n")[1]);
+
+            Main.main(String.format("pdf -f %s -p 12345 test", f2).split(" "));
+            res = finalStreams1._2().toString();
+            assertEquals("The provided password is correct", res.split("\n")[2]);
+        });
+
+
+    }
+
+    @Test
+    @DisplayName("When encrypt and decrypt pdf")
+    public void testPdfFileEncrypt() {
+        var streams = PasswordGenTest.streams();
+        var is = streams._1();
+        var os = streams._2();
+        var es = streams._3();
+
+        var f2 = prepare();
 
         PasswordGenTest.borrowStdOutV2(is, os, es, () -> {
                     assertFalse(PdfModification.loadFile(f2.toFile(), Optional.empty()).get().isEncrypted());
