@@ -106,4 +106,17 @@ class ConsoleTest {
         assertNotEquals("", esMessage);
         assertTrue(esMessage.contains("This message is intended to be logged"));
     }
+
+    @Test
+    @DisplayName("When console log if")
+    void testLogIf() {
+        ByteArrayInputStream is = new ByteArrayInputStream(new byte[]{});
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream es = new ByteArrayOutputStream();
+
+        PasswordGenTest.borrowStdOutV2(is,os, es, ()->{
+            Console.getConsole().logIf(true, "this is a test message");
+            assertEquals("this is a test message\n", os.toString());
+        });
+    }
 }

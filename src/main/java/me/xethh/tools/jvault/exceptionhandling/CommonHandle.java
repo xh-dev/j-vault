@@ -1,13 +1,22 @@
 package me.xethh.tools.jvault.exceptionhandling;
 
-import io.vavr.CheckedFunction0;
-
 public class CommonHandle {
-    public static <X> X tryCatchThrow(CheckedFunction0<X> runnable) {
+    public interface CheckedSupplier<X>{
+        public X get() throws Exception;
+    }
+    public static <X> X tryCatchThrow(CheckedSupplier<X> supplier) {
         try{
-            return runnable.unchecked().get();
-        } catch (Exception ex){
-            throw new RuntimeException(ex);
+            return supplier.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean throwExceptionIfNotExpected(Boolean checkedResult, String msg) {
+        if (Boolean.TRUE.equals(checkedResult)) {
+            throw new RuntimeException(msg);
+        } else {
+            return true;
         }
     }
 }

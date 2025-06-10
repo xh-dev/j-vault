@@ -27,6 +27,12 @@ public class Console {
         return instance;
     }
 
+    public void logIf(boolean res, String msg) {
+        if(res){
+            getConsole().log(msg);
+        }
+    }
+
     public static void restConsole() {
         instance = null;
     }

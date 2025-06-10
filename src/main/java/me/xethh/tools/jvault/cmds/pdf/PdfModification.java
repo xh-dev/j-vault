@@ -8,8 +8,10 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
+
+import static me.xethh.tools.jvault.exceptionhandling.CommonHandle.throwExceptionIfNotExpected;
+import static me.xethh.tools.jvault.exceptionhandling.CommonHandle.tryCatchThrow;
 
 public class PdfModification {
     private PdfModification(){
@@ -40,25 +42,16 @@ public class PdfModification {
         final var fnTemp = fn + ".tmp";
         final var path = file.getAbsoluteFile().getParentFile().toPath();
         final var doc2 = docOp.apply(doc);
-        try {
+        tryCatchThrow(()->{
             doc2.save(path.resolve(fnTemp).toFile());
             doc2.close();
             final var delRes = path.resolve(fn).toFile().delete();
-            if (!delRes) {
-                Console.getConsole().log("Failed to delete " + fnTemp);
-            }
-            if (path.resolve(fn).toFile().exists()) {
-                throw new RuntimeException("File not deleted!");
-            }
+            Console.getConsole().logIf(!delRes, "Failed to delete " + fnTemp);
+            throwExceptionIfNotExpected(path.resolve(fn).toFile().exists(), "File not deleted!");
             final var rnRes = path.resolve(fnTemp).toFile().renameTo(path.resolve(fn).toFile());
-            if (!rnRes) {
-                Console.getConsole().log("Failed to rename " + fnTemp);
-            }
-            if (path.resolve(fnTemp).toFile().exists()) {
-                throw new RuntimeException("File not renamed!");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            Console.getConsole().logIf(!rnRes, "Failed to rename " + fnTemp);
+            throwExceptionIfNotExpected(path.resolve(fnTemp).toFile().exists(),"File not renamed!");
+            return "";
+        });
     }
 }
