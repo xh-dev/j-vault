@@ -42,12 +42,8 @@ public class ZipUnSetPassword implements ConsoleOwner, Callable<Integer> {
             newZipFile.addStream(is, parameters);
         }
         zipFile.close();
-        if (!zipManaging.getFile().delete()) {
-            console().log("Failed to delete zip file");
-        }
-        if (!newZipFileName.toFile().renameTo(zipManaging.getFile())) {
-            console().log("Failed to rename zip file");
-        }
+        console().logIf(!zipManaging.getFile().delete(), "Failed to delete zip file");
+        console().logIf(!newZipFileName.toFile().renameTo(zipManaging.getFile()), "Failed to rename zip file");
         console().log(String.format("file [%s] is now zip without password.", zipManaging.getFile().getName()));
         return 0;
     }
