@@ -3,6 +3,7 @@ package me.xethh.tools.jvault.cmds.deen.sub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import io.vavr.control.Try;
 import me.xethh.tools.jvault.cmds.deen.Vault;
 import me.xethh.tools.jvault.interfaces.ConsoleOwner;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -44,6 +45,15 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
 
     @CommandLine.ParentCommand
     private Vault deen;
+
+    public void handleError(HttpExchange exchange, int status) {
+        Try.of(()->{
+            exchange.sendResponseHeaders(status, 0);
+            var os = exchange.getResponseBody();
+            os.close();
+            return true;
+        }).getOrElseThrow(()->new RuntimeException("Fail to close response"));
+    }
 
     @Override
     public Integer call() throws Exception {
@@ -101,14 +111,10 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                     if (genToken) {
                         var param = tokenProvider.apply(exchange);
                         if (param.isEmpty()) {
-                            exchange.sendResponseHeaders(403, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                            handleError(exchange, 403);
                         } else {
                             if (!finalTokenGen.equalsIgnoreCase(param.get())) {
-                                exchange.sendResponseHeaders(403, 0);
-                                var os = exchange.getResponseBody();
-                                os.close();
+                                handleError(exchange, 403);
                             }
                         }
                     }
@@ -129,13 +135,9 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                     if (genToken) {
                         var param = tokenProvider.apply(exchange);
                         if (param.isEmpty()) {
-                            exchange.sendResponseHeaders(403, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                            handleError(exchange, 403);
                         } else if (!finalTokenGen.equalsIgnoreCase(param.get())) {
-                            exchange.sendResponseHeaders(403, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                            handleError(exchange, 403);
                         }
                     }
                     final var p = exchange.getRequestURI().getPath();
@@ -151,9 +153,7 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                             body.write(v.getBytes(StandardCharsets.UTF_8));
                             body.close();
                         } else {
-                            exchange.sendResponseHeaders(404, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                            handleError(exchange, 404);
                         }
                     } else {
                         exchange.sendResponseHeaders(405, 0);
@@ -171,13 +171,9 @@ public class RestServer implements ConsoleOwner, Callable<Integer> {
                     if (genToken) {
                         var param = tokenProvider.apply(exchange);
                         if (param.isEmpty()) {
-                            exchange.sendResponseHeaders(403, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                            handleError(exchange, 403);
                         } else if (!finalTokenGen.equalsIgnoreCase(param.get())) {
-                            exchange.sendResponseHeaders(403, 0);
-                            var os = exchange.getResponseBody();
-                            os.close();
+                            handleError(exchange, 403);
                         }
                     }
                     final var mapResult = om.writeValueAsString(map);
