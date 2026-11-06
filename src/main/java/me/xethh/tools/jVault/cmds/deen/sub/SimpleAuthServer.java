@@ -361,6 +361,15 @@ public class SimpleAuthServer implements Callable<Integer> {
                     var os = exchange.getResponseBody();
 
                     var req = new ObjectMapper().readValue(ddd, Request.class);
+
+                    if(!Optional.ofNullable(req.getKey()).orElse("").equals(key)){
+                        if(debugging){
+                            System.out.println("rejected due to invalid key");
+                        }
+                        exchange.sendResponseHeaders(400, 0);
+                        exchange.getResponseBody().close();
+                        return;
+                    }
                     // Test timing
                     var now=Instant.now();
                     var upper = now.plus(1, ChronoUnit.MINUTES);
