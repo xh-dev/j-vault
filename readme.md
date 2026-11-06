@@ -184,6 +184,7 @@ set -o history
 # Releases
 | Version | Date        | Description                                                                                                                                |
 |---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| v1.7.1  | 7 Nov 2026  | Bind temporary auth-server certificates to the sender public key; add per-IP rate limiting and fix vault key comparison                    |
 | v1.7.0  | 3 Jun 2025  | change sub command `rest-server` to `over-http` and small refactoring                                                                      |
 | v1.6.1  | 2 Jun 2025  | - Default port to `7910 instead of `` <br> - Add secure mode (`--harden`, `--secure`) to `j-vault vault rest-server`                       |
 | v1.6.0  | 31 May 2025 | Add new command `j-vault vault rest-server` and code refactor                                                                              |
@@ -222,4 +223,3 @@ sudo rm -f out/j-vault \
       -jar j-vault.jar \
       /out/j-vault
 ```
-
