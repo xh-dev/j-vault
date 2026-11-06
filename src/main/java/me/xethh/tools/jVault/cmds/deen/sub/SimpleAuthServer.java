@@ -123,6 +123,88 @@ public class SimpleAuthServer implements Callable<Integer> {
     @CommandLine.Option(names = {"--use-env"}, required = false, arity = "1", description = "Enable to get config from ENV")
     private boolean useEnv = false;
 
+    @CommandLine.Option(names = {"--rate-limit"}, required = false, defaultValue = "30", description = "Max requests per minute per IP for /a, /b, /c (default: ${DEFAULT-VALUE})")
+    private int rateLimitPerMinute = 30;
+
+    @CommandLine.Option(names = {"--ip-behind-azure"}, required = false, description = "Resolve client IP from Azure routing headers (X-Azure-ClientIP / X-Forwarded-For)")
+    private boolean ipBehindAzure = false;
+
+    @CommandLine.Option(names = {"--ip-behind-cloudflare"}, required = false, description = "Resolve client IP from the Cloudflare CF-Connecting-IP header (can be combined with --ip-behind-azure)")
+    private boolean ipBehindCloudflare = false;
+
+    private final java.util.concurrent.ConcurrentHashMap<String, java.util.ArrayDeque<Long>> hits = new java.util.concurrent.ConcurrentHashMap<>();
+
+    static String stripPort(String ip) {
+        ip = ip.trim();
+        if (ip.startsWith("[")) { // [v6]:port
+            var end = ip.indexOf(']');
+            return end > 0 ? ip.substring(1, end) : ip;
+        }
+        var idx = ip.indexOf(':');
+        if (idx > 0 && idx == ip.lastIndexOf(':')) { // v4:port
+            return ip.substring(0, idx);
+        }
+        return ip;
+    }
+
+    String resolveClientIp(HttpExchange exchange) {
+        var headers = exchange.getRequestHeaders();
+        if (ipBehindCloudflare) {
+            var cf = headers.getFirst("CF-Connecting-IP");
+            if (cf != null && !cf.isBlank()) {
+                return stripPort(cf);
+            }
+        }
+        if (ipBehindAzure) {
+            var azure = headers.getFirst("X-Azure-ClientIP");
+            if (azure != null && !azure.isBlank()) {
+                return stripPort(azure);
+            }
+            var xff = headers.getFirst("X-Forwarded-For");
+            if (xff != null && !xff.isBlank()) {
+                return stripPort(xff.split(",")[0]);
+            }
+        }
+        return exchange.getRemoteAddress().getAddress().getHostAddress();
+    }
+
+    /** Logs the incoming IP and returns true if the request is within the per-minute limit. */
+    boolean logAndCheckRate(HttpExchange exchange) {
+        var ip = resolveClientIp(exchange);
+        var now = System.currentTimeMillis();
+        var window = hits.computeIfAbsent(ip, k -> new java.util.ArrayDeque<>());
+        boolean allowed;
+        synchronized (window) {
+            while (!window.isEmpty() && now - window.peekFirst() >= 60_000) {
+                window.pollFirst();
+            }
+            allowed = window.size() < rateLimitPerMinute;
+            if (allowed) {
+                window.addLast(now);
+            }
+        }
+        System.out.printf("[request] ip=%s path=%s allowed=%b%n", ip, exchange.getRequestURI().getPath(), allowed);
+        if (hits.size() > 10_000) {
+            hits.entrySet().removeIf(e -> {
+                synchronized (e.getValue()) {
+                    return e.getValue().isEmpty() || now - e.getValue().peekLast() >= 60_000;
+                }
+            });
+        }
+        return allowed;
+    }
+
+    HttpHandler rateLimited(HttpHandler delegate) {
+        return exchange -> {
+            if (!logAndCheckRate(exchange)) {
+                exchange.sendResponseHeaders(400, -1);
+                exchange.close();
+                return;
+            }
+            delegate.handle(exchange);
+        };
+    }
+
 
 
     @Override
@@ -178,7 +260,7 @@ public class SimpleAuthServer implements Callable<Integer> {
             }
         };
 
-        server.createContext("/a", new HttpHandler() {
+        server.createContext("/a", rateLimited(new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
                 System.out.println("received request: "+exchange.getRequestURI());
@@ -189,7 +271,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                 os.write(response.getBytes());
                 os.close();
             }
-        });
+        }));
 
         Function<HttpExchange, Optional<PublicKey>> getSender = exchange->{
             if(debugging){
@@ -245,7 +327,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                 throw new RuntimeException(e);
             }
         };
-        server.createContext("/b", new HttpHandler() {
+        server.createContext("/b", rateLimited(new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
                 System.out.println("received request: "+exchange.getRequestURI());
@@ -344,9 +426,9 @@ public class SimpleAuthServer implements Callable<Integer> {
                     exchange.getResponseBody().close();
                 }
             }
-        });
+        }));
 
-        server.createContext("/c", new HttpHandler() {
+        server.createContext("/c", rateLimited(new HttpHandler() {
 
             @Override
             public void handle(HttpExchange exchange) throws IOException {
@@ -440,7 +522,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     exchange.getResponseBody().close();
                 }
             }
-        });
+        }));
         ExecutorService executor = Executors.newFixedThreadPool(2);
         server.setExecutor(executor);
         server.start();
