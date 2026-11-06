@@ -363,9 +363,9 @@ public class SimpleAuthServer implements Callable<Integer> {
 
                     var req = new ObjectMapper().readValue(ddd, Request.class);
 
-                    if(key == null ||  req.getKey()==null || MessageDigest.isEqual(
-                            Optional.of(req.getKey()).get().getBytes(StandardCharsets.UTF_8),
-                            Optional.of(key).get().getBytes(StandardCharsets.UTF_8)
+                    if(key == null ||  req.getKey()==null || !MessageDigest.isEqual(
+                            req.getKey().getBytes(StandardCharsets.UTF_8),
+                            key.getBytes(StandardCharsets.UTF_8)
                     )) {
                         if(debugging){
                             System.out.println("rejected due to invalid key");
