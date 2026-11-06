@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.MessageDigest;
 import java.security.PublicKey;
 import java.time.Duration;
 import java.time.Instant;
@@ -362,7 +363,10 @@ public class SimpleAuthServer implements Callable<Integer> {
 
                     var req = new ObjectMapper().readValue(ddd, Request.class);
 
-                    if(!Optional.ofNullable(req.getKey()).orElse("").equals(key)){
+                    if(key == null ||  req.getKey()==null || MessageDigest.isEqual(
+                            Optional.of(req.getKey()).get().getBytes(StandardCharsets.UTF_8),
+                            Optional.of(key).get().getBytes(StandardCharsets.UTF_8)
+                    )) {
                         if(debugging){
                             System.out.println("rejected due to invalid key");
                         }
@@ -370,6 +374,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                         exchange.getResponseBody().close();
                         return;
                     }
+
                     // Test timing
                     var now=Instant.now();
                     var upper = now.plus(1, ChronoUnit.MINUTES);
