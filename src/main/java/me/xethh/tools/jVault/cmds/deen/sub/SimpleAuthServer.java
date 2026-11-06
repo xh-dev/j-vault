@@ -165,6 +165,19 @@ public class SimpleAuthServer implements Callable<Integer> {
 
         DeEnCryptorImpl deenServer = DeEnCryptor.instance(kp.getPublic(), kp.getPrivate());
 
+        Function<PublicKey, String> hashKey = pk -> {
+            try {
+                var digest = java.security.MessageDigest.getInstance("SHA-256").digest(pk.getEncoded());
+                var sb = new StringBuilder();
+                for (byte b : digest) {
+                    sb.append(String.format("%02x", b));
+                }
+                return sb.toString();
+            } catch (java.security.NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
         server.createContext("/a", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
@@ -304,7 +317,7 @@ public class SimpleAuthServer implements Callable<Integer> {
                     var tempCert = new TempCert();
                     tempCert.setExpiresInM(req.getExpiresInM());
                     tempCert.setDate(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.now().atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId())));
-                    tempCert.setTo(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
+                    tempCert.setTo(hashKey.apply(publicKey));
 
                     final var ff = new ObjectMapper().writeValueAsString(tempCert);
                     if(debugging){
@@ -376,6 +389,17 @@ public class SimpleAuthServer implements Callable<Integer> {
                         System.out.println("received cert: "+certStrOpt);
                     }
                     var cert = new ObjectMapper().readValue(certStrOpt.get(), TempCert.class);
+
+                    if(cert.getTo() == null || !java.security.MessageDigest.isEqual(
+                            cert.getTo().getBytes(StandardCharsets.UTF_8),
+                            hashKey.apply(publicKey).getBytes(StandardCharsets.UTF_8))){
+                        if(debugging){
+                            System.out.println("rejected due to cert not issued to sender");
+                        }
+                        exchange.sendResponseHeaders(400, 0);
+                        exchange.getResponseBody().close();
+                        return;
+                    }
 
                     // Test timing
                     var now=Instant.now();
