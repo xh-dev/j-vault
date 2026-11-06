@@ -52,6 +52,8 @@ jobs:
         asset_content_type: application/java-archive
   build-linux-executable:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     needs:
       - basic-jar-build
     steps:
@@ -107,6 +109,8 @@ jobs:
           asset_content_type: application/octet-stream
   build-windows-executor:
     runs-on: windows-latest
+    permissions:
+      contents: write
     needs:
       - basic-jar-build
     steps:
