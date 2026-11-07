@@ -4,4 +4,4 @@ RUN apk add gcompat
 WORKDIR /app
 COPY j-vault /app/
 EXPOSE 8005
-CMD ./j-vault -V && ./j-vault auth-server --use-env true
+CMD ./j-vault -V && ./j-vault auth-server auth-server --use-env true --ip-behind-cloudflare

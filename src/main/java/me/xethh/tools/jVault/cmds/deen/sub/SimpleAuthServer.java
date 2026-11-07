@@ -486,21 +486,36 @@ public class SimpleAuthServer implements Callable<Integer> {
                     }
                     var cert = new ObjectMapper().readValue(certStrOpt.get(), TempCert.class);
 
-                    if(cert.getTo() == null || !java.security.MessageDigest.isEqual(
-                            cert.getTo().getBytes(StandardCharsets.UTF_8),
-                            hashKey.apply(publicKey).getBytes(StandardCharsets.UTF_8))){
-                        if(debugging){
-                            System.out.println("rejected due to cert not issued to sender");
-                        }
-                        exchange.sendResponseHeaders(400, 0);
-                        exchange.getResponseBody().close();
-                        return;
-                    }
+                    /*
+                     # JV-0001
+                     Intensionally disabled the check for the "to" field in the certificate,
+                     current implementation does not support this check, it is recommended to
+                     implement this check in the future for enhanced security.
+                     */
+
+                    //if(cert.getTo() == null || !java.security.MessageDigest.isEqual(
+                    //        cert.getTo().getBytes(StandardCharsets.UTF_8),
+                    //        hashKey.apply(publicKey).getBytes(StandardCharsets.UTF_8))){
+                    //    if(debugging){
+                    //        System.out.println("rejected due to cert not issued to sender");
+                    //    }
+                    //    exchange.sendResponseHeaders(400, 0);
+                    //    exchange.getResponseBody().close();
+                    //    return;
+                    //}
 
                     // Test timing
                     var now=Instant.now();
                     var dateCert=Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(cert.getDate())).atZone(BaseTimeZone.Asia_Hong_Kong.timeZone().toZoneId());
-                    var timeLimit = dateCert.plus(cert.getExpiresInM(), ChronoUnit.MINUTES);
+
+                    /*
+                        # JV-0001
+                        Intensionally limit the cert validity to 5 minutes, due to the current implementation
+                        does not support the getTo check, so need to limit the validity of the cert to reduce
+                        the risk of misuse.
+                     */
+                    //var timeLimit = dateCert.plus(cert.getExpiresInM(), ChronoUnit.MINUTES);
+                    var timeLimit = dateCert.plusMinutes(5);
                     if(debugging){
                         System.out.println("time now: "+now);
                         System.out.println("time expire: "+timeLimit);

@@ -1,0 +1,12 @@
+services:
+  j-vault:
+    image: xethhung/j-vault-server:latest
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8005:8005"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
